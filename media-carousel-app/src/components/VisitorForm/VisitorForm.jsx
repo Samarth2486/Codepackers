@@ -8,6 +8,9 @@ const VisitorForm = () => {
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
 
+  // ✅ This should exactly match what's in your .env
+  const API_BASE_URL = process.env.REACT_APP_BACKEND_URL;
+
   useEffect(() => {
     const saved = localStorage.getItem("visitorFormSubmitted");
     if (saved === "true") setFormSubmitted(true);
@@ -43,7 +46,7 @@ const VisitorForm = () => {
     }
 
     try {
-      const res = await fetch("https://codepackers.onrender.com/api/messages", {
+      const res = await fetch(`${API_BASE_URL}/api/messages`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
@@ -52,12 +55,8 @@ const VisitorForm = () => {
       const data = await res.json();
       if (!data.success) throw new Error("API failed");
 
-      if (data.success) {
-        setFormSubmitted(true);
-        localStorage.setItem("visitorFormSubmitted", "true");
-      } else {
-        setErrorMsg("Submission failed. Please try again.");
-      }
+      setFormSubmitted(true);
+      localStorage.setItem("visitorFormSubmitted", "true");
     } catch (err) {
       console.warn("Backend not reachable. Using fallback.", err);
       setErrorMsg("⚠️ Not able to connect to backend. Showing dummy form success.");
@@ -84,6 +83,7 @@ const VisitorForm = () => {
       viewport={{ once: true, amount: 0.3 }}
     >
       <h2>Get Access to Our PDF</h2>
+
       {!formSubmitted ? (
         <form onSubmit={handleSubmit} className="visitor-form">
           <input type="text" name="name" placeholder="Your Name" onChange={handleChange} required />
@@ -97,13 +97,17 @@ const VisitorForm = () => {
       ) : (
         <div className="download-section">
           <p>Thank you! You can now download the PDF:</p>
+
+          {/* ✅ FIXED: prevent frontend routing by using "a" outside the button */}
           <a
-            href="https://codepackers.onrender.com/api/download-pdf"
+            href={`${API_BASE_URL}/api/download-pdf`}
+            download
             target="_blank"
-            rel="noreferrer"
+            rel="noopener noreferrer"
           >
-            <button>Download PDF</button>
+            <button type="button">Download PDF</button>
           </a>
+
           <button onClick={handleReset}>Submit Another Response</button>
         </div>
       )}

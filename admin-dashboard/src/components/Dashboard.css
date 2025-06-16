@@ -1,12 +1,18 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap');
 
-.dashboard-container {
+body {
+  margin: 0;
   font-family: 'Inter', sans-serif;
-  padding: 2rem;
   background-color: #f0f2f5;
+}
+
+/* ✅ Main Dashboard Container */
+.dashboard-container {
+  padding: 2rem;
   min-height: 100vh;
 }
 
+/* ✅ Header */
 .dashboard-header {
   display: flex;
   justify-content: space-between;
@@ -21,6 +27,7 @@
   font-size: 2rem;
 }
 
+/* ✅ Logout Button */
 .logout-btn {
   background-color: #ff4757;
   color: white;
@@ -36,6 +43,7 @@
   background-color: #e84118;
 }
 
+/* ✅ Tools Bar */
 .dashboard-tools {
   display: flex;
   align-items: center;
@@ -72,6 +80,7 @@
   color: #1e2a60;
 }
 
+/* ✅ Table Section */
 .table-wrapper {
   max-width: 1000px;
   margin: 0 auto 2rem;
@@ -105,6 +114,7 @@
   transition: background-color 0.2s ease;
 }
 
+/* ✅ Pagination */
 .pagination {
   display: flex;
   justify-content: center;
@@ -126,6 +136,7 @@
   color: white;
 }
 
+/* ✅ Chart Section */
 .chart-wrapper {
   max-width: 1000px;
   margin: 0 auto;
@@ -135,6 +146,7 @@
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
 }
 
+/* ✅ Error Styling */
 .error {
   text-align: center;
   color: #d32f2f;
@@ -142,7 +154,7 @@
   margin-top: 1rem;
 }
 
-/* ✅ Modal Styling */
+/* ✅ Session Expiry Modal */
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -163,7 +175,7 @@
   text-align: center;
   max-width: 400px;
   width: 90%;
-  box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
 }
 
 .modal-box h3 {
@@ -188,6 +200,8 @@
 .modal-btn:hover {
   background-color: #142049;
 }
+
+/* ✅ Responsive Design */
 @media (max-width: 768px) {
   .dashboard-header,
   .dashboard-tools,

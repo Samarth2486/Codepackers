@@ -23,6 +23,7 @@ const Dashboard = () => {
   const [sessionExpired, setSessionExpired] = useState(false);
   const rowsPerPage = 5;
 
+  const API_BASE_URL = process.env.REACT_APP_BACKEND_URL;
   const dummyVisitors = [];
 
   useEffect(() => {
@@ -33,42 +34,33 @@ const Dashboard = () => {
   }, [navigate]);
 
   useEffect(() => {
-    const loggedIn = localStorage.getItem("loggedIn");
-    const expiryTime = localStorage.getItem("sessionExpiry");
+  const expiryTime = localStorage.getItem("sessionExpiry");
 
-    if (loggedIn === "true" && expiryTime) {
-      const interval = setInterval(() => {
-        if (new Date().getTime() > Number(expiryTime)) {
-          localStorage.removeItem("loggedIn");
-          localStorage.removeItem("sessionExpiry");
-          setSessionExpired(true);
+  if (expiryTime) {
+    const interval = setInterval(() => {
+      if (Date.now() > Number(expiryTime)) {
+        localStorage.removeItem("loggedIn");
+        localStorage.removeItem("sessionExpiry");
+        setSessionExpired(true);
+        clearInterval(interval);
+      }
+    }, 1000); // Check every second
+    return () => clearInterval(interval);
+  }
+}, []);
 
-          // ⏳ Redirect to login after 30s
-          setTimeout(() => {
-            navigate("/login", { replace: true });
-          }, 30000);
-
-          clearInterval(interval);
-        }
-      }, 1000);
-      return () => clearInterval(interval);
-    }
-  }, [navigate]);
 
   useEffect(() => {
     const fetchVisitors = async () => {
       try {
-        const res = await fetch(
-          "https://codepackers.onrender.com/api/visitors"
-        );
+        const res = await fetch(`${API_BASE_URL}/api/visitors`);
         if (!res.ok) throw new Error("Failed to fetch data");
         const data = await res.json();
-        if (Array.isArray(data) && data.length > 0) {
+        if (Array.isArray(data)) {
           setVisitorData(data);
           setFilteredData(data);
-          setError("");
         } else {
-          throw new Error("Empty or invalid data from backend");
+          throw new Error("Invalid response format");
         }
       } catch (err) {
         console.warn("⚠️ Backend unreachable. Using dummy data.", err);
@@ -80,7 +72,7 @@ const Dashboard = () => {
       }
     };
     fetchVisitors();
-  }, []);
+  }, [API_BASE_URL]);
 
   const handleLogout = () => {
     localStorage.removeItem("loggedIn");
@@ -89,12 +81,12 @@ const Dashboard = () => {
   };
 
   const handleSearch = (e) => {
-    const value = e.target.value.toLowerCase();
-    setSearchQuery(value);
+    const query = e.target.value.toLowerCase();
+    setSearchQuery(query);
     const filtered = visitorData.filter(
       (v) =>
-        v.name.toLowerCase().includes(value) ||
-        v.email.toLowerCase().includes(value)
+        v.name.toLowerCase().includes(query) ||
+        v.email.toLowerCase().includes(query)
     );
     setFilteredData(filtered);
     setCurrentPage(1);
@@ -105,18 +97,23 @@ const Dashboard = () => {
     const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
     const link = document.createElement("a");
     link.href = URL.createObjectURL(blob);
-    link.setAttribute("download", "visitor_data.csv");
+    link.setAttribute("download", `visitors_${Date.now()}.csv`);
+    document.body.appendChild(link);
     link.click();
+    document.body.removeChild(link);
   };
 
-  const totalPages = Math.ceil(filteredData.length / rowsPerPage);
   const paginatedData = filteredData.slice(
     (currentPage - 1) * rowsPerPage,
     currentPage * rowsPerPage
   );
 
+  const totalPages = Math.ceil(filteredData.length / rowsPerPage);
+
   const chartData = filteredData.reduce((acc, curr) => {
-    const date = new Date(curr.timestamp).toLocaleDateString();
+    const date = curr.timestamp
+      ? new Date(curr.timestamp).toLocaleDateString()
+      : "Unknown";
     const existing = acc.find((item) => item.date === date);
     if (existing) existing.count += 1;
     else acc.push({ date, count: 1 });
@@ -139,9 +136,7 @@ const Dashboard = () => {
 
       <div className="table-wrapper">
         <div className="dashboard-tools">
-          <div className="stats-box">
-            👥 Total Visitors: {filteredData.length}
-          </div>
+          <div className="stats-box">👥 Total Visitors: {filteredData.length}</div>
           <input
             type="text"
             placeholder="Search by Name or Email"
@@ -153,49 +148,50 @@ const Dashboard = () => {
 
         {loading ? (
           <p>Loading...</p>
+        ) : error ? (
+          <p className="error">{error}</p>
+        ) : filteredData.length === 0 ? (
+          <p>No matching visitors found.</p>
         ) : (
           <>
-            {error && <p className="error">{error}</p>}
-            {filteredData.length === 0 ? (
-              <p>No matching visitors found.</p>
-            ) : (
-              <>
-                <table className="visitor-table">
-                  <thead>
-                    <tr>
-                      <th>#</th>
-                      <th>Full Name</th>
-                      <th>Email</th>
-                      <th>Phone</th>
-                      <th>Submitted At</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {paginatedData.map((visitor, index) => (
-                      <tr key={index}>
-                        <td>{(currentPage - 1) * rowsPerPage + index + 1}</td>
-                        <td>{visitor.name}</td>
-                        <td>{visitor.email}</td>
-                        <td>{visitor.phone}</td>
-                        <td>{new Date(visitor.timestamp).toLocaleString()}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+            <table className="visitor-table">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Full Name</th>
+                  <th>Email</th>
+                  <th>Phone</th>
+                  <th>Submitted At</th>
+                </tr>
+              </thead>
+              <tbody>
+                {paginatedData.map((visitor, index) => (
+                  <tr key={index}>
+                    <td>{(currentPage - 1) * rowsPerPage + index + 1}</td>
+                    <td>{visitor.name}</td>
+                    <td>{visitor.email}</td>
+                    <td>{visitor.phone}</td>
+                    <td>
+                      {visitor.timestamp
+                        ? new Date(visitor.timestamp).toLocaleString()
+                        : "N/A"}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
 
-                <div className="pagination">
-                  {Array.from({ length: totalPages }).map((_, i) => (
-                    <button
-                      key={i}
-                      className={currentPage === i + 1 ? "active" : ""}
-                      onClick={() => setCurrentPage(i + 1)}
-                    >
-                      {i + 1}
-                    </button>
-                  ))}
-                </div>
-              </>
-            )}
+            <div className="pagination">
+              {Array.from({ length: totalPages }, (_, i) => (
+                <button
+                  key={i}
+                  className={currentPage === i + 1 ? "active" : ""}
+                  onClick={() => setCurrentPage(i + 1)}
+                >
+                  {i + 1}
+                </button>
+              ))}
+            </div>
           </>
         )}
       </div>

@@ -11,16 +11,16 @@ import "./App.css";
 import LoginForm from "./components/LoginForm";
 import Dashboard from "./components/Dashboard";
 
+// Utility function for session validation
 const isAuthenticated = () => {
   const loggedIn = localStorage.getItem("loggedIn");
   const expiry = localStorage.getItem("sessionExpiry");
-  const now = new Date().getTime();
-  return loggedIn === "true" && expiry && now < parseInt(expiry, 10);
+  return loggedIn === "true" && expiry && Date.now() < Number(expiry);
 };
 
 const AppRoutes = () => {
-  const [auth, setAuth] = useState(isAuthenticated());
   const location = useLocation();
+  const [auth, setAuth] = useState(isAuthenticated());
 
   useEffect(() => {
     setAuth(isAuthenticated());
@@ -45,12 +45,10 @@ const AppRoutes = () => {
   );
 };
 
-const App = () => {
-  return (
-    <Router>
-      <AppRoutes />
-    </Router>
-  );
-};
+const App = () => (
+  <Router>
+    <AppRoutes />
+  </Router>
+);
 
 export default App;

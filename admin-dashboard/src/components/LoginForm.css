@@ -72,6 +72,11 @@ body {
   cursor: pointer;
   transition: background-color 0.3s ease;
 }
+.error-text {
+  color: red;
+  font-size: 0.9rem;
+  margin-top: 8px;
+}
 
 .login-card button:hover {
   background-color: #142049;

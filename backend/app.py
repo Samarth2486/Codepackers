@@ -1,15 +1,20 @@
 from flask import Flask, request, jsonify, send_file
 from flask_cors import CORS
 from generate_pdf import create_pdf
+from dotenv import load_dotenv
 import json
 import os
 from datetime import datetime
+import pytz  # ✅ Import pytz for timezone support
+
+# Load environment variables
+load_dotenv()
 
 app = Flask(__name__)
 CORS(app)
 
-VISITOR_DATA_FILE = 'visitors.json'
-PDF_DIR = 'static/pdfs'
+VISITOR_DATA_FILE = os.getenv("VISITOR_DATA_FILE", "visitors.json")
+PDF_DIR = os.getenv("PDF_DIR", "static/pdfs")
 
 @app.route('/api/messages', methods=['POST'])
 def receive_visitor():
@@ -20,8 +25,9 @@ def receive_visitor():
         if not all(k in data for k in ('name', 'email', 'phone')):
             return jsonify({'success': False, 'message': 'Missing fields'}), 200
 
-        # ✅ Add timestamp
-        data['timestamp'] = datetime.utcnow().isoformat()
+        # ✅ Add IST timestamp
+        india_timezone = pytz.timezone("Asia/Kolkata")
+        data['timestamp'] = datetime.now(india_timezone).isoformat()
 
         if not os.path.exists(VISITOR_DATA_FILE):
             with open(VISITOR_DATA_FILE, 'w') as f:
@@ -76,4 +82,6 @@ def get_visitors():
         return jsonify({'success': False, 'message': 'Error fetching data'}), 500
 
 if __name__ == '__main__':
-    app.run(port=5000, host='0.0.0.0')
+    port = int(os.getenv("PORT", 5000))
+    host = os.getenv("HOST", "0.0.0.0")
+    app.run(port=port, host=host)
