@@ -59,7 +59,7 @@ const Dashboard = () => {
     const fetchVisitors = async () => {
       try {
         const res = await fetch(
-          "https://backend-8lse.onrender.com/api/visitors"
+          "https://codepackers.onrender.com/api/visitors"
         );
         if (!res.ok) throw new Error("Failed to fetch data");
         const data = await res.json();
