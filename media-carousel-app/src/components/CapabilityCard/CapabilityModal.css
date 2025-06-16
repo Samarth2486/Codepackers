@@ -1,0 +1,106 @@
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+  backdrop-filter: blur(3px);
+  padding: 1rem;
+}
+
+.modal-content {
+  background: linear-gradient(135deg, #ffffff, #f4f6fc);
+  border-radius: 20px;
+  padding: 2rem;
+  max-width: 480px;
+  width: 100%;
+  text-align: center;
+  position: relative;
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease;
+}
+
+.modal-icon {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+}
+
+.modal-content h2 {
+  margin-bottom: 0.5rem;
+  color: #1f3c88;
+}
+
+.modal-content p {
+  color: #555;
+  font-size: 1rem;
+  margin-bottom: 1.2rem;
+}
+
+.tabs {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.tab {
+  padding: 0.5rem 1rem;
+  background: #e3e9ff;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: 0.3s ease;
+}
+
+.tab.active {
+  background: #1f3c88;
+  color: white;
+}
+
+.tab-content {
+  margin-top: 1rem;
+  text-align: left;
+  font-size: 0.95rem;
+  color: #333;
+}
+
+.tab-content ul {
+  padding-left: 1.2rem;
+  margin: 0;
+}
+
+.tab-content li {
+  margin-bottom: 0.5rem;
+  list-style-type: disc;
+}
+
+.close-x {
+  position: absolute;
+  top: 14px;
+  right: 16px;
+  font-size: 1.5rem;
+  background: transparent;
+  border: none;
+  color: #555;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.close-x:hover {
+  color: #000;
+}
+
+/* Mobile Responsive */
+@media (max-width: 480px) {
+  .modal-content {
+    padding: 1.2rem;
+  }
+
+  .tab {
+    flex: 1 1 45%;
+    text-align: center;
+  }
+}

@@ -1,0 +1,253 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap');
+
+.dashboard-container {
+  font-family: 'Inter', sans-serif;
+  padding: 2rem;
+  background-color: #f0f2f5;
+  min-height: 100vh;
+}
+
+.dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 1000px;
+  margin: 0 auto 2rem;
+}
+
+.dashboard-header h2 {
+  color: #1e2a60;
+  font-weight: 700;
+  font-size: 2rem;
+}
+
+.logout-btn {
+  background-color: #ff4757;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.logout-btn:hover {
+  background-color: #e84118;
+}
+
+.dashboard-tools {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+  padding: 1rem;
+  border-bottom: 1px solid #ddd;
+  background: #ffffff;
+  border-top-left-radius: 12px;
+  border-top-right-radius: 12px;
+}
+
+.dashboard-tools input {
+  padding: 0.5rem;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  flex: 1;
+  min-width: 200px;
+}
+
+.dashboard-tools button {
+  padding: 0.5rem 1rem;
+  background: #007bff;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.stats-box {
+  font-weight: bold;
+  color: #1e2a60;
+}
+
+.table-wrapper {
+  max-width: 1000px;
+  margin: 0 auto 2rem;
+  background-color: white;
+  border-radius: 12px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
+  overflow-x: auto;
+}
+
+.visitor-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.visitor-table th,
+.visitor-table td {
+  padding: 1rem;
+  text-align: left;
+  border-bottom: 1px solid #eee;
+  white-space: nowrap;
+}
+
+.visitor-table th {
+  background-color: #1e2a60;
+  color: white;
+  font-weight: 600;
+}
+
+.visitor-table tr:hover {
+  background-color: #f9f9f9;
+  transition: background-color 0.2s ease;
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  padding: 1rem;
+  gap: 6px;
+}
+
+.pagination button {
+  padding: 6px 12px;
+  border: 1px solid #007bff;
+  background: white;
+  color: #007bff;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.pagination button.active {
+  background: #007bff;
+  color: white;
+}
+
+.chart-wrapper {
+  max-width: 1000px;
+  margin: 0 auto;
+  background-color: white;
+  border-radius: 12px;
+  padding: 1rem;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
+}
+
+.error {
+  text-align: center;
+  color: #d32f2f;
+  font-weight: 500;
+  margin-top: 1rem;
+}
+
+/* ✅ Modal Styling */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+.modal-box {
+  background: white;
+  padding: 2rem;
+  border-radius: 12px;
+  text-align: center;
+  max-width: 400px;
+  width: 90%;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+}
+
+.modal-box h3 {
+  color: #1e2a60;
+  margin-bottom: 1rem;
+}
+
+.modal-box p {
+  margin-bottom: 1.5rem;
+}
+
+.modal-btn {
+  background-color: #1e2a60;
+  color: white;
+  border: none;
+  padding: 0.6rem 1.2rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.modal-btn:hover {
+  background-color: #142049;
+}
+@media (max-width: 768px) {
+  .dashboard-header,
+  .dashboard-tools,
+  .table-wrapper,
+  .chart-wrapper {
+    padding: 1rem;
+    margin: 0 auto 1rem;
+    max-width: 100%;
+  }
+
+  .dashboard-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .dashboard-tools {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 1rem;
+  }
+
+  .visitor-table th,
+  .visitor-table td {
+    padding: 0.75rem;
+    font-size: 0.9rem;
+  }
+
+  .logout-btn {
+    width: 100%;
+    text-align: center;
+  }
+
+  .chart-wrapper {
+    padding: 1rem 0.5rem;
+  }
+
+  .pagination {
+    flex-wrap: wrap;
+    gap: 4px;
+  }
+}
+
+@media (max-width: 480px) {
+  .dashboard-header h2 {
+    font-size: 1.5rem;
+  }
+
+  .dashboard-tools input,
+  .dashboard-tools button {
+    width: 100%;
+  }
+
+  .stats-box {
+    font-size: 0.95rem;
+  }
+
+  .visitor-table th,
+  .visitor-table td {
+    font-size: 0.85rem;
+    padding: 0.5rem;
+  }
+}
