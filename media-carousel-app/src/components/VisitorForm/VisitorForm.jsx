@@ -53,7 +53,7 @@ const VisitorForm = () => {
     try {
       console.log("Sending:", JSON.stringify(formData));
       const res = await fetch(
-        "https://backend-8lse.onrender.com/api/messages",
+        "https://backend-8lse.onrender.com/api/visitors",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
