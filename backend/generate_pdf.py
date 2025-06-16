@@ -1,23 +1,37 @@
 from fpdf import FPDF
+from datetime import datetime, timezone
+from dotenv import load_dotenv
 import os
-from datetime import datetime
+
+# Load environment variables from .env file
+load_dotenv()
+
+# Get the PDF directory from environment variable or fallback to default
+PDF_DIR = os.getenv("PDF_DIR", "static/pdfs")
 
 def create_pdf(data):
     pdf = FPDF()
     pdf.add_page()
     pdf.set_font("Arial", size=12)
 
+    # Title
     pdf.cell(200, 10, txt="Visitor Details", ln=True, align='C')
     pdf.ln(10)
 
+    # Visitor Data
     for key, value in data.items():
         pdf.cell(200, 10, txt=f"{key.title()}: {value}", ln=True)
 
-    if not os.path.exists('static/pdfs'):
-        os.makedirs('static/pdfs')
+    # Ensure directory exists
+    if not os.path.exists(PDF_DIR):
+        os.makedirs(PDF_DIR)
 
-    filename = f"visitor_{datetime.utcnow().strftime('%Y%m%d%H%M%S')}.pdf"
-    filepath = os.path.join('static/pdfs', filename)
+    # Create timezone-aware timestamped filename
+    timestamp = datetime.now(timezone.utc).strftime('%Y%m%d%H%M%S')
+    filename = f"visitor_{timestamp}.pdf"
+    filepath = os.path.join(PDF_DIR, filename)
+
+    # Save PDF
     pdf.output(filepath)
 
     return filename

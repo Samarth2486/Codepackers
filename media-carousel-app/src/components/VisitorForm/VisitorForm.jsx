@@ -3,20 +3,16 @@ import { motion } from "framer-motion";
 import "./VisitorForm.css";
 
 const VisitorForm = () => {
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    phone: "",
-  });
+  const [formData, setFormData] = useState({ name: "", email: "", phone: "" });
   const [formSubmitted, setFormSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
 
+  const API_BASE_URL = process.env.REACT_APP_BACKEND_URL;
+
   useEffect(() => {
     const saved = localStorage.getItem("visitorFormSubmitted");
-    if (saved === "true") {
-      setFormSubmitted(true);
-    }
+    if (saved === "true") setFormSubmitted(true);
   }, []);
 
   const handleChange = (e) => {
@@ -37,13 +33,11 @@ const VisitorForm = () => {
       setLoading(false);
       return;
     }
-
     if (!emailRegex.test(formData.email)) {
       setErrorMsg("Please enter a valid email address.");
       setLoading(false);
       return;
     }
-
     if (!phoneRegex.test(formData.phone)) {
       setErrorMsg("Phone number must be exactly 10 digits.");
       setLoading(false);
@@ -52,27 +46,17 @@ const VisitorForm = () => {
 
     try {
       console.log("Sending:", JSON.stringify(formData));
-      const res = await fetch(
-        "https://backend-8lse.onrender.com/api/visitors",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(formData),
-        }
-      );
-      const data = await res.json();
-      console.log(data);
-      if (!data.success) {
-        //const msg = await data.text();
-        throw new Error("API failed");
-      }
+      const res = await fetch(`${API_BASE_URL}/api/visitors`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
 
-      if (data.success) {
-        setFormSubmitted(true);
-        localStorage.setItem("visitorFormSubmitted", "true");
-      } else {
-        setErrorMsg("Submission failed. Please try again.");
-      }
+      const data = await res.json();
+      if (!data.success) throw new Error("API failed");
+
+      setFormSubmitted(true);
+      localStorage.setItem("visitorFormSubmitted", "true");
     } catch (err) {
       console.warn("Backend not reachable. Using fallback.", err);
       setErrorMsg(
@@ -101,6 +85,7 @@ const VisitorForm = () => {
       viewport={{ once: true, amount: 0.3 }}
     >
       <h2>Get Access to Our PDF</h2>
+
       {!formSubmitted ? (
         <form onSubmit={handleSubmit} className="visitor-form">
           <input
@@ -133,11 +118,12 @@ const VisitorForm = () => {
         <div className="download-section">
           <p>Thank you! You can now download the PDF:</p>
           <a
-            href="https://backend-8lse.onrender.com/api/download-pdf"
+            href={`${API_BASE_URL}/api/download-pdf`}
+            download
             target="_blank"
-            rel="noreferrer"
+            rel="noopener noreferrer"
           >
-            <button>Download PDF</button>
+            <button type="button">Download PDF</button>
           </a>
           <button onClick={handleReset}>Submit Another Response</button>
         </div>

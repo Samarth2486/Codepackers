@@ -1,25 +1,27 @@
-import React, { useState } from 'react';
-import './LoginForm.css';
-import { useNavigate } from 'react-router-dom';
+import React, { useState } from "react";
+import "./LoginForm.css";
+import { useNavigate } from "react-router-dom";
 
 const LoginForm = () => {
-  const [formData, setFormData] = useState({ username: '', password: '' });
+  const [formData, setFormData] = useState({ username: "", password: "" });
+  const [errorMsg, setErrorMsg] = useState("");
   const navigate = useNavigate();
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
+    setErrorMsg("");
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    if (formData.username === 'admin' && formData.password === 'admin') {
-      const expiryTime = new Date().getTime() + 30 * 1000;
-      localStorage.setItem('loggedIn', 'true');
-      localStorage.setItem('sessionExpiry', expiryTime);
-      navigate('/dashboard');
+    if (formData.username === "admin" && formData.password === "admin") {
+      const expiryTime = Date.now() + 30 * 1000; // ⏱️ 30 seconds session
+      localStorage.setItem("loggedIn", "true");
+      localStorage.setItem("sessionExpiry", expiryTime);
+      navigate("/dashboard");
     } else {
-      alert('Invalid credentials');
+      setErrorMsg("Invalid username or password. Try again.");
     }
   };
 
@@ -44,6 +46,7 @@ const LoginForm = () => {
             onChange={handleChange}
             required
           />
+          {errorMsg && <p className="error-text">{errorMsg}</p>}
           <button type="submit">Login</button>
         </form>
       </div>
