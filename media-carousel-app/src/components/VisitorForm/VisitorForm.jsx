@@ -53,7 +53,7 @@ const VisitorForm = () => {
     try {
       console.log("Sending:", JSON.stringify(formData));
       const res = await fetch(
-        "https://backend-8lse.onrender.com/api/messages",
+        "https://codepackers.onrender.com/api/messages",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -133,7 +133,7 @@ const VisitorForm = () => {
         <div className="download-section">
           <p>Thank you! You can now download the PDF:</p>
           <a
-            href="https://backend-8lse.onrender.com/api/download-pdf"
+            href="https://codepackers.onrender.com/api/download-pdf"
             target="_blank"
             rel="noreferrer"
           >
