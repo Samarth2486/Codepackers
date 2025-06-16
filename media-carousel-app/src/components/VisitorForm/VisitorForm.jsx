@@ -3,20 +3,14 @@ import { motion } from "framer-motion";
 import "./VisitorForm.css";
 
 const VisitorForm = () => {
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    phone: "",
-  });
+  const [formData, setFormData] = useState({ name: "", email: "", phone: "" });
   const [formSubmitted, setFormSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
 
   useEffect(() => {
     const saved = localStorage.getItem("visitorFormSubmitted");
-    if (saved === "true") {
-      setFormSubmitted(true);
-    }
+    if (saved === "true") setFormSubmitted(true);
   }, []);
 
   const handleChange = (e) => {
@@ -37,13 +31,11 @@ const VisitorForm = () => {
       setLoading(false);
       return;
     }
-
     if (!emailRegex.test(formData.email)) {
       setErrorMsg("Please enter a valid email address.");
       setLoading(false);
       return;
     }
-
     if (!phoneRegex.test(formData.phone)) {
       setErrorMsg("Phone number must be exactly 10 digits.");
       setLoading(false);
@@ -51,21 +43,14 @@ const VisitorForm = () => {
     }
 
     try {
-      console.log("Sending:", JSON.stringify(formData));
-      const res = await fetch(
-        "https://codepackers.onrender.com/api/messages",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(formData),
-        }
-      );
+      const res = await fetch("https://codepackers.onrender.com/api/messages", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
+
       const data = await res.json();
-      console.log(data);
-      if (!data.success) {
-        //const msg = await data.text();
-        throw new Error("API failed");
-      }
+      if (!data.success) throw new Error("API failed");
 
       if (data.success) {
         setFormSubmitted(true);
@@ -75,9 +60,7 @@ const VisitorForm = () => {
       }
     } catch (err) {
       console.warn("Backend not reachable. Using fallback.", err);
-      setErrorMsg(
-        "⚠️ Not able to connect to backend. Showing dummy form success."
-      );
+      setErrorMsg("⚠️ Not able to connect to backend. Showing dummy form success.");
       setFormSubmitted(true);
       localStorage.setItem("visitorFormSubmitted", "true");
     }
@@ -103,27 +86,9 @@ const VisitorForm = () => {
       <h2>Get Access to Our PDF</h2>
       {!formSubmitted ? (
         <form onSubmit={handleSubmit} className="visitor-form">
-          <input
-            type="text"
-            name="name"
-            placeholder="Your Name"
-            onChange={handleChange}
-            required
-          />
-          <input
-            type="email"
-            name="email"
-            placeholder="Your Email"
-            onChange={handleChange}
-            required
-          />
-          <input
-            type="tel"
-            name="phone"
-            placeholder="Your Phone Number"
-            onChange={handleChange}
-            required
-          />
+          <input type="text" name="name" placeholder="Your Name" onChange={handleChange} required />
+          <input type="email" name="email" placeholder="Your Email" onChange={handleChange} required />
+          <input type="tel" name="phone" placeholder="Your Phone Number" onChange={handleChange} required />
           <button type="submit" disabled={loading}>
             {loading ? "Submitting..." : "Submit"}
           </button>
