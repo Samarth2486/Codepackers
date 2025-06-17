@@ -7,12 +7,17 @@ const VisitorForm = () => {
   const [formSubmitted, setFormSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
+  const [pdfFilename, setPdfFilename] = useState("");
 
   const API_BASE_URL = process.env.REACT_APP_BACKEND_URL;
 
   useEffect(() => {
     const saved = localStorage.getItem("visitorFormSubmitted");
-    if (saved === "true") setFormSubmitted(true);
+    const savedPdf = localStorage.getItem("visitorFormPdf");
+    if (saved === "true") {
+      setFormSubmitted(true);
+      if (savedPdf) setPdfFilename(savedPdf);
+    }
   }, []);
 
   const handleChange = (e) => {
@@ -46,24 +51,28 @@ const VisitorForm = () => {
 
     try {
       console.log("Sending:", JSON.stringify(formData));
-      const res = await fetch(`${API_BASE_URL}/api/visitors`, {
+      const res = await fetch(`${API_BASE_URL}/api/messages`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
       });
 
       const data = await res.json();
-      if (!data.success) throw new Error("API failed");
+      if (!data.success || !data.pdf) throw new Error("API failed");
 
       setFormSubmitted(true);
+      setPdfFilename(data.pdf);
       localStorage.setItem("visitorFormSubmitted", "true");
+      localStorage.setItem("visitorFormPdf", data.pdf);
     } catch (err) {
       console.warn("Backend not reachable. Using fallback.", err);
       setErrorMsg(
         "⚠️ Not able to connect to backend. Showing dummy form success."
       );
       setFormSubmitted(true);
+      setPdfFilename(""); // no PDF in fallback
       localStorage.setItem("visitorFormSubmitted", "true");
+      localStorage.removeItem("visitorFormPdf");
     }
 
     setLoading(false);
@@ -72,8 +81,10 @@ const VisitorForm = () => {
   const handleReset = () => {
     setFormSubmitted(false);
     localStorage.removeItem("visitorFormSubmitted");
+    localStorage.removeItem("visitorFormPdf");
     setFormData({ name: "", email: "", phone: "" });
     setErrorMsg("");
+    setPdfFilename("");
   };
 
   return (
@@ -117,14 +128,20 @@ const VisitorForm = () => {
       ) : (
         <div className="download-section">
           <p>Thank you! You can now download the PDF:</p>
-          <a
-            href={`${API_BASE_URL}/api/download-pdf`}
-            download
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <button type="button">Download PDF</button>
-          </a>
+          {pdfFilename ? (
+            <a
+              href={`${API_BASE_URL}/static/pdfs/${pdfFilename}`}
+              download
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <button type="button">Download PDF</button>
+            </a>
+          ) : (
+            <p style={{ color: "orange" }}>
+              (No PDF available - backend might not be reachable.)
+            </p>
+          )}
           <button onClick={handleReset}>Submit Another Response</button>
         </div>
       )}
