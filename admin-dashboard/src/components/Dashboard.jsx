@@ -12,6 +12,9 @@ import {
 } from "recharts";
 import Papa from "papaparse";
 
+// Define API URL here (outside component)
+const API_BASE_URL = process.env.REACT_APP_BACKEND_URL;
+
 const Dashboard = () => {
   const navigate = useNavigate();
   const [visitorData, setVisitorData] = useState([]);
@@ -23,7 +26,6 @@ const Dashboard = () => {
   const [sessionExpired, setSessionExpired] = useState(false);
   const rowsPerPage = 5;
 
-  const API_BASE_URL = process.env.REACT_APP_BACKEND_URL;
   const dummyVisitors = [];
 
   useEffect(() => {
@@ -34,21 +36,21 @@ const Dashboard = () => {
   }, [navigate]);
 
   useEffect(() => {
-  const expiryTime = localStorage.getItem("sessionExpiry");
+    const expiryTime = localStorage.getItem("sessionExpiry");
 
-  if (expiryTime) {
-    const interval = setInterval(() => {
-      if (Date.now() > Number(expiryTime)) {
-        localStorage.removeItem("loggedIn");
-        localStorage.removeItem("sessionExpiry");
-        setSessionExpired(true);
-        clearInterval(interval);
-      }
-    }, 1000); // Check every second
-    return () => clearInterval(interval);
-  }
-}, []);
+    if (expiryTime) {
+      const interval = setInterval(() => {
+        if (Date.now() > Number(expiryTime)) {
+          localStorage.removeItem("loggedIn");
+          localStorage.removeItem("sessionExpiry");
+          setSessionExpired(true);
+          clearInterval(interval);
+        }
+      }, 1000);
 
+      return () => clearInterval(interval);
+    }
+  }, []);
 
   useEffect(() => {
     const fetchVisitors = async () => {
@@ -71,8 +73,9 @@ const Dashboard = () => {
         setLoading(false);
       }
     };
+
     fetchVisitors();
-  }, [API_BASE_URL]);
+  }, []);
 
   const handleLogout = () => {
     localStorage.removeItem("loggedIn");
@@ -136,7 +139,9 @@ const Dashboard = () => {
 
       <div className="table-wrapper">
         <div className="dashboard-tools">
-          <div className="stats-box">👥 Total Visitors: {filteredData.length}</div>
+          <div className="stats-box">
+            👥 Total Visitors: {filteredData.length}
+          </div>
           <input
             type="text"
             placeholder="Search by Name or Email"
