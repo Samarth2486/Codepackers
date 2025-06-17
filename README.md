@@ -1,5 +1,4 @@
 # Codepackers Carousel App
-# Special thanks to Rahul and Samya for their incredible patience while building this, I couldn’t have done it alone.
 
 Welcome to the **Codepackers Carousel App** – an interactive platform for showcasing company services with chatbot integration, analytics dashboard, and contact functionality. This project consists of:
 
