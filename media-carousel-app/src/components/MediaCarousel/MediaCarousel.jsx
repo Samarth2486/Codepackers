@@ -49,10 +49,13 @@ const MediaCarousel = ({ mediaItems }) => (
                 autoPlay
                 loop
                 playsInline
-                controls={item.controls || false}
+                controls // ✅ Always show controls while debugging
                 className="media-item"
+                style={{ width: '100%', height: '100%' }} // ✅ Ensures sizing in all environments
                 poster={item.poster || '/assets/fallback-poster.jpg'}
-              />
+              >
+                Sorry, your browser doesn't support embedded videos.
+              </video>
               {item.caption && <p className="slide-caption">{item.caption}</p>}
             </>
           )}
