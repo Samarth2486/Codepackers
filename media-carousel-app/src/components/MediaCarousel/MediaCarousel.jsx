@@ -51,7 +51,7 @@ const MediaCarousel = ({ mediaItems }) => (
                 playsInline
                 controls={item.controls || false}
                 className="media-item"
-                poster={item.poster || '/assets/fallback-poster.jpg'} // <-- Optional poster
+                poster={item.poster || '/assets/fallback-poster.jpg'}
               />
               {item.caption && <p className="slide-caption">{item.caption}</p>}
             </>
