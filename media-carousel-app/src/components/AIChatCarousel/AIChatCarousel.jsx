@@ -1,3 +1,4 @@
+// AIChatCarousel.jsx
 import React, { useEffect, useState } from 'react';
 import './AIChatCarousel.css';
 
@@ -10,50 +11,90 @@ const messages = [
   { sender: 'user', text: 'Please, provide me breakdown of top three product categories' }
 ];
 
-const TYPING_DELAY = 100;
-const DOTS_DELAY = 1500;
-const LOOP_DELAY = 2500;
+const HUMAN_TYPING_SPEED = 100;
+const BOT_TYPING_SPEED = 20;
+const RESET_LOOP_DELAY = 5000;
+const BOT_TYPING_INDICATOR_DELAY = 800;
 
 const AIChatCarousel = () => {
   const [displayedMessages, setDisplayedMessages] = useState([]);
-  const [currentText, setCurrentText] = useState('');
-  const [typing, setTyping] = useState(false);
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [phase, setPhase] = useState('dots');
+  const [inputText, setInputText] = useState('');
+  const [cursorVisible, setCursorVisible] = useState(true);
+  const [isTyping, setIsTyping] = useState(false);
+  const [botTyping, setBotTyping] = useState(false);
+  const [sendClicked, setSendClicked] = useState(false);
+  const [loopKey, setLoopKey] = useState(0);
 
   useEffect(() => {
-    if (currentIndex < messages.length) {
-      setTyping(true);
-      setCurrentText('');
-      setPhase('dots');
+    const blink = setInterval(() => {
+      setCursorVisible((prev) => !prev);
+    }, 500);
+    return () => clearInterval(blink);
+  }, []);
 
-      const dotsTimer = setTimeout(() => {
-        setPhase('typing');
-        typeMessage(messages[currentIndex].text, 0);
-      }, DOTS_DELAY);
+  useEffect(() => {
+    let isCancelled = false;
 
-      return () => clearTimeout(dotsTimer);
-    } else {
-      const loopTimer = setTimeout(() => {
+    const playChatSequence = async () => {
+      for (let i = 0; i < messages.length; i++) {
+        const currentMsg = messages[i];
+        if (isCancelled) return;
+
+        if (currentMsg.sender === 'ai') {
+          setBotTyping(true);
+          await new Promise((r) => setTimeout(r, BOT_TYPING_INDICATOR_DELAY));
+          setBotTyping(false);
+
+          let aiText = '';
+          for (let c = 0; c < currentMsg.text.length; c++) {
+            if (isCancelled) return;
+            aiText += currentMsg.text[c];
+            setDisplayedMessages((prev) => {
+              const updated = [...prev];
+              if (updated[updated.length - 1]?.sender === 'ai') {
+                updated[updated.length - 1].text = aiText;
+              } else {
+                updated.push({ sender: 'ai', text: aiText });
+              }
+              return updated;
+            });
+            await new Promise((r) => setTimeout(r, BOT_TYPING_SPEED));
+          }
+        }
+
+        if (currentMsg.sender === 'user') {
+          setIsTyping(true);
+          let userInput = '';
+          for (let c = 0; c < currentMsg.text.length; c++) {
+            if (isCancelled) return;
+            userInput += currentMsg.text[c];
+            setInputText(userInput);
+            await new Promise((r) => setTimeout(r, HUMAN_TYPING_SPEED));
+          }
+
+          setSendClicked(true);
+          await new Promise((r) => setTimeout(r, 400));
+          setDisplayedMessages((prev) => [...prev, { sender: 'user', text: userInput }]);
+          setInputText('');
+          setSendClicked(false);
+          setIsTyping(false);
+        }
+      }
+
+      setTimeout(() => {
+        if (isCancelled) return;
         setDisplayedMessages([]);
-        setCurrentIndex(0);
-      }, LOOP_DELAY);
+        setInputText('');
+        setLoopKey((prev) => prev + 1);
+      }, RESET_LOOP_DELAY);
+    };
 
-      return () => clearTimeout(loopTimer);
-    }
-  }, [currentIndex]);
+    playChatSequence();
 
-  const typeMessage = (message, index) => {
-    if (index <= message.length) {
-      setCurrentText(message.slice(0, index));
-      setTimeout(() => typeMessage(message, index + 1), TYPING_DELAY);
-    } else {
-      setDisplayedMessages(prev => [...prev, messages[currentIndex]]);
-      setTyping(false);
-      setCurrentText('');
-      setCurrentIndex(prev => prev + 1);
-    }
-  };
+    return () => {
+      isCancelled = true;
+    };
+  }, [loopKey]);
 
   return (
     <div className="chat-carousel-container">
@@ -72,28 +113,32 @@ const AIChatCarousel = () => {
           </div>
         ))}
 
-        {typing && (
-          <div className={`chat-bubble ${messages[currentIndex]?.sender || 'ai'}`}>
-            {phase === 'dots' ? (
-              <span className={`typing`}>
-                <span className="dot"></span>
-                <span className="dot"></span>
-                <span className="dot"></span>
-              </span>
-            ) : (
-              <span className="typewriter-text">
-                {currentText}
-                <span className="cursor" />
-              </span>
-            )}
+        {botTyping && (
+          <div className="chat-bubble ai typing-indicator">
+            <span className="dot"></span>
+            <span className="dot"></span>
+            <span className="dot"></span>
           </div>
         )}
       </div>
 
-      <div className="chat-footer">
-        <span className="dot blue"></span>
-        <span className="dot green"></span>
-        <span className="dot pink"></span>
+      <div className="chat-input-area">
+        <div className="fake-input" tabIndex="-1">
+          {isTyping ? (
+            <>
+              {inputText}
+              <span className={`cursor ${cursorVisible ? 'visible' : ''}`}>|</span>
+            </>
+          ) : (
+            <span className="placeholder-text">
+              <span className={`cursor ${cursorVisible ? 'visible' : ''}`}>|</span>
+              Type your query
+            </span>
+          )}
+        </div>
+        <button className={`send-btn ${sendClicked ? 'clicked' : ''}`} disabled>
+          ➤
+        </button>
       </div>
     </div>
   );
