@@ -2,6 +2,8 @@
   width: 100%;
   max-width: 650px;
   background: linear-gradient(135deg, #f3f4ff, #f8f5fc);
+  background-color: #f8f5fc; /* ✅ Fallback for mobile rendering */
+  -webkit-mask-image: -webkit-radial-gradient(white, black); /* ✅ Fix for mobile ghost line */
   border-radius: 16px;
   padding: 20px;
   margin: auto;
@@ -147,9 +149,10 @@
   gap: 8px;
   padding-top: 2px; /* ✅ Compensate for margin overlap */
   padding-bottom: 4px;
-  background: #f8f5fc;
+  background-color: #f8f5fc;
   border-top: 1px solid transparent; /* ✅ Prevent ghost line */
   box-shadow: none;
+  -webkit-mask-image: -webkit-radial-gradient(white, black);
 }
 
 .fake-input {
@@ -284,9 +287,11 @@
   }
 
   .chat-input-area {
+    border-bottom: none !important;
+    margin-bottom: -1px;
     flex-direction: row;
     gap: 6px;
-    background: #f8f5fc !important;
+    background-color: #f8f5fc !important;
     border-top: none !important;
     box-shadow: none !important;
     z-index: 2;
