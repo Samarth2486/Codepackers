@@ -7,16 +7,16 @@ const VisitorForm = () => {
   const [formSubmitted, setFormSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
-  const [pdfUrl, setPdfUrl] = useState("");
+  const [pdfFilename, setPdfFilename] = useState("");
 
   const API_BASE_URL = process.env.REACT_APP_BACKEND_URL;
 
   useEffect(() => {
     const saved = localStorage.getItem("visitorFormSubmitted");
     const savedPdf = localStorage.getItem("visitorFormPdf");
-    if (saved === "true" && savedPdf) {
+    if (saved === "true") {
       setFormSubmitted(true);
-      setPdfUrl(savedPdf);
+      if (savedPdf) setPdfFilename(savedPdf);
     }
   }, []);
 
@@ -51,36 +51,26 @@ const VisitorForm = () => {
 
     try {
       console.log("Sending:", JSON.stringify(formData));
-
       const res = await fetch(`${API_BASE_URL}/api/messages`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
       });
 
-      if (!res.ok) throw new Error("PDF generation failed");
-
-      const blob = await res.blob();
-      const filename = res.headers
-        .get("Content-Disposition")
-        ?.split("filename=")[1]
-        ?.replace(/"/g, "");
-
-      if (!filename) throw new Error("Filename missing");
-
-      const blobUrl = window.URL.createObjectURL(blob);
+      const data = await res.json();
+      if (!data.success || !data.pdf) throw new Error("API failed");
 
       setFormSubmitted(true);
-      setPdfUrl(blobUrl);
+      setPdfFilename(data.pdf);
       localStorage.setItem("visitorFormSubmitted", "true");
-      localStorage.setItem("visitorFormPdf", blobUrl);
+      localStorage.setItem("visitorFormPdf", data.pdf);
     } catch (err) {
-      console.warn("Backend not reachable or failed:", err);
+      console.warn("Backend not reachable. Using fallback.", err);
       setErrorMsg(
         "⚠️ Not able to connect to backend. Showing dummy form success."
       );
       setFormSubmitted(true);
-      setPdfUrl(""); // no PDF fallback
+      setPdfFilename(""); // no PDF in fallback
       localStorage.setItem("visitorFormSubmitted", "true");
       localStorage.removeItem("visitorFormPdf");
     }
@@ -94,7 +84,7 @@ const VisitorForm = () => {
     localStorage.removeItem("visitorFormPdf");
     setFormData({ name: "", email: "", phone: "" });
     setErrorMsg("");
-    setPdfUrl("");
+    setPdfFilename("");
   };
 
   return (
@@ -138,8 +128,13 @@ const VisitorForm = () => {
       ) : (
         <div className="download-section">
           <p>Thank you! You can now download the PDF:</p>
-          {pdfUrl ? (
-            <a href={pdfUrl} download target="_blank" rel="noopener noreferrer">
+          {pdfFilename ? (
+            <a
+              href={`${API_BASE_URL}/static/pdfs/${pdfFilename}`}
+              download
+              target="_blank"
+              rel="noopener noreferrer"
+            >
               <button type="button">Download PDF</button>
             </a>
           ) : (
