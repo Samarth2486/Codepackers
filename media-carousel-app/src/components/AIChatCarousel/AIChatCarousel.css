@@ -57,6 +57,8 @@
   overflow-y: auto;
   padding-right: 8px;
   padding-bottom: 8px;
+  background: transparent;
+  border-bottom: 1px solid transparent; /* ✅ fix ghost line */
 }
 
 .chat-bubble {
@@ -142,11 +144,10 @@
   align-items: stretch;
   gap: 8px;
   padding-bottom: 4px;
-  border-top: none; /* Add this line */
-  box-shadow: none; /* Add this to eliminate ghost shadow if any */
-  background: #f3f4ff; /* Ensure it's not introducing a new background line */
+  border-top: none !important;
+  box-shadow: none !important;
+  background: #f8f5fc !important;
 }
-
 
 .fake-input {
   flex-grow: 1;
@@ -166,8 +167,8 @@
   user-select: none;
   pointer-events: none;
   font-family: inherit;
-  display: block; /* Ensures layout is not flex-centered */
-  text-align: left; /* <-- This enforces strict left alignment */
+  display: block;
+  text-align: left;
 }
 
 .typing-content {
@@ -191,7 +192,7 @@
   white-space: pre-wrap;
   display: inline;
   vertical-align: middle;
-  text-align: left; /* Add this to override if needed */
+  text-align: left;
 }
 
 .send-btn {
@@ -235,6 +236,7 @@
   }
 }
 
+/* Mobile Styles */
 @media (max-width: 600px) {
   .chat-carousel-container {
     padding: 12px;
@@ -272,6 +274,8 @@
   .chat-bubble-wrapper {
     padding-right: 4px;
     max-height: 300px;
+    background: transparent;
+    border-bottom: 1px solid transparent;
   }
 
   .chat-input-area {
@@ -279,7 +283,7 @@
     gap: 6px;
     border-top: none !important;
     box-shadow: none !important;
-    background: transparent !important;
+    background: #f8f5fc !important;
   }
 
   .send-btn {
