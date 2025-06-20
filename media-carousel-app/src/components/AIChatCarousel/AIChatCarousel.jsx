@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import './AIChatCarousel.css';
 
 const messages = [
@@ -18,18 +18,12 @@ const BOT_TYPING_INDICATOR_DELAY = 800;
 const AIChatCarousel = () => {
   const [displayedMessages, setDisplayedMessages] = useState([]);
   const [inputText, setInputText] = useState('');
-  const [cursorVisible, setCursorVisible] = useState(true);
   const [isTyping, setIsTyping] = useState(false);
   const [botTyping, setBotTyping] = useState(false);
   const [sendClicked, setSendClicked] = useState(false);
   const [loopKey, setLoopKey] = useState(0);
 
-  useEffect(() => {
-    const blink = setInterval(() => {
-      setCursorVisible((prev) => !prev);
-    }, 500);
-    return () => clearInterval(blink);
-  }, []);
+  const inputRef = useRef();
 
   useEffect(() => {
     let isCancelled = false;
@@ -95,6 +89,12 @@ const AIChatCarousel = () => {
     };
   }, [loopKey]);
 
+  useEffect(() => {
+    if (inputRef.current) {
+      inputRef.current.scrollTop = inputRef.current.scrollHeight;
+    }
+  }, [inputText]);
+
   return (
     <div className="chat-carousel-container">
       <div className="chat-header">
@@ -122,17 +122,17 @@ const AIChatCarousel = () => {
       </div>
 
       <div className="chat-input-area">
-        <div className="fake-input" tabIndex="-1">
-          {isTyping ? (
+        <div className="fake-input" contentEditable={false} tabIndex="-1" ref={inputRef}>
+          {inputText ? (
             <>
-              <span style={{ whiteSpace: 'pre-wrap' }}>{inputText}</span>
-              <span className={`cursor ${cursorVisible ? 'visible' : ''}`}>|</span>
+              <span className="typing-content">{inputText}</span>
+              <span className="cursor" />
             </>
           ) : (
-            <span className="placeholder-text">
-              <span className={`cursor ${cursorVisible ? 'visible' : ''}`}>|</span>
-              Type your query
-            </span>
+            <>
+              <span className="cursor" />
+              <span className="placeholder-text">Type your query</span>
+            </>
           )}
         </div>
 
