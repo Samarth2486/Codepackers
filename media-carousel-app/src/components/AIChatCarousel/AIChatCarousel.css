@@ -58,7 +58,7 @@
   padding-right: 8px;
   padding-bottom: 8px;
   background: transparent;
-  margin-bottom: -1px; /* ✅ force overlap to hide ghost line */
+  margin-bottom: -2px; /* ✅ hide subpixel gap across browsers */
 }
 
 .chat-bubble {
@@ -142,10 +142,11 @@
   display: flex;
   align-items: stretch;
   gap: 8px;
+  padding-top: 2px; /* ✅ Compensate for margin overlap */
   padding-bottom: 4px;
-  background: #f8f5fc !important;
-  border-top: none !important;
-  box-shadow: none !important;
+  background: #f8f5fc;
+  border-top: none;
+  box-shadow: none;
 }
 
 .fake-input {
@@ -273,8 +274,8 @@
   .chat-bubble-wrapper {
     padding-right: 4px;
     max-height: 300px;
-    margin-bottom: -1px !important; /* ✅ Important for mobile render issue */
     background: transparent !important;
+    margin-bottom: -2px !important; /* ✅ Mobile overlap fix */
   }
 
   .chat-input-area {
@@ -284,6 +285,7 @@
     border-top: none !important;
     box-shadow: none !important;
     z-index: 2;
+    padding-top: 2px !important; /* ✅ Aligns mobile fix too */
   }
 
   .send-btn {
@@ -292,4 +294,3 @@
     font-size: 16px;
   }
 }
-

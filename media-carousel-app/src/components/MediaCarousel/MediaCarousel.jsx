@@ -14,35 +14,37 @@ const MediaCarousel = ({ mediaItems }) => (
   <div className="media-carousel">
     <Swiper
       modules={[Pagination, Navigation, Autoplay, EffectFade]}
-      navigation={true}
+      effect="fade"
+      fadeEffect={{ crossFade: true }}
       pagination={{ clickable: true }}
+      navigation
       autoplay={{
         delay: 4000,
         pauseOnMouseEnter: true,
         disableOnInteraction: false,
       }}
-      effect="fade"
-      fadeEffect={{ crossFade: true }}
       loop
       grabCursor
       slidesPerView={1}
-      speed={800}
-      touchRatio={1.5}
-      threshold={5}
+      touchRatio={1.2}
+      threshold={10}
     >
       {mediaItems.map((item, idx) => (
         <SwiperSlide key={idx}>
-          <div className="media-wrapper">
-            {item.type === 'image' && (
+          {item.type === 'image' && (
+            <>
               <img
                 src={item.src}
                 alt={item.alt || 'media image'}
                 className="media-item"
                 loading="lazy"
               />
-            )}
+              {item.caption && <p className="slide-caption">{item.caption}</p>}
+            </>
+          )}
 
-            {item.type === 'video' && (
+          {item.type === 'video' && (
+            <>
               <video
                 src={item.src}
                 muted
@@ -51,13 +53,17 @@ const MediaCarousel = ({ mediaItems }) => (
                 playsInline
                 controls
                 className="media-item"
+                style={{ width: '100%', height: '100%' }}
                 poster={item.poster || '/assets/fallback-poster.jpg'}
               >
-                Your browser does not support the video tag.
+                Sorry, your browser doesn't support embedded videos.
               </video>
-            )}
+              {item.caption && <p className="slide-caption">{item.caption}</p>}
+            </>
+          )}
 
-            {item.type === 'iframe' && (
+          {item.type === 'iframe' && (
+            <>
               <div className="iframe-wrapper">
                 <iframe
                   src={`${item.src}?rel=0&modestbranding=1`}
@@ -67,31 +73,30 @@ const MediaCarousel = ({ mediaItems }) => (
                   allowFullScreen
                 />
               </div>
-            )}
+              {item.caption && <p className="slide-caption">{item.caption}</p>}
+            </>
+          )}
 
-            {item.type === 'custom' && (
-              <motion.div
-                className="custom-slide"
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5 }}
-              >
-                <div className="custom-content">
-                  <div className="icon-stack">
-                    <FaRocket />
-                    <FaCogs />
-                    <FaCloud />
-                  </div>
-                  <h2>We Build Scalable Systems</h2>
-                  <p>
-                    Custom software engineered for performance, reliability, and scale — powered by CodePackers.
-                  </p>
+          {item.type === 'custom' && (
+            <motion.div
+              className="custom-slide"
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+            >
+              <div className="custom-content">
+                <div className="icon-stack">
+                  <FaRocket />
+                  <FaCogs />
+                  <FaCloud />
                 </div>
-              </motion.div>
-            )}
-
-            {item.caption && <p className="slide-caption">{item.caption}</p>}
-          </div>
+                <h2>We Build Scalable Systems</h2>
+                <p>
+                  Custom software engineered for performance, reliability, and scale — powered by CodePackers.
+                </p>
+              </div>
+            </motion.div>
+          )}
         </SwiperSlide>
       ))}
     </Swiper>
