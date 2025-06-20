@@ -68,5 +68,32 @@
         "email": "samarth@gmail.com",
         "phone": "1234567890",
         "timestamp": "2025-06-17T02:38:10.113765+05:30"
+    },
+    {
+        "name": "samarth",
+        "email": "good@gmail.com",
+        "phone": "8310048454"
+    },
+    {
+        "name": "samarth",
+        "email": "samarthoffcampus@gmail.com",
+        "phone": "7778373833"
+    },
+    {
+        "name": "samya",
+        "email": "samya@gmail.com",
+        "phone": "7778373833"
+    },
+    {
+        "name": "M.Samarth",
+        "email": "m.samarth.ug22@nsut.ac.in",
+        "phone": "9310742242",
+        "timestamp": "2025-06-20T22:15:32.978560+05:30"
+    },
+    {
+        "name": "chatur",
+        "email": "chatur@gmail.com",
+        "phone": "9888877777",
+        "timestamp": "2025-06-20T22:16:07.246542+05:30"
     }
 ]

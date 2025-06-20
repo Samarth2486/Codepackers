@@ -1,17 +1,60 @@
 from flask import Flask, request, jsonify, send_file
 from flask_cors import CORS
 from generate_pdf import create_pdf
-from dotenv import load_dotenv
-import json
-import os
+import os,json,pytz
 from datetime import datetime
-import pytz  # ✅ Import pytz for timezone support
+from dotenv import load_dotenv
+
+# Gemini import
+import google.generativeai as genai
 
 # Load environment variables
 load_dotenv()
 
+# Setup Gemini
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
+genai.configure(api_key=GEMINI_API_KEY)
+
+# Load Gemini model
+model = genai.GenerativeModel('gemini-1.5-flash')  # or 'gemini-1.5-pro'
+
+# PDF directory
+PDF_DIR = os.getenv("PDF_DIR", "static/pdfs")
+
+# Ensure PDF_DIR exists
+if not os.path.exists(PDF_DIR):
+    os.makedirs(PDF_DIR)
+
+# Flask app
 app = Flask(__name__)
 CORS(app)
+
+# -----------------------------
+# ROUTES
+# -----------------------------
+
+# Root route
+@app.route('/')
+def home():
+    return "Codepackers Backend Running ✅"
+
+# Chatbot route
+@app.route('/api/chat', methods=['POST'])
+def chat():
+    try:
+        user_message = request.json.get("message", "")
+        if not user_message:
+            return jsonify({"error": "No message provided"}), 400
+
+        # Send message to Gemini
+        response = model.generate_content(user_message)
+        bot_reply = response.text
+
+        return jsonify({"reply": bot_reply})
+
+    except Exception as e:
+        print(f"Error in /api/chat: {str(e)}")
+        return jsonify({"error": str(e)}), 500
 
 VISITOR_DATA_FILE = os.getenv("VISITOR_DATA_FILE", "visitors.json")
 PDF_DIR = os.getenv("PDF_DIR", "static/pdfs")
@@ -81,7 +124,10 @@ def get_visitors():
         print("Error in /api/visitors:", e)
         return jsonify({'success': False, 'message': 'Error fetching data'}), 500
 
+# -----------------------------
+# Run app
+# -----------------------------
+
 if __name__ == '__main__':
-    port = int(os.getenv("PORT", 5000))
-    host = os.getenv("HOST", "0.0.0.0")
-    app.run(port=port, host=host)
+    app.run(debug=True, port=5000)
+

@@ -6,7 +6,7 @@ import os
 # Load environment variables from .env file
 load_dotenv()
 
-# Get the PDF directory from environment variable or fallback to default
+# PDF directory
 PDF_DIR = os.getenv("PDF_DIR", "static/pdfs")
 
 def create_pdf(data):
@@ -34,4 +34,6 @@ def create_pdf(data):
     # Save PDF
     pdf.output(filepath)
 
+    # Return only filename (NOT full path)
     return filename
+
