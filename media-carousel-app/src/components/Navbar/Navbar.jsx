@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import './Navbar.css';
+import { useTranslation } from 'react-i18next';
 
 const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
+  const { t, i18n } = useTranslation();
 
   const scrollToSection = (id) => {
     const section = document.getElementById(id);
@@ -10,6 +12,10 @@ const Navbar = () => {
       section.scrollIntoView({ behavior: 'smooth' });
       setMenuOpen(false); // close menu on mobile
     }
+  };
+
+  const changeLanguage = (lng) => {
+    i18n.changeLanguage(lng);
   };
 
   return (
@@ -20,34 +26,37 @@ const Navbar = () => {
         </div>
 
         <div className="navbar-links">
-          <button onClick={() => scrollToSection('hero')}>Home</button>
-          <button onClick={() => scrollToSection('ai-form')}>AI Chat Carousel</button>
-          <button onClick={() => scrollToSection('ai-form')}>Form</button>
-          <button onClick={() => scrollToSection('media')}>Media Carousel</button>
-          <button onClick={() => scrollToSection('capabilities')}>Capabilities</button>
-          <button onClick={() => scrollToSection('analytics')}>Analytics</button>
-          <button onClick={() => scrollToSection('contact')}>Contact</button>
+          <button onClick={() => scrollToSection('hero')}>{t('navbar.home')}</button>
+          <button onClick={() => scrollToSection('ai-form')}>{t('navbar.ai_chat')}</button>
+          <button onClick={() => scrollToSection('ai-form')}>{t('navbar.form')}</button>
+          <button onClick={() => scrollToSection('media')}>{t('navbar.capabilities')}</button>
+          <button onClick={() => scrollToSection('capabilities')}>{t('navbar.capabilities')}</button>
+          <button onClick={() => scrollToSection('analytics')}>{t('navbar.analytics')}</button>
+          <button onClick={() => scrollToSection('contact')}>{t('navbar.contact')}</button>
         </div>
 
-        <div
-          className="navbar-toggle"
-          onClick={() => setMenuOpen((prev) => !prev)}
-        >
+        <div className="navbar-toggle" onClick={() => setMenuOpen((prev) => !prev)}>
           <span />
           <span />
           <span />
+        </div>
+
+        {/* Language Switcher */}
+        <div className="language-switcher">
+          <button onClick={() => changeLanguage('en')}>EN</button>
+          <button onClick={() => changeLanguage('es')}>ES</button>
         </div>
       </div>
 
       {menuOpen && (
         <div className="mobile-menu open">
-          <button onClick={() => scrollToSection('hero')}>Home</button>
-          <button onClick={() => scrollToSection('ai-form')}>AI Chat Carousel</button>
-          <button onClick={() => scrollToSection('ai-form')}>Form</button>
-          <button onClick={() => scrollToSection('media')}>Media Carousel</button>
-          <button onClick={() => scrollToSection('capabilities')}>Capabilities</button>
-          <button onClick={() => scrollToSection('analytics')}>Analytics</button>
-          <button onClick={() => scrollToSection('contact')}>Contact</button>
+          <button onClick={() => scrollToSection('hero')}>{t('navbar.home')}</button>
+          <button onClick={() => scrollToSection('ai-form')}>{t('navbar.ai_chat')}</button>
+          <button onClick={() => scrollToSection('ai-form')}>{t('navbar.form')}</button>
+          <button onClick={() => scrollToSection('media')}>{t('navbar.capabilities')}</button>
+          <button onClick={() => scrollToSection('capabilities')}>{t('navbar.capabilities')}</button>
+          <button onClick={() => scrollToSection('analytics')}>{t('navbar.analytics')}</button>
+          <button onClick={() => scrollToSection('contact')}>{t('navbar.contact')}</button>
         </div>
       )}
     </nav>

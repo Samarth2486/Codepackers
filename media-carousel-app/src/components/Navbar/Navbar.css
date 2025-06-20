@@ -110,4 +110,18 @@ body {
     display: flex;
   }
 }
+.language-switcher button {
+  background: transparent;
+  border: none;
+  color: #333;
+  margin: 0 5px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+
+.language-switcher button:hover {
+  color: #e91e63;
+  transform: scale(1.05);
+}
 

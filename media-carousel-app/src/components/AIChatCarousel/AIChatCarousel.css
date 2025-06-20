@@ -2,8 +2,8 @@
   width: 100%;
   max-width: 650px;
   background: linear-gradient(135deg, #f3f4ff, #f8f5fc);
-  background-color: #f8f5fc; /* ✅ Fallback for mobile rendering */
-  -webkit-mask-image: -webkit-radial-gradient(white, black); /* ✅ Fix for mobile ghost line */
+  background-color: #f8f5fc;
+  -webkit-mask-image: -webkit-radial-gradient(white, black);
   border-radius: 16px;
   padding: 20px;
   margin: auto;
@@ -16,7 +16,14 @@
   overflow: hidden;
   position: relative;
   z-index: 0;
+
+  /* ✅ New Fixes */
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  -webkit-font-smoothing: antialiased;
+  -webkit-overflow-scrolling: touch;
 }
+
 
 .chat-header {
   display: flex;
@@ -147,12 +154,18 @@
   display: flex;
   align-items: stretch;
   gap: 8px;
-  padding-top: 2px; /* ✅ Compensate for margin overlap */
+  padding-top: 2px;
   padding-bottom: 4px;
   background-color: #f8f5fc;
-  border-top: 1px solid transparent; /* ✅ Prevent ghost line */
+  border-top: 1px solid transparent;
   box-shadow: none;
   -webkit-mask-image: -webkit-radial-gradient(white, black);
+
+  /* ✅ Extra Fixes */
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  -webkit-font-smoothing: antialiased;
+  -webkit-overflow-scrolling: touch;
 }
 
 .fake-input {

@@ -43,37 +43,50 @@ function App() {
   ];
 
   const capabilities = [
-    {
-      title: 'AI Conversational Agents',
-      description: 'Designing human-like AI chatbots and voice assistants for seamless user interactions.',
-      icon: '🧠'
-    },
-    {
-      title: 'Web & Mobile Apps',
-      description: 'Building cross-platform applications with modern UI/UX and scalable backend.',
-      icon: '📱'
-    },
-    {
-      title: 'Database Management Systems',
-      description: 'Solutions for Task, Health, HR, and Customer Relations management.',
-      icon: '🗄️'
-    },
-    {
-      title: 'Voice-first & AI Apps',
-      description: 'Building next-gen voice-command powered apps integrated with smart AI.',
-      icon: '🎙️'
-    },
-    {
-      title: 'Systems Integration',
-      description: 'Connecting tools, platforms, and databases into a unified smart ecosystem.',
-      icon: '🔗'
-    },
-    {
-      title: 'Data Analytics',
-      description: 'Visualizing data and extracting insights using dashboards and AI-driven analysis.',
-      icon: '📊'
-    }
-  ];
+  {
+    title: 'AI Conversational Agents',
+    description: 'Designing human-like AI chatbots and voice assistants for seamless user interactions.',
+    icon: '🧠',
+    features: ['Scalable AI architecture', 'Multi-channel support', 'Natural language understanding'],
+    useCases: ['Automated customer service', 'Internal knowledge bots', 'Voice AI for accessibility']
+  },
+  {
+    title: 'Web & Mobile Apps',
+    description: 'Building cross-platform applications with modern UI/UX and scalable backend.',
+    icon: '📱',
+    features: ['React Native and PWA support', 'Responsive UI/UX', 'Secure authentication and APIs'],
+    useCases: ['eCommerce apps', 'CRM systems', 'Event booking platforms']
+  },
+  {
+    title: 'Database Management Systems',
+    description: 'Solutions for Task, Health, HR, and Customer Relations management.',
+    icon: '🗄️',
+    features: ['MySQL, PostgreSQL, MongoDB', 'Data backups and restore', 'Role-based access control'],
+    useCases: ['HR data systems', 'Inventory tracking', 'CRM solutions']
+  },
+  {
+    title: 'Voice-first & AI Apps',
+    description: 'Building next-gen voice-command powered apps integrated with smart AI.',
+    icon: '🎙️',
+    features: ['Voice recognition SDKs', 'Text-to-speech integration', 'Voice-triggered workflows'],
+    useCases: ['Accessibility tools', 'Smart home apps', 'Voice-enabled surveys']
+  },
+  {
+    title: 'Systems Integration',
+    description: 'Connecting tools, platforms, and databases into a unified smart ecosystem.',
+    icon: '🔗',
+    features: ['REST & GraphQL APIs', 'SSO (Single Sign-On)', 'Real-time data sync'],
+    useCases: ['ERP/CRM integration', 'IoT dashboards', 'Data pipelines']
+  },
+  {
+    title: 'Data Analytics',
+    description: 'Visualizing data and extracting insights using dashboards and AI-driven analysis.',
+    icon: '📊',
+    features: ['BI dashboards', 'Custom KPIs', 'Automated data cleaning'],
+    useCases: ['Sales analytics', 'User behavior tracking', 'Forecasting & predictions']
+  }
+];
+
 
   const analyticsData = [
     { name: 'Jan', users: 30 },

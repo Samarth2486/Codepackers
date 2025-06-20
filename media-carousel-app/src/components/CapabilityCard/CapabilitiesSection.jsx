@@ -6,46 +6,52 @@ import './CapabilitiesSection.css';
 
 const capabilities = [
   {
+    id: 1,
     icon: <BrainCircuit size={36} strokeWidth={2} />,
     title: 'AI Conversational Agents',
-    description: 'Human-like AI chatbots and voice assistants for seamless interaction.',
-    features: ['Natural language understanding', 'Multilingual support', 'Custom workflows'],
-    useCases: ['Customer support', 'Virtual assistants', 'Internal team bots'],
+    description: 'Designing human-like AI chatbots and voice assistants for seamless user interactions.',
+    features: ['Scalable AI architecture', 'Multi-channel support', 'Natural language understanding'],
+    useCases: ['Automated customer service', 'Internal knowledge bots', 'Voice AI for accessibility']
   },
   {
+    id: 2,
     icon: <Smartphone size={36} strokeWidth={2} />,
     title: 'Web & Mobile Apps',
-    description: 'Cross-platform apps with modern UI/UX and scalable backend.',
-    features: ['React Native', 'Progressive Web Apps', 'Backend APIs'],
-    useCases: ['eCommerce apps', 'CRM systems', 'Booking platforms'],
+    description: 'Building cross-platform applications with modern UI/UX and scalable backend.',
+    features: ['React Native and PWA support', 'Responsive UI/UX', 'Secure authentication and APIs'],
+    useCases: ['eCommerce apps', 'CRM systems', 'Event booking platforms']
   },
   {
+    id: 3,
     icon: <Database size={36} strokeWidth={2} />,
     title: 'Database Management',
-    description: 'Efficient tools for managing enterprise data and customer relations.',
-    features: ['MySQL, MongoDB', 'Data backups', 'Role-based access'],
-    useCases: ['HR systems', 'Inventory tracking', 'Customer DBs'],
+    description: 'Reliable solutions to manage enterprise data efficiently and securely.',
+    features: ['MySQL, PostgreSQL, MongoDB', 'Data backups and restore', 'Role-based access control'],
+    useCases: ['HR and employee data systems', 'Inventory and order tracking', 'Customer relationship management']
   },
   {
+    id: 4,
     icon: <Mic size={36} strokeWidth={2} />,
     title: 'Voice-first AI Apps',
-    description: 'Next-gen voice-command powered apps integrated with smart AI.',
-    features: ['Voice SDKs', 'Text-to-Speech', 'Voice-triggered automation'],
-    useCases: ['Voice assistants', 'Accessibility tools', 'Smart home interfaces'],
+    description: 'Smart applications that understand and respond to voice commands.',
+    features: ['Voice recognition SDKs', 'Text-to-speech integration', 'Voice-triggered workflows'],
+    useCases: ['Accessibility tools', 'Smart home interfaces', 'Voice-enabled surveys']
   },
   {
+    id: 5,
     icon: <Link size={36} strokeWidth={2} />,
     title: 'Systems Integration',
-    description: 'Connect tools, platforms and databases into a unified ecosystem.',
-    features: ['API bridges', 'Data syncing', 'Single sign-on'],
-    useCases: ['ERP integration', 'Analytics pipeline', 'IoT control centers'],
+    description: 'Unify all your tools and platforms through custom integrations.',
+    features: ['REST & GraphQL APIs', 'Single sign-on (SSO)', 'Real-time data syncing'],
+    useCases: ['ERP and CRM integration', 'IoT dashboards', 'Analytics data pipelines']
   },
   {
+    id: 6,
     icon: <BarChart size={36} strokeWidth={2} />,
     title: 'Data Analytics',
-    description: 'Dashboard-driven insights and AI-powered analytics.',
-    features: ['BI dashboards', 'Data cleaning', 'Custom KPIs'],
-    useCases: ['Sales trends', 'User behavior tracking', 'Forecasting'],
+    description: 'Drive decisions with visual dashboards and AI-powered insights.',
+    features: ['BI dashboards', 'Custom KPIs', 'Automated data cleaning'],
+    useCases: ['Sales trends and reports', 'User behavior tracking', 'Forecasting & predictions']
   }
 ];
 
@@ -56,8 +62,16 @@ const CapabilitiesSection = () => {
     <section className="capabilities-section">
       <h2>Codepackers Software Solutions</h2>
       <div className="capabilities-grid">
-        {capabilities.map((cap, idx) => (
-          <CapabilityCard key={idx} {...cap} onClick={() => setSelected(cap)} />
+        {capabilities.map((cap) => (
+          <CapabilityCard
+            key={cap.id}
+            icon={cap.icon}
+            title={cap.title}
+            description={cap.description}
+            features={cap.features}
+            useCases={cap.useCases}
+            onClick={setSelected}
+          />
         ))}
       </div>
       <CapabilityModal

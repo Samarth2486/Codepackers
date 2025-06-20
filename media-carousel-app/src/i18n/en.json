@@ -1,0 +1,16 @@
+{
+  "navbar": {
+    "home": "Home",
+    "ai_chat": "AI Chat",
+    "capabilities": "Capabilities",
+    "analytics": "Analytics",
+    "form": "Form",
+    "contact": "Contact"
+  },
+  "chatbot": {
+    "welcome": "Hi! How can I help you today?",
+    "option1": "Product Information",
+    "option2": "Pricing Details",
+    "option3": "Speak to Support"
+  }
+}
