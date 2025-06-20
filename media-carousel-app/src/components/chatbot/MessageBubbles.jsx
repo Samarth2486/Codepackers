@@ -1,18 +1,22 @@
-import React, { useEffect, useRef } from 'react';
-import './MessageBubbles.css';
+import React, { useEffect, useRef } from "react";
+import ReactMarkdown from "react-markdown";
+import "./MessageBubbles.css";
 
-const MessageBubbles = ({ chat, isBotTyping, onOptionClick }) => {
+const MessageBubbles = ({ chat, isBotTyping, onOptionClick = () => {} }) => {
   const bottomRef = useRef(null);
 
   useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
+    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [chat, isBotTyping]);
 
   return (
     <div className="chat-messages">
       {chat.map((msg, idx) => (
         <div key={idx} className={`chat-bubble ${msg.from}`}>
-          <div>{msg.text}</div>
+          <div className="markdown-content">
+            <ReactMarkdown>{msg.text}</ReactMarkdown>
+          </div>
+
           {msg.options && (
             <div className="chat-options">
               {msg.options.map((opt, i) => (
@@ -37,7 +41,7 @@ const MessageBubbles = ({ chat, isBotTyping, onOptionClick }) => {
         </div>
       )}
 
-      {/* Scroll target */}
+      {/* Auto scroll anchor */}
       <div ref={bottomRef} />
     </div>
   );
