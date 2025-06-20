@@ -50,6 +50,7 @@
 }
 
 .chat-bubble-wrapper {
+  background-clip: padding-box;
   display: flex;
   flex-direction: column;
   gap: 12px;
@@ -58,7 +59,8 @@
   padding-right: 8px;
   padding-bottom: 8px;
   background: transparent;
-  margin-bottom: -2px; /* ✅ hide subpixel gap across browsers */
+  margin-bottom: 0; /* ✅ hide subpixel gap across browsers */
+  border-bottom: none !important;
 }
 
 .chat-bubble {
@@ -137,6 +139,7 @@
 }
 
 .chat-input-area {
+  background-clip: padding-box;
   position: relative;
   z-index: 2;
   display: flex;
@@ -145,7 +148,7 @@
   padding-top: 2px; /* ✅ Compensate for margin overlap */
   padding-bottom: 4px;
   background: #f8f5fc;
-  border-top: none;
+  border-top: 1px solid transparent; /* ✅ Prevent ghost line */
   box-shadow: none;
 }
 
