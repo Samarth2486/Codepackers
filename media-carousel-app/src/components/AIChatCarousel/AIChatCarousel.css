@@ -245,6 +245,8 @@
     padding: 12px;
     border-radius: 12px;
     height: auto;
+    border-bottom: 0.5px solid transparent; /* ✅ Prevent ghost border line */
+    background-clip: padding-box;
   }
 
   .chat-title {
