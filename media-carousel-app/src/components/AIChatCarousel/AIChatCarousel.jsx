@@ -1,4 +1,3 @@
-// AIChatCarousel.jsx
 import React, { useEffect, useState } from 'react';
 import './AIChatCarousel.css';
 
@@ -124,18 +123,18 @@ const AIChatCarousel = () => {
 
       <div className="chat-input-area">
         <div className="fake-input" tabIndex="-1">
-        {isTyping ? (
-          <>
-            <span style={{ whiteSpace: 'pre-wrap' }}>{inputText}</span>
-            <span className={`cursor ${cursorVisible ? 'visible' : ''}`}>|</span>
-          </>
-        ) : (
-          <span className="placeholder-text">
-            <span className={`cursor ${cursorVisible ? 'visible' : ''}`}>|</span>
-            Type your query
-          </span>
-        )}
-      </div>
+          {isTyping ? (
+            <>
+              <span style={{ whiteSpace: 'pre-wrap' }}>{inputText}</span>
+              <span className={`cursor ${cursorVisible ? 'visible' : ''}`}>|</span>
+            </>
+          ) : (
+            <span className="placeholder-text">
+              <span className={`cursor ${cursorVisible ? 'visible' : ''}`}>|</span>
+              Type your query
+            </span>
+          )}
+        </div>
 
         <button className={`send-btn ${sendClicked ? 'clicked' : ''}`} disabled>
           ➤

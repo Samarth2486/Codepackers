@@ -133,34 +133,30 @@
 
 .chat-input-area {
   margin-top: 8px;
-  position: relative;
   display: flex;
-  align-items: center;
+  align-items: stretch;
+  gap: 8px;
   padding-bottom: 4px;
 }
 
 .fake-input {
-  width: 100%;
+  flex-grow: 1;
   padding: 10px 14px;
-  padding-right: 36px;
   border-radius: 12px;
   border: 1px solid #ccc;
   font-size: 14px;
-  outline: none;
-  font-family: 'Segoe UI', sans-serif;
   background-color: #fff;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  box-shadow: none; /* Removed box-shadow to eliminate grey line */
   color: #222;
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   min-height: 42px;
   max-height: 150px;
   overflow-y: auto;
   white-space: pre-wrap;
-  cursor: default;
   caret-color: transparent;
   user-select: none;
-  pointer-events: none; /* ensures user can’t click and activate caret */
+  pointer-events: none;
 }
 
 .fake-input:focus {
@@ -183,14 +179,14 @@
 
 
 .send-btn {
-  position: absolute;
-  right: 10px;
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
   background: linear-gradient(135deg, #9eaaff, #3f82f7);
   border: none;
   font-size: 18px;
   cursor: pointer;
   color: #fff;
-  padding: 6px 10px;
   border-radius: 50%;
   box-shadow: 0 4px 12px rgba(63, 130, 247, 0.3);
   transition: all 0.3s ease;
@@ -259,5 +255,14 @@
   .chat-bubble-wrapper {
     padding-right: 4px;
     max-height: 300px;
+  }
+  .chat-input-area {
+    flex-direction: row;
+    gap: 6px;
+  }
+  .send-btn {
+    width: 36px;
+    height: 36px;
+    font-size: 16px;
   }
 }
