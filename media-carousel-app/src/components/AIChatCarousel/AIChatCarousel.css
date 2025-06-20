@@ -137,7 +137,11 @@
   align-items: stretch;
   gap: 8px;
   padding-bottom: 4px;
+  border-top: none; /* Add this line */
+  box-shadow: none; /* Add this to eliminate ghost shadow if any */
+  background: transparent; /* Ensure it's not introducing a new background line */
 }
+
 
 .fake-input {
   flex-grow: 1;
@@ -268,6 +272,9 @@
   .chat-input-area {
     flex-direction: row;
     gap: 6px;
+    border-top: none !important;
+    box-shadow: none !important;
+    background: transparent !important;
   }
 
   .send-btn {
