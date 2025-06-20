@@ -1,8 +1,10 @@
 import React, { useState, useEffect, useCallback } from "react";
 import MessageBubbles from "./MessageBubbles";
 import "./FloatingChatbot.css";
+import { useTranslation } from "react-i18next";
 
 const FloatingChatbot = () => {
+  const { t } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
@@ -18,9 +20,9 @@ const FloatingChatbot = () => {
 
   useEffect(() => {
     if (isOpen && messages.length === 0) {
-      typeMessage("Hi there! I'm your AI assistant. How can I help you today?");
+      typeMessage(t("floatingChatbot.welcome"));
     }
-  }, [isOpen, messages.length, typeMessage]);
+  }, [isOpen, messages.length, typeMessage, t]);
 
   const handleSend = async (userInput) => {
     if (!userInput.trim()) return;
@@ -38,12 +40,12 @@ const FloatingChatbot = () => {
 
       const data = await response.json();
       const botReply =
-        data.reply || "Sorry, I couldn't process that. Please try again.";
+        data.reply || t("floatingChatbot.noReply");
 
       typeMessage(botReply);
     } catch (error) {
       console.error("Error:", error);
-      typeMessage("Oops! Something went wrong. Please try again later.");
+      typeMessage(t("floatingChatbot.error"));
     }
   };
 
@@ -51,7 +53,7 @@ const FloatingChatbot = () => {
     <>
       {!isOpen && (
         <div className="chatbot-tooltip-wrapper">
-          <div className="chatbot-tooltip">Start a chat with Paul</div>
+          <div className="chatbot-tooltip">{t("floatingChatbot.tooltip")}</div>
           <button className="chatbot-toggle" onClick={() => setIsOpen(true)}>
             <div className="chatbot-icon">💬</div>
           </button>
@@ -61,7 +63,7 @@ const FloatingChatbot = () => {
       {isOpen && (
         <div className="chatbot-popup">
           <div className="chatbot-header">
-            <span className="chatbot-title">Paul - Codepackers AI Agent</span>
+            <span className="chatbot-title">{t("floatingChatbot.header")}</span>
             <button className="chatbot-close" onClick={() => setIsOpen(false)}>
               ×
             </button>
@@ -74,12 +76,12 @@ const FloatingChatbot = () => {
           <div className="chatbot-input">
             <input
               type="text"
-              placeholder="Type your message..."
+              placeholder={t("floatingChatbot.inputPlaceholder")}
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && handleSend(input)}
             />
-            <button onClick={() => handleSend(input)}>Send</button>
+            <button onClick={() => handleSend(input)}>{t("floatingChatbot.send")}</button>
           </div>
         </div>
       )}

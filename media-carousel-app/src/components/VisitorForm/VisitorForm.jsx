@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
+import { useTranslation } from "react-i18next";
 import "./VisitorForm.css";
 
 const VisitorForm = () => {
@@ -8,6 +9,7 @@ const VisitorForm = () => {
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
   const [pdfFilename, setPdfFilename] = useState("");
+  const { t } = useTranslation();
 
   const API_BASE_URL = process.env.REACT_APP_BACKEND_URL;
 
@@ -34,23 +36,22 @@ const VisitorForm = () => {
     const phoneRegex = /^\d{10}$/;
 
     if (!nameRegex.test(formData.name)) {
-      setErrorMsg("Name must not contain numbers.");
+      setErrorMsg(t("form.errors.invalid_name"));
       setLoading(false);
       return;
     }
     if (!emailRegex.test(formData.email)) {
-      setErrorMsg("Please enter a valid email address.");
+      setErrorMsg(t("form.errors.invalid_email"));
       setLoading(false);
       return;
     }
     if (!phoneRegex.test(formData.phone)) {
-      setErrorMsg("Phone number must be exactly 10 digits.");
+      setErrorMsg(t("form.errors.invalid_phone"));
       setLoading(false);
       return;
     }
 
     try {
-      console.log("Sending:", JSON.stringify(formData));
       const res = await fetch(`${API_BASE_URL}/api/messages`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -66,11 +67,9 @@ const VisitorForm = () => {
       localStorage.setItem("visitorFormPdf", data.pdf);
     } catch (err) {
       console.warn("Backend not reachable. Using fallback.", err);
-      setErrorMsg(
-        "⚠️ Not able to connect to backend. Showing dummy form success."
-      );
+      setErrorMsg(t("form.errors.fallback"));
       setFormSubmitted(true);
-      setPdfFilename(""); // no PDF in fallback
+      setPdfFilename("");
       localStorage.setItem("visitorFormSubmitted", "true");
       localStorage.removeItem("visitorFormPdf");
     }
@@ -95,39 +94,39 @@ const VisitorForm = () => {
       transition={{ duration: 0.6, ease: "easeOut" }}
       viewport={{ once: true, amount: 0.3 }}
     >
-      <h2>Get Access to Our PDF</h2>
+      <h2>{t("form.heading")}</h2>
 
       {!formSubmitted ? (
         <form onSubmit={handleSubmit} className="visitor-form">
           <input
             type="text"
             name="name"
-            placeholder="Your Name"
+            placeholder={t("form.name")}
             onChange={handleChange}
             required
           />
           <input
             type="email"
             name="email"
-            placeholder="Your Email"
+            placeholder={t("form.email")}
             onChange={handleChange}
             required
           />
           <input
             type="tel"
             name="phone"
-            placeholder="Your Phone Number"
+            placeholder={t("form.phone")}
             onChange={handleChange}
             required
           />
           <button type="submit" disabled={loading}>
-            {loading ? "Submitting..." : "Submit"}
+            {loading ? t("form.submitting") : t("form.submit")}
           </button>
           {errorMsg && <p className="error">{errorMsg}</p>}
         </form>
       ) : (
         <div className="download-section">
-          <p>Thank you! You can now download the PDF:</p>
+          <p>{t("form.success_message")}</p>
           {pdfFilename ? (
             <a
               href={`${API_BASE_URL}/static/pdfs/${pdfFilename}`}
@@ -135,14 +134,12 @@ const VisitorForm = () => {
               target="_blank"
               rel="noopener noreferrer"
             >
-              <button type="button">Download PDF</button>
+              <button type="button">{t("form.download_pdf")}</button>
             </a>
           ) : (
-            <p style={{ color: "orange" }}>
-              (No PDF available - backend might not be reachable.)
-            </p>
+            <p style={{ color: "orange" }}>{t("form.no_pdf")}</p>
           )}
-          <button onClick={handleReset}>Submit Another Response</button>
+          <button onClick={handleReset}>{t("form.submit_another")}</button>
         </div>
       )}
     </motion.div>

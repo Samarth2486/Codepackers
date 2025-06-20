@@ -8,17 +8,12 @@ import AIChatCarousel from './components/AIChatCarousel/AIChatCarousel';
 import CapabilityCard from './components/CapabilityCard/CapabilityCard';
 import VisitorForm from './components/VisitorForm/VisitorForm';
 
-import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer
-} from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { useTranslation } from 'react-i18next';
 
 function App() {
+  const { t } = useTranslation();
+
   const [selectedCap, setSelectedCap] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -43,50 +38,49 @@ function App() {
   ];
 
   const capabilities = [
-  {
-    title: 'AI Conversational Agents',
-    description: 'Designing human-like AI chatbots and voice assistants for seamless user interactions.',
-    icon: '🧠',
-    features: ['Scalable AI architecture', 'Multi-channel support', 'Natural language understanding'],
-    useCases: ['Automated customer service', 'Internal knowledge bots', 'Voice AI for accessibility']
-  },
-  {
-    title: 'Web & Mobile Apps',
-    description: 'Building cross-platform applications with modern UI/UX and scalable backend.',
-    icon: '📱',
-    features: ['React Native and PWA support', 'Responsive UI/UX', 'Secure authentication and APIs'],
-    useCases: ['eCommerce apps', 'CRM systems', 'Event booking platforms']
-  },
-  {
-    title: 'Database Management Systems',
-    description: 'Solutions for Task, Health, HR, and Customer Relations management.',
-    icon: '🗄️',
-    features: ['MySQL, PostgreSQL, MongoDB', 'Data backups and restore', 'Role-based access control'],
-    useCases: ['HR data systems', 'Inventory tracking', 'CRM solutions']
-  },
-  {
-    title: 'Voice-first & AI Apps',
-    description: 'Building next-gen voice-command powered apps integrated with smart AI.',
-    icon: '🎙️',
-    features: ['Voice recognition SDKs', 'Text-to-speech integration', 'Voice-triggered workflows'],
-    useCases: ['Accessibility tools', 'Smart home apps', 'Voice-enabled surveys']
-  },
-  {
-    title: 'Systems Integration',
-    description: 'Connecting tools, platforms, and databases into a unified smart ecosystem.',
-    icon: '🔗',
-    features: ['REST & GraphQL APIs', 'SSO (Single Sign-On)', 'Real-time data sync'],
-    useCases: ['ERP/CRM integration', 'IoT dashboards', 'Data pipelines']
-  },
-  {
-    title: 'Data Analytics',
-    description: 'Visualizing data and extracting insights using dashboards and AI-driven analysis.',
-    icon: '📊',
-    features: ['BI dashboards', 'Custom KPIs', 'Automated data cleaning'],
-    useCases: ['Sales analytics', 'User behavior tracking', 'Forecasting & predictions']
-  }
-];
-
+    {
+      title: t('capabilities.ai.title'),
+      description: t('capabilities.ai.description'),
+      icon: '🧠',
+      features: t('capabilities.ai.features', { returnObjects: true }),
+      useCases: t('capabilities.ai.useCases', { returnObjects: true })
+    },
+    {
+      title: t('capabilities.web.title'),
+      description: t('capabilities.web.description'),
+      icon: '📱',
+      features: t('capabilities.web.features', { returnObjects: true }),
+      useCases: t('capabilities.web.useCases', { returnObjects: true })
+    },
+    {
+      title: t('capabilities.db.title'),
+      description: t('capabilities.db.description'),
+      icon: '🗄️',
+      features: t('capabilities.db.features', { returnObjects: true }),
+      useCases: t('capabilities.db.useCases', { returnObjects: true })
+    },
+    {
+      title: t('capabilities.voice.title'),
+      description: t('capabilities.voice.description'),
+      icon: '🎙️',
+      features: t('capabilities.voice.features', { returnObjects: true }),
+      useCases: t('capabilities.voice.useCases', { returnObjects: true })
+    },
+    {
+      title: t('capabilities.integration.title'),
+      description: t('capabilities.integration.description'),
+      icon: '🔗',
+      features: t('capabilities.integration.features', { returnObjects: true }),
+      useCases: t('capabilities.integration.useCases', { returnObjects: true })
+    },
+    {
+      title: t('capabilities.analytics.title'),
+      description: t('capabilities.analytics.description'),
+      icon: '📊',
+      features: t('capabilities.analytics.features', { returnObjects: true }),
+      useCases: t('capabilities.analytics.useCases', { returnObjects: true })
+    }
+  ];
 
   const analyticsData = [
     { name: 'Jan', users: 30 },
@@ -101,9 +95,9 @@ function App() {
 
       <section id="hero" className="hero">
         <h1>
-          Experience <span>Codepackers</span>
+          {t('hero.title')} <span>Codepackers</span>
         </h1>
-        <p>Innovative AI-first solutions & platform showcase</p>
+        <p>{t('hero.subtitle')}</p>
       </section>
 
       <section id="ai-form" className="ai-form-wrapper">
@@ -120,7 +114,7 @@ function App() {
       </section>
 
       <section id="capabilities" className="capabilities-section">
-        <h2>Codepackers Software Solutions</h2>
+        <h2>{t('capabilities.heading')}</h2>
         <div className="capabilities-grid">
           {capabilities.map((cap, idx) => (
             <CapabilityCard
@@ -128,6 +122,8 @@ function App() {
               title={cap.title}
               description={cap.description}
               icon={cap.icon}
+              features={cap.features}
+              useCases={cap.useCases}
               onClick={() => openModal(cap)}
             />
           ))}
@@ -141,7 +137,7 @@ function App() {
       />
 
       <section id="analytics" className="analytics-section">
-        <h2>Analytics Overview</h2>
+        <h2>{t('analytics.heading')}</h2>
         <ResponsiveContainer width="100%" height={300}>
           <BarChart data={analyticsData}>
             <CartesianGrid strokeDasharray="3 3" />
@@ -154,9 +150,9 @@ function App() {
       </section>
 
       <section id="contact" className="contact-section">
-        <h2>Contact Us</h2>
-        <p>Email: <a href="mailto:hello@codepackers.com">hello@codepackers.com</a></p>
-        <p>Phone: <a href="tel:+919876543210">+91-9876543210</a></p>
+        <h2>{t('contact.heading')}</h2>
+        <p>{t('contact.email')}: <a href="mailto:hello@codepackers.com">hello@codepackers.com</a></p>
+        <p>{t('contact.phone')}: <a href="tel:+919876543210">+91-9876543210</a></p>
       </section>
 
       <FloatingChatbot />

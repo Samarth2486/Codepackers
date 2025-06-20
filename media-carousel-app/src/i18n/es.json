@@ -2,15 +2,179 @@
   "navbar": {
     "home": "Inicio",
     "ai_chat": "Chat IA",
+    "form": "Formulario",
     "capabilities": "Capacidades",
     "analytics": "Analítica",
-    "form": "Formulario",
     "contact": "Contacto"
   },
+
+  "brand": "Soluciones de Software de Codepackers",
+
   "chatbot": {
+    "header": "Paul - Mi Agente de IA Empresarial",
+    "thankyou": "¡Gracias! Nuestro equipo se pondrá en contacto contigo pronto.",
+    "inputPlaceholder": "Escribe tu mensaje...",
+    "send": "Enviar",
     "welcome": "¡Hola! ¿Cómo puedo ayudarte hoy?",
     "option1": "Información del Producto",
     "option2": "Detalles de Precios",
     "option3": "Hablar con Soporte"
+  },
+
+  "floatingChatbot": {
+    "welcome": "¡Hola! Soy tu asistente de IA. ¿En qué puedo ayudarte hoy?",
+    "noReply": "Lo siento, no pude procesar eso. Por favor, inténtalo de nuevo.",
+    "error": "¡Ups! Algo salió mal. Inténtalo de nuevo más tarde.",
+    "tooltip": "Inicia un chat con Paul",
+    "header": "Paul - Agente de IA de Codepackers",
+    "inputPlaceholder": "Escribe tu mensaje...",
+    "send": "Enviar"
+  },
+
+  "aiChatCarousel": {
+    "title": "Paul - Mi Agente de IA Empresarial",
+    "subtitle": "Multilingüe",
+    "placeholder": "Escribe tu consulta",
+    "messages": {
+      "0": "Muéstrame el informe de ventas del tercer trimestre para la región de Delhi",
+      "1": "He encontrado el informe del tercer trimestre para Delhi. La región mostró un crecimiento del 23% con ₹2.4 crores en ingresos. ¿Quieres que lo desglosé por categorías de productos?",
+      "2": "Por favor, proporcióname el desglose de las tres principales categorías de productos"
+    }
+  },
+
+  "capabilities": {
+    "heading": "Soluciones de Software de Codepackers",
+    "ai": {
+      "title": "Agentes Conversacionales de IA",
+      "description": "Diseñando chatbots y asistentes de voz parecidos a humanos para interacciones fluidas.",
+      "features": [
+        "Arquitectura de IA escalable",
+        "Soporte multicanal",
+        "Comprensión del lenguaje natural"
+      ],
+      "useCases": [
+        "Servicio al cliente automatizado",
+        "Bots internos de conocimiento",
+        "IA de voz para accesibilidad"
+      ]
+    },
+    "web": {
+      "title": "Aplicaciones Web y Móviles",
+      "description": "Construcción de aplicaciones multiplataforma con UI/UX modernas y backend escalable.",
+      "features": [
+        "Soporte para React Native y PWA",
+        "UI/UX adaptable",
+        "Autenticación segura y APIs"
+      ],
+      "useCases": [
+        "Aplicaciones de comercio electrónico",
+        "Sistemas CRM",
+        "Plataformas de reservas de eventos"
+      ]
+    },
+    "db": {
+      "title": "Gestión de Bases de Datos",
+      "description": "Soluciones confiables para gestionar datos empresariales de manera eficiente y segura.",
+      "features": [
+        "MySQL, PostgreSQL, MongoDB",
+        "Copias de seguridad y restauración",
+        "Control de acceso basado en roles"
+      ],
+      "useCases": [
+        "Sistemas de datos de empleados",
+        "Seguimiento de inventario y pedidos",
+        "Gestión de relaciones con clientes"
+      ]
+    },
+    "voice": {
+      "title": "Aplicaciones de IA por Voz",
+      "description": "Aplicaciones inteligentes que entienden y responden a comandos de voz.",
+      "features": [
+        "SDKs de reconocimiento de voz",
+        "Integración de texto a voz",
+        "Flujos de trabajo activados por voz"
+      ],
+      "useCases": [
+        "Herramientas de accesibilidad",
+        "Interfaces para hogares inteligentes",
+        "Encuestas habilitadas por voz"
+      ]
+    },
+    "integration": {
+      "title": "Integración de Sistemas",
+      "description": "Unifica todas tus herramientas y plataformas a través de integraciones personalizadas.",
+      "features": [
+        "APIs REST y GraphQL",
+        "Inicio de sesión único (SSO)",
+        "Sincronización de datos en tiempo real"
+      ],
+      "useCases": [
+        "Integración de ERP y CRM",
+        "Paneles de IoT",
+        "Canales de datos analíticos"
+      ]
+    },
+    "analytics": {
+      "title": "Análisis de Datos",
+      "description": "Toma decisiones con paneles visuales e insights impulsados por IA.",
+      "features": [
+        "Paneles de BI",
+        "KPIs personalizados",
+        "Limpieza automática de datos"
+      ],
+      "useCases": [
+        "Tendencias y reportes de ventas",
+        "Seguimiento del comportamiento del usuario",
+        "Pronósticos y predicciones"
+      ]
+    }
+  },
+
+  "capabilityModal": {
+    "features": "Funciones",
+    "useCases": "Casos de uso",
+    "noFeatures": "No hay funciones listadas.",
+    "noUseCases": "No hay casos de uso listados."
+  },
+
+  "mediaCarousel": {
+    "imageAlt": "imagen multimedia",
+    "videoFallback": "Lo sentimos, tu navegador no admite videos incrustados.",
+    "customTitle": "Construimos sistemas escalables",
+    "customDesc": "Software personalizado diseñado para rendimiento, confiabilidad y escalabilidad — impulsado por CodePackers."
+  },
+
+  "form": {
+    "heading": "Obtén acceso a nuestro PDF",
+    "name": "Tu nombre",
+    "email": "Tu correo electrónico",
+    "phone": "Tu número de teléfono",
+    "submit": "Enviar",
+    "submitting": "Enviando...",
+    "success_message": "¡Gracias! Ahora puedes descargar el PDF:",
+    "download_pdf": "Descargar PDF",
+    "no_pdf": "(No hay PDF disponible - el backend podría no estar accesible.)",
+    "submit_another": "Enviar otra respuesta",
+    "errors": {
+      "invalid_name": "El nombre no debe contener números.",
+      "invalid_email": "Por favor ingresa un correo válido.",
+      "invalid_phone": "El número de teléfono debe tener exactamente 10 dígitos.",
+      "fallback": "⚠️ No se pudo conectar con el backend. Mostrando éxito simulado."
+    }
+  },
+
+  "hero": {
+    "title": "Experimenta",
+    "subtitle": "Soluciones innovadoras centradas en IA y plataforma de exhibición"
+  },
+
+  "analytics": {
+    "heading": "Resumen Analítico"
+  },
+
+  "contact": {
+    "heading": "Contáctanos",
+    "email": "Correo",
+    "phone": "Teléfono"
   }
 }

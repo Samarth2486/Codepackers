@@ -10,7 +10,7 @@ const Navbar = () => {
     const section = document.getElementById(id);
     if (section) {
       section.scrollIntoView({ behavior: 'smooth' });
-      setMenuOpen(false); // close menu on mobile
+      setMenuOpen(false);
     }
   };
 
@@ -21,30 +21,45 @@ const Navbar = () => {
   return (
     <nav className="navbar">
       <div className="navbar-container">
-        <div className="navbar-logo" onClick={() => scrollToSection('hero')}>
-          Codepackers Software Solutions
+        <div
+          className="navbar-logo"
+          onClick={() => scrollToSection('hero')}
+          translate="no"
+        >
+          {/* ✅ Use full brand from translation only */}
+          <span style={{ color: '#1f3c88', fontWeight: 700 }}>
+            {t('brand')}
+          </span>
         </div>
 
         <div className="navbar-links">
           <button onClick={() => scrollToSection('hero')}>{t('navbar.home')}</button>
           <button onClick={() => scrollToSection('ai-form')}>{t('navbar.ai_chat')}</button>
           <button onClick={() => scrollToSection('ai-form')}>{t('navbar.form')}</button>
-          <button onClick={() => scrollToSection('media')}>{t('navbar.capabilities')}</button>
           <button onClick={() => scrollToSection('capabilities')}>{t('navbar.capabilities')}</button>
           <button onClick={() => scrollToSection('analytics')}>{t('navbar.analytics')}</button>
           <button onClick={() => scrollToSection('contact')}>{t('navbar.contact')}</button>
         </div>
 
-        <div className="navbar-toggle" onClick={() => setMenuOpen((prev) => !prev)}>
-          <span />
-          <span />
-          <span />
+        <div className="language-switcher">
+          <button
+            className={i18n.language === 'en' ? 'active' : ''}
+            onClick={() => changeLanguage('en')}
+          >
+            EN
+          </button>
+          <button
+            className={i18n.language === 'es' ? 'active' : ''}
+            onClick={() => changeLanguage('es')}
+          >
+            ES
+          </button>
         </div>
 
-        {/* Language Switcher */}
-        <div className="language-switcher">
-          <button onClick={() => changeLanguage('en')}>EN</button>
-          <button onClick={() => changeLanguage('es')}>ES</button>
+        <div className="navbar-toggle" onClick={() => setMenuOpen(!menuOpen)}>
+          <span />
+          <span />
+          <span />
         </div>
       </div>
 
@@ -53,7 +68,6 @@ const Navbar = () => {
           <button onClick={() => scrollToSection('hero')}>{t('navbar.home')}</button>
           <button onClick={() => scrollToSection('ai-form')}>{t('navbar.ai_chat')}</button>
           <button onClick={() => scrollToSection('ai-form')}>{t('navbar.form')}</button>
-          <button onClick={() => scrollToSection('media')}>{t('navbar.capabilities')}</button>
           <button onClick={() => scrollToSection('capabilities')}>{t('navbar.capabilities')}</button>
           <button onClick={() => scrollToSection('analytics')}>{t('navbar.analytics')}</button>
           <button onClick={() => scrollToSection('contact')}>{t('navbar.contact')}</button>

@@ -21,7 +21,13 @@
     "recharts": "^2.15.3",
     "slick-carousel": "^1.8.1",
     "swiper": "^11.2.8",
+    "typescript": "^4.9.5",
     "web-vitals": "^2.1.4"
+  },
+  "devDependencies": {
+    "autoprefixer": "^10.4.21",
+    "postcss": "^8.5.5",
+    "tailwindcss": "^4.1.10"
   },
   "scripts": {
     "start": "react-scripts start",
@@ -30,10 +36,7 @@
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
-    "extends": [
-      "react-app",
-      "react-app/jest"
-    ]
+    "extends": ["react-app", "react-app/jest"]
   },
   "browserslist": {
     "production": [
@@ -46,10 +49,5 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
-  },
-  "devDependencies": {
-    "autoprefixer": "^10.4.21",
-    "postcss": "^8.5.5",
-    "tailwindcss": "^4.1.10"
   }
 }

@@ -1,21 +1,21 @@
 import React, { useEffect, useState, useRef } from 'react';
 import './AIChatCarousel.css';
-
-const messages = [
-  { sender: 'user', text: 'Show me the Q3 sales report for the Delhi region' },
-  {
-    sender: 'ai',
-    text: "I've found the Q3 sales report for Delhi. The region showed 23% growth with ₹2.4 crores in revenue. Would you like me to break this down by product categories?"
-  },
-  { sender: 'user', text: 'Please, provide me breakdown of top three product categories' }
-];
-
-const HUMAN_TYPING_SPEED = 100;
-const BOT_TYPING_SPEED = 20;
-const RESET_LOOP_DELAY = 5000;
-const BOT_TYPING_INDICATOR_DELAY = 800;
+import { useTranslation } from 'react-i18next';
 
 const AIChatCarousel = () => {
+  const { t } = useTranslation();
+
+  const messages = [
+    { sender: 'user', text: t('aiChatCarousel.messages.0') },
+    { sender: 'ai', text: t('aiChatCarousel.messages.1') },
+    { sender: 'user', text: t('aiChatCarousel.messages.2') },
+  ];
+
+  const HUMAN_TYPING_SPEED = 100;
+  const BOT_TYPING_SPEED = 20;
+  const RESET_LOOP_DELAY = 5000;
+  const BOT_TYPING_INDICATOR_DELAY = 800;
+
   const [displayedMessages, setDisplayedMessages] = useState([]);
   const [inputText, setInputText] = useState('');
   const [isTyping, setIsTyping] = useState(false);
@@ -100,8 +100,8 @@ const AIChatCarousel = () => {
       <div className="chat-header">
         <div className="avatar-icon">💬</div>
         <div>
-          <div className="chat-title">Paul - My Enterprise AI Agent</div>
-          <div className="chat-subtitle">Multilingual</div>
+          <div className="chat-title">{t('aiChatCarousel.title')}</div>
+          <div className="chat-subtitle">{t('aiChatCarousel.subtitle')}</div>
         </div>
       </div>
 
@@ -131,7 +131,7 @@ const AIChatCarousel = () => {
           ) : (
             <>
               <span className="cursor" />
-              <span className="placeholder-text">Type your query</span>
+              <span className="placeholder-text">{t('aiChatCarousel.placeholder')}</span>
             </>
           )}
         </div>

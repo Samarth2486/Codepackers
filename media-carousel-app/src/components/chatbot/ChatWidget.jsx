@@ -1,8 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
 import decisionTree from './decisionTree';
 import './ChatWidget.css';
+import { useTranslation } from 'react-i18next';
 
 const ChatWidget = () => {
+  const { t } = useTranslation();
+
   const [chat, setChat] = useState([]);
   const [currentNode, setCurrentNode] = useState('start');
   const [userInput, setUserInput] = useState('');
@@ -69,14 +72,14 @@ const ChatWidget = () => {
     setUserInput('');
     setIsTyping(true);
     setTimeout(() => {
-      setFullMessage("Thanks! Our team will get back to you soon.");
+      setFullMessage(t('chatbot.thankyou'));
     }, 1000);
   };
 
   return (
     <div className="chatbot-window">
       <div className="chatbot-header">
-        Paul - My Enterprise AI Agent
+        {t('chatbot.header')}
         <button className="chatbot-close-btn" onClick={() => window.location.reload()}>×</button>
       </div>
 
@@ -103,11 +106,11 @@ const ChatWidget = () => {
         <form className="chatbot-input" onSubmit={handleUserSubmit}>
           <input
             type="text"
-            placeholder="Type your message..."
+            placeholder={t('chatbot.inputPlaceholder')}
             value={userInput}
             onChange={(e) => setUserInput(e.target.value)}
           />
-          <button type="submit">Send</button>
+          <button type="submit">{t('chatbot.send')}</button>
         </form>
       ) : (
         !isTyping && !fullMessage && decisionTree[currentNode]?.options && (

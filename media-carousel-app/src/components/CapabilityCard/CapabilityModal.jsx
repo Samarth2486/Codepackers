@@ -1,10 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import './CapabilityModal.css';
+import { useTranslation } from 'react-i18next';
 
 const CapabilityModal = ({ isOpen, onClose, capability }) => {
   const [activeTab, setActiveTab] = useState('features');
   const modalRef = useRef(null);
+  const { t } = useTranslation();
 
   useEffect(() => {
     const handleEsc = (e) => {
@@ -19,6 +21,13 @@ const CapabilityModal = ({ isOpen, onClose, capability }) => {
       onClose();
     }
   };
+
+  const renderList = (items, fallbackKey) =>
+    Array.isArray(items) && items.length > 0 ? (
+      <ul>{items.map((item, i) => <li key={i}>{item}</li>)}</ul>
+    ) : (
+      <p className="tab-fallback">{t(fallbackKey)}</p>
+    );
 
   return (
     <AnimatePresence>
@@ -50,38 +59,20 @@ const CapabilityModal = ({ isOpen, onClose, capability }) => {
                 className={`tab ${activeTab === 'features' ? 'active' : ''}`}
                 onClick={() => setActiveTab('features')}
               >
-                Features
+                {t('capabilityModal.features')}
               </button>
               <button
                 className={`tab ${activeTab === 'usecases' ? 'active' : ''}`}
                 onClick={() => setActiveTab('usecases')}
               >
-                Use Cases
+                {t('capabilityModal.useCases')}
               </button>
             </div>
 
             <div className="tab-content">
-              {activeTab === 'features' ? (
-                capability?.features?.length > 0 ? (
-                  <ul>
-                    {capability.features.map((f, i) => (
-                      <li key={i}>{f}</li>
-                    ))}
-                  </ul>
-                ) : (
-                  <p className="tab-fallback">No features listed.</p>
-                )
-              ) : (
-                capability?.useCases?.length > 0 ? (
-                  <ul>
-                    {capability.useCases.map((u, i) => (
-                      <li key={i}>{u}</li>
-                    ))}
-                  </ul>
-                ) : (
-                  <p className="tab-fallback">No use cases listed.</p>
-                )
-              )}
+              {activeTab === 'features'
+                ? renderList(capability.features, 'capabilityModal.noFeatures')
+                : renderList(capability.useCases, 'capabilityModal.noUseCases')}
             </div>
           </motion.div>
         </motion.div>

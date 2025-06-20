@@ -2,15 +2,131 @@
   "navbar": {
     "home": "Home",
     "ai_chat": "AI Chat",
+    "form": "Form",
     "capabilities": "Capabilities",
     "analytics": "Analytics",
-    "form": "Form",
     "contact": "Contact"
   },
+
+  "brand": "Codepackers Software Solutions",
+
   "chatbot": {
+    "header": "Paul - My Enterprise AI Agent",
+    "thankyou": "Thanks! Our team will get back to you soon.",
+    "inputPlaceholder": "Type your message...",
+    "send": "Send",
     "welcome": "Hi! How can I help you today?",
     "option1": "Product Information",
     "option2": "Pricing Details",
     "option3": "Speak to Support"
+  },
+
+  "floatingChatbot": {
+    "welcome": "Hi there! I'm your AI assistant. How can I help you today?",
+    "noReply": "Sorry, I couldn't process that. Please try again.",
+    "error": "Oops! Something went wrong. Please try again later.",
+    "tooltip": "Start a chat with Paul",
+    "header": "Paul - Codepackers AI Agent",
+    "inputPlaceholder": "Type your message...",
+    "send": "Send"
+  },
+
+  "aiChatCarousel": {
+    "title": "Paul - My Enterprise AI Agent",
+    "subtitle": "Multilingual",
+    "placeholder": "Type your query",
+    "messages": {
+      "0": "Show me the Q3 sales report for the Delhi region",
+      "1": "I've found the Q3 sales report for Delhi. The region showed 23% growth with ₹2.4 crores in revenue. Would you like me to break this down by product categories?",
+      "2": "Please, provide me breakdown of top three product categories"
+    }
+  },
+
+  "capabilities": {
+    "heading": "Codepackers Software Solutions",
+    "ai": {
+      "title": "AI Conversational Agents",
+      "description": "Designing human-like AI chatbots and voice assistants for seamless user interactions.",
+      "features": ["Scalable AI architecture", "Multi-channel support", "Natural language understanding"],
+      "useCases": ["Automated customer service", "Internal knowledge bots", "Voice AI for accessibility"]
+    },
+    "web": {
+      "title": "Web & Mobile Apps",
+      "description": "Building cross-platform applications with modern UI/UX and scalable backend.",
+      "features": ["React Native and PWA support", "Responsive UI/UX", "Secure authentication and APIs"],
+      "useCases": ["eCommerce apps", "CRM systems", "Event booking platforms"]
+    },
+    "db": {
+      "title": "Database Management Systems",
+      "description": "Solutions for Task, Health, HR, and Customer Relations management.",
+      "features": ["MySQL, PostgreSQL, MongoDB", "Data backups and restore", "Role-based access control"],
+      "useCases": ["HR data systems", "Inventory tracking", "CRM solutions"]
+    },
+    "voice": {
+      "title": "Voice-first & AI Apps",
+      "description": "Building next-gen voice-command powered apps integrated with smart AI.",
+      "features": ["Voice recognition SDKs", "Text-to-speech integration", "Voice-triggered workflows"],
+      "useCases": ["Accessibility tools", "Smart home apps", "Voice-enabled surveys"]
+    },
+    "integration": {
+      "title": "Systems Integration",
+      "description": "Connecting tools, platforms, and databases into a unified smart ecosystem.",
+      "features": ["REST & GraphQL APIs", "SSO (Single Sign-On)", "Real-time data sync"],
+      "useCases": ["ERP/CRM integration", "IoT dashboards", "Data pipelines"]
+    },
+    "analytics": {
+      "title": "Data Analytics",
+      "description": "Visualizing data and extracting insights using dashboards and AI-driven analysis.",
+      "features": ["BI dashboards", "Custom KPIs", "Automated data cleaning"],
+      "useCases": ["Sales analytics", "User behavior tracking", "Forecasting & predictions"]
+    }
+  },
+
+  "capabilityModal": {
+    "features": "Features",
+    "useCases": "Use Cases",
+    "noFeatures": "No features listed.",
+    "noUseCases": "No use cases listed."
+  },
+
+  "mediaCarousel": {
+    "imageAlt": "media image",
+    "videoFallback": "Sorry, your browser doesn't support embedded videos.",
+    "customTitle": "We Build Scalable Systems",
+    "customDesc": "Custom software engineered for performance, reliability, and scale — powered by CodePackers."
+  },
+
+  "form": {
+    "heading": "Get Access to Our PDF",
+    "name": "Your Name",
+    "email": "Your Email",
+    "phone": "Your Phone Number",
+    "submit": "Submit",
+    "submitting": "Submitting...",
+    "success_message": "Thank you! You can now download the PDF:",
+    "download_pdf": "Download PDF",
+    "no_pdf": "(No PDF available - backend might not be reachable.)",
+    "submit_another": "Submit Another Response",
+    "errors": {
+      "invalid_name": "Name must not contain numbers.",
+      "invalid_email": "Please enter a valid email address.",
+      "invalid_phone": "Phone number must be exactly 10 digits.",
+      "fallback": "⚠️ Not able to connect to backend. Showing dummy form success."
+    }
+  },
+
+  "hero": {
+    "title": "Experience",
+    "subtitle": "Innovative AI-first solutions & platform showcase"
+  },
+
+  "analytics": {
+    "heading": "Analytics Overview"
+  },
+
+  "contact": {
+    "heading": "Contact Us",
+    "email": "Email",
+    "phone": "Phone"
   }
 }
