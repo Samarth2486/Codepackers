@@ -3,13 +3,13 @@ import './AIChatCarousel.css';
 import { useTranslation } from 'react-i18next';
 
 const AIChatCarousel = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
 
-  const messages = [
+  const messages = React.useMemo(() => [
     { sender: 'user', text: t('aiChatCarousel.messages.0') },
     { sender: 'ai', text: t('aiChatCarousel.messages.1') },
     { sender: 'user', text: t('aiChatCarousel.messages.2') },
-  ];
+  ], [t]);
 
   const HUMAN_TYPING_SPEED = 100;
   const BOT_TYPING_SPEED = 20;
@@ -25,6 +25,7 @@ const AIChatCarousel = () => {
 
   const inputRef = useRef();
 
+  // 🔁 Restart carousel when loopKey or messages change
   useEffect(() => {
     let isCancelled = false;
 
@@ -87,8 +88,16 @@ const AIChatCarousel = () => {
     return () => {
       isCancelled = true;
     };
-  }, [loopKey]);
+  }, [loopKey, messages]);
 
+  // 🆕 Reset the loop when language changes
+  useEffect(() => {
+    setDisplayedMessages([]);
+    setInputText('');
+    setLoopKey((prev) => prev + 1);
+  }, [i18n.language]);
+
+  // ⬇ Scroll input into view as user types
   useEffect(() => {
     if (inputRef.current) {
       inputRef.current.scrollTop = inputRef.current.scrollHeight;
