@@ -6,17 +6,17 @@ from datetime import datetime
 from dotenv import load_dotenv
 from database import collection
 # Gemini import
-import google.generativeai as genai
+from google.generativeai import configure, GenerativeModel
 print(collection)
 # Load environment variables
 load_dotenv()
 
 # Setup Gemini
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
-genai.configure(api_key=GEMINI_API_KEY)
-
+configure(api_key=GEMINI_API_KEY)
 # Load Gemini model
-model = genai.GenerativeModel('gemini-1.5-flash')  # or 'gemini-1.5-pro'
+model = GenerativeModel("gemini-1.5-flash")
+Chat = model.start_chat()
 
 # PDF directory
 PDF_DIR = os.getenv("PDF_DIR", "static/pdfs")
@@ -47,8 +47,8 @@ def chat():
             return jsonify({"error": "No message provided"}), 400
 
         # Send message to Gemini
-        response = model.generate_content(user_message)
-        bot_reply = response.text
+        response = Chat.send_message(user_message)
+        bot_reply=response.text
         collection.insert_one({"query": user_message, "response": bot_reply})
 
         # Find the document
