@@ -21,17 +21,20 @@ const Navbar = () => {
   return (
     <nav className="navbar">
       <div className="navbar-container">
-        <div
-          className="navbar-logo"
-          onClick={() => scrollToSection('hero')}
-          translate="no"
-        >
-          <span style={{ color: '#1f3c88', fontWeight: 700 }}>
-            {t('brand')}
-          </span>
+        {/* Top row: Brand full width centered */}
+        <div className="navbar-top">
+          <div
+            className="navbar-logo"
+            onClick={() => scrollToSection('hero')}
+            translate="no"
+          >
+            <span style={{ color: '#1f3c88', fontWeight: 700 }}>
+              {t('brand')}
+            </span>
+          </div>
         </div>
 
-        {/* ✅ Grouping right-side items */}
+        {/* Second row: Right side icons */}
         <div className="navbar-right">
           <div className="navbar-links">
             <button onClick={() => scrollToSection('hero')}>{t('navbar.home')}</button>
