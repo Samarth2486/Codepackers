@@ -24,7 +24,6 @@
   -webkit-overflow-scrolling: touch;
 }
 
-
 .chat-header {
   display: flex;
   align-items: center;
@@ -290,12 +289,11 @@
     max-height: 200px;
     line-height: 1.5;
     word-break: break-word;
-
-    /* Remove border or shadow that might cause the grey line */
-    border: 1px solid #ccc !important; /* keep border as is */
+    border: 1px solid #ccc !important;
     box-shadow: none !important;
     outline: none !important;
     background-clip: padding-box;
+    margin-top: -1px; /* Added to prevent the grey line */
   }
 
   .chat-bubble-wrapper {
@@ -313,11 +311,11 @@
     flex-direction: row;
     gap: 6px;
     background-color: #f8f5fc !important;
-    /* Add this to explicitly remove any border or line */
     border: none !important;
     outline: none !important;
+    padding-top: 0; /* Added to prevent the grey line */
+    padding-bottom: 0; /* Added to prevent the grey line */
   }
-
 
   .send-btn {
     width: 36px;
