@@ -18,10 +18,11 @@ body {
 .navbar-inner {
   max-width: 1100px;
   margin: 0 auto;
-  padding: 0.6rem 1.5rem;
+  padding: 0.5rem 1rem;
   display: flex;
   align-items: center;
   justify-content: space-between;
+  height: 56px;
 }
 
 .navbar-logo {
@@ -31,6 +32,7 @@ body {
   cursor: pointer;
   transition: all 0.3s;
   white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .navbar-logo span {
@@ -108,6 +110,10 @@ body {
   cursor: pointer;
   gap: 5px;
   margin-left: 0.5rem;
+  width: 32px;
+  height: 32px;
+  justify-content: center;
+  align-items: center;
 }
 
 .navbar-toggle span {
@@ -130,9 +136,15 @@ body {
   top: 100%;
   left: 0;
   right: 0;
-  padding: 1rem 2rem;
+  padding: 1rem 2rem 1rem 1.2rem;
   box-shadow: 0 4px 12px rgba(0,0,0,0.04);
   z-index: 1010;
+  animation: slideDown 0.2s ease;
+}
+
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-10px);}
+  to   { opacity: 1; transform: translateY(0);}
 }
 
 .mobile-menu button {
@@ -176,7 +188,7 @@ body {
 /* Responsive */
 @media screen and (max-width: 900px) {
   .navbar-inner {
-    padding: 0.6rem 1rem;
+    padding: 0.5rem 0.7rem;
     max-width: 98vw;
   }
   .navbar-links {
@@ -186,7 +198,8 @@ body {
 
 @media screen and (max-width: 768px) {
   .navbar-inner {
-    padding: 0.6rem 0.7rem;
+    padding: 0.5rem 0.5rem;
+    height: 52px;
   }
   .navbar-links {
     display: none;
@@ -194,13 +207,27 @@ body {
   .navbar-toggle {
     display: flex;
   }
+  .language-switcher {
+    gap: 0.1rem;
+    padding: 2px 3px;
+  }
 }
 
 @media screen and (max-width: 500px) {
   .navbar-inner {
-    padding: 0.5rem 0.3rem;
+    padding: 0.4rem 0.2rem;
+    height: 48px;
   }
   .navbar-logo {
-    font-size: 1rem;
+    font-size: 0.97rem;
+  }
+  .language-switcher button {
+    padding: 2px 5px;
+    font-size: 0.76rem;
+  }
+  .navbar-toggle {
+    width: 28px;
+    height: 28px;
   }
 }
+
