@@ -290,6 +290,12 @@
     max-height: 200px;
     line-height: 1.5;
     word-break: break-word;
+
+    /* Remove border or shadow that might cause the grey line */
+    border: 1px solid #ccc !important; /* keep border as is */
+    box-shadow: none !important;
+    outline: none !important;
+    background-clip: padding-box;
   }
 
   .chat-bubble-wrapper {
@@ -300,16 +306,18 @@
   }
 
   .chat-input-area {
+    border-top: none !important;
     border-bottom: none !important;
+    box-shadow: none !important;
     margin-bottom: -1px;
     flex-direction: row;
     gap: 6px;
     background-color: #f8f5fc !important;
-    border-top: none !important;
-    box-shadow: none !important;
-    z-index: 2;
-    padding-top: 2px !important; /* ✅ Aligns mobile fix too */
+    /* Add this to explicitly remove any border or line */
+    border: none !important;
+    outline: none !important;
   }
+
 
   .send-btn {
     width: 36px;
