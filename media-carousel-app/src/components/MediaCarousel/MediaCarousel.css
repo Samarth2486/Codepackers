@@ -6,6 +6,7 @@
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
 }
 
+/* Swiper Container & Slide */
 .swiper,
 .swiper-slide {
   width: 100%;
@@ -16,6 +17,7 @@
   background-color: #000;
 }
 
+/* Media Items (Images/Videos) */
 .media-item {
   width: 100%;
   height: 100%;
@@ -30,7 +32,7 @@
   box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
 }
 
-/* Iframe styling */
+/* Iframe Styling */
 .iframe-wrapper {
   width: 100%;
   aspect-ratio: 16 / 9;
@@ -85,18 +87,102 @@
 .custom-slide h2 {
   font-size: 2rem;
   margin-bottom: 1rem;
-  color: white;
   font-weight: bold;
+  color: white;
 }
 
 .custom-slide p {
   font-size: 1.2rem;
   line-height: 1.6;
-  color: white;
   max-width: 600px;
+  color: white;
 }
 
-/* Swiper Dots */
+/* Caption */
+.slide-caption {
+  text-align: center;
+  color: #fff;
+  background: rgba(0, 0, 0, 0.4);
+  font-size: 1rem;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  margin: 0.5rem auto 0;
+  max-width: 90%;
+}
+
+/* Outer Carousel Controls */
+.carousel-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 1000px;
+  margin: 0 auto 1rem;
+  padding: 0 1rem;
+}
+
+.carousel-controls button {
+  background: var(--primary);
+  color: white;
+  font-size: 1rem;
+  padding: 0.5rem 1.2rem;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: background 0.3s ease, transform 0.2s ease;
+}
+
+.carousel-controls button:hover {
+  background: var(--accent);
+  transform: scale(1.05);
+}
+
+/* Inner Controls (on each slide) */
+.media-slide-wrapper {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.inner-carousel-controls {
+  position: absolute;
+  bottom: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.35);
+  padding: 0.4rem 1rem;
+  border-radius: 30px;
+  display: flex;
+  gap: 1.2rem;
+  align-items: center;
+  z-index: 5;
+}
+
+.inner-carousel-controls button {
+  background: transparent;
+  border: none;
+  color: #fff;
+  font-size: 1.2rem;
+  cursor: pointer;
+  transition: transform 0.2s ease, color 0.3s ease;
+}
+
+.inner-carousel-controls button:hover {
+  transform: scale(1.2);
+  color: var(--accent);
+}
+
+.inner-carousel-controls button:active {
+  transform: scale(0.85);
+}
+
+/* Hide Default Swiper Controls */
+.swiper-button-next,
+.swiper-button-prev,
+.swiper-pagination-bullet {
+  display: none !important;
+}
+
+/* Swiper Dots Styling (in case you re-enable them later) */
 .swiper-pagination-bullet {
   background: #1f3c88;
   opacity: 0.4;
@@ -107,25 +193,15 @@
   opacity: 1;
 }
 
-/* Swiper Arrows */
-.swiper-button-next,
-.swiper-button-prev {
-  color: white;
-  background-color: rgba(0, 0, 0, 0.4);
-  padding: 1rem;
-  border-radius: 50%;
-  transition: background 0.3s;
-}
-
-.swiper-button-next:hover,
-.swiper-button-prev:hover {
-  background-color: rgba(0, 0, 0, 0.8);
-}
-
-/* Responsive */
+/* Responsive Styling */
 @media (max-width: 768px) {
   .swiper,
   .swiper-slide {
+    aspect-ratio: 4 / 3;
+    min-height: 220px;
+  }
+
+  .iframe-wrapper {
     aspect-ratio: 4 / 3;
     min-height: 220px;
   }
@@ -143,26 +219,7 @@
     height: 28px;
   }
 
-  .iframe-wrapper {
-    aspect-ratio: 4 / 3;
-    min-height: 220px;
-  }
-
   .media-item {
     object-fit: contain;
   }
-}
-
-/* Caption */
-.slide-caption {
-  text-align: center;
-  color: #fff;
-  background: rgba(0, 0, 0, 0.4);
-  font-size: 1rem;
-  padding: 0.5rem 1rem;
-  border-radius: 8px;
-  margin-top: 0.5rem;
-  max-width: 90%;
-  margin-left: auto;
-  margin-right: auto;
 }
