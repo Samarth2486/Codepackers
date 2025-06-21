@@ -22,10 +22,10 @@ const AIChatCarousel = () => {
   const [botTyping, setBotTyping] = useState(false);
   const [sendClicked, setSendClicked] = useState(false);
   const [loopKey, setLoopKey] = useState(0);
+  const [showPause, setShowPause] = useState(false);
 
   const inputRef = useRef();
 
-  // 🔁 Restart carousel when loopKey or messages change
   useEffect(() => {
     let isCancelled = false;
 
@@ -36,6 +36,7 @@ const AIChatCarousel = () => {
 
         if (currentMsg.sender === 'ai') {
           setBotTyping(true);
+          setShowPause(true);
           await new Promise((r) => setTimeout(r, BOT_TYPING_INDICATOR_DELAY));
           setBotTyping(false);
 
@@ -54,6 +55,7 @@ const AIChatCarousel = () => {
             });
             await new Promise((r) => setTimeout(r, BOT_TYPING_SPEED));
           }
+          setShowPause(false);
         }
 
         if (currentMsg.sender === 'user') {
@@ -90,14 +92,12 @@ const AIChatCarousel = () => {
     };
   }, [loopKey, messages]);
 
-  // 🆕 Reset the loop when language changes
   useEffect(() => {
     setDisplayedMessages([]);
     setInputText('');
     setLoopKey((prev) => prev + 1);
   }, [i18n.language]);
 
-  // ⬇ Scroll input into view as user types
   useEffect(() => {
     if (inputRef.current) {
       inputRef.current.scrollTop = inputRef.current.scrollHeight;
@@ -145,8 +145,15 @@ const AIChatCarousel = () => {
           )}
         </div>
 
-        <button className={`send-btn ${sendClicked ? 'clicked' : ''}`} disabled>
-          ➤
+        <button 
+          className={`send-btn ${sendClicked ? 'clicked' : ''}`} 
+          disabled
+        >
+          {showPause ? (
+            <svg width="18" height="18" viewBox="0 0 18 18" className="pause-square-icon">
+              <rect x="3" y="3" width="12" height="12" rx="3" fill="white"/>
+            </svg>
+          ) : '➤'}
         </button>
       </div>
     </div>

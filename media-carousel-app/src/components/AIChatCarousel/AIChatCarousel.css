@@ -239,6 +239,21 @@
   animation: pulseSend 0.4s ease forwards;
 }
 
+/* Square pause icon styling */
+.pause-square-icon {
+  display: block;
+  width: 18px;
+  height: 18px;
+}
+
+/* Mobile styles for pause button */
+@media (max-width: 600px) {
+  .pause-square-icon {
+    width: 14px;
+    height: 14px;
+  }
+}
+
 @keyframes pulseSend {
   0% {
     transform: scale(1);
@@ -260,7 +275,6 @@
     padding: 12px;
     border-radius: 12px;
     height: auto;
-    /* Complete border removal */
     border: none !important;
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08) !important;
   }
@@ -285,23 +299,19 @@
   }
 
   .fake-input {
-    /* Input field styling */
     border: 1px solid #ccc !important;
     margin-top: 0 !important;
-    /* Remove any potential inner shadows */
     box-shadow: none !important;
     -webkit-box-shadow: none !important;
   }
 
   .chat-bubble-wrapper {
-    /* Ensure no overflow artifacts */
     overflow: hidden !important;
     padding-bottom: 0 !important;
     margin-bottom: 0 !important;
   }
 
   .chat-input-area {
-    /* Complete line removal */
     border: none !important;
     outline: none !important;
     box-shadow: none !important;
