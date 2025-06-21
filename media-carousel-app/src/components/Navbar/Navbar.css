@@ -24,6 +24,7 @@ body {
   justify-content: space-between;
   min-height: 56px;
   min-width: 0;
+  height: 56px; /* Added fixed height */
 }
 
 .navbar-logo {
@@ -37,6 +38,9 @@ body {
   line-height: 1.2;
   word-wrap: break-word;
   hyphens: auto;
+  display: flex;
+  align-items: center; /* Added to center vertically */
+  height: 100%; /* Added to use full height */
 }
 
 .navbar-logo span {
@@ -52,6 +56,8 @@ body {
   gap: 1.2rem;
   flex-shrink: 1;
   overflow: hidden;
+  align-items: center; /* Added to center vertically */
+  height: 100%; /* Added to use full height */
 }
 
 .navbar-links button {
@@ -64,6 +70,9 @@ body {
   transition: color 0.3s;
   padding: 0 2px;
   white-space: nowrap;
+  display: flex;
+  align-items: center; /* Added to center vertically */
+  height: 100%; /* Added to use full height */
 }
 
 .navbar-links button:hover {
@@ -75,6 +84,7 @@ body {
   align-items: center;
   gap: 0.7rem;
   flex-shrink: 0;
+  height: 100%; /* Added to use full height */
 }
 
 .language-switcher {
@@ -86,6 +96,7 @@ body {
   padding: 3px 5px;
   flex-shrink: 0;
   margin-left: 0.7rem;
+  height: fit-content; /* Added to maintain proper height */
 }
 
 .language-switcher button {
@@ -216,9 +227,10 @@ body {
   .navbar-inner {
     padding: 0.5rem 0.5rem;
     min-height: 52px;
-    align-items: flex-start;
-    padding-top: 0.3rem;
-    padding-bottom: 0.3rem;
+    height: 52px; /* Added fixed height */
+    align-items: center; /* Changed from flex-start to center */
+    padding-top: 0;
+    padding-bottom: 0;
   }
   .navbar-links {
     display: none !important;
@@ -241,9 +253,10 @@ body {
   .navbar-inner {
     padding: 0.3rem 0.1rem;
     min-height: 48px;
-    align-items: flex-start;
-    padding-top: 0.2rem;
-    padding-bottom: 0.2rem;
+    height: 48px; /* Added fixed height */
+    align-items: center; /* Changed from flex-start to center */
+    padding-top: 0;
+    padding-bottom: 0;
   }
   .navbar-logo {
     font-size: 0.85rem;
@@ -268,9 +281,10 @@ body {
   .navbar-inner {
     padding: 0.2rem 0.05rem;
     min-height: 44px;
-    align-items: flex-start;
-    padding-top: 0.1rem;
-    padding-bottom: 0.1rem;
+    height: 44px; /* Added fixed height */
+    align-items: center; /* Changed from flex-start to center */
+    padding-top: 0;
+    padding-bottom: 0;
   }
   .navbar-logo {
     font-size: 0.8rem;

@@ -50,7 +50,7 @@
   display: block;
 }
 
-/* Custom Slide */
+/* Custom Slide - Fixed Version */
 .custom-slide {
   display: flex;
   align-items: center;
@@ -59,6 +59,7 @@
   text-align: center;
   background: linear-gradient(135deg, #1f3c88, #3b5998);
   height: 100%;
+  box-sizing: border-box; /* Added to prevent overflow */
 }
 
 .custom-content {
@@ -67,6 +68,9 @@
   align-items: center;
   justify-content: center;
   color: white;
+  width: 100%;
+  height: 100%;
+  padding: 20px 0; /* Added padding to prevent cutting */
 }
 
 .custom-content .icon-stack {
@@ -75,6 +79,7 @@
   justify-content: center;
   align-items: center;
   margin-bottom: 1.5rem;
+  flex-wrap: wrap; /* Added to handle overflow */
 }
 
 .custom-content .icon-stack svg {
@@ -82,6 +87,7 @@
   height: 40px;
   color: white;
   opacity: 0.9;
+  flex-shrink: 0; /* Prevent icons from shrinking */
 }
 
 .custom-slide h2 {
@@ -193,7 +199,7 @@
   opacity: 1;
 }
 
-/* Responsive Styling */
+/* Responsive Styling - Fixed Mobile Issues */
 @media (max-width: 768px) {
   .swiper,
   .swiper-slide {
@@ -206,12 +212,28 @@
     min-height: 220px;
   }
 
+  .custom-slide {
+    padding: 1.5rem; /* Reduced padding for mobile */
+  }
+
+  .custom-content {
+    padding: 10px 0; /* Adjusted padding */
+    justify-content: space-around; /* Better space distribution */
+  }
+
   .custom-slide h2 {
     font-size: 1.5rem;
+    margin-bottom: 0.8rem;
   }
 
   .custom-slide p {
     font-size: 1rem;
+    margin-bottom: 0.8rem;
+  }
+
+  .custom-content .icon-stack {
+    gap: 1rem;
+    margin-bottom: 1rem;
   }
 
   .custom-content .icon-stack svg {
@@ -221,5 +243,30 @@
 
   .media-item {
     object-fit: contain;
+  }
+}
+
+/* Extra Small Devices */
+@media (max-width: 480px) {
+  .custom-slide {
+    padding: 1rem; /* Further reduced padding */
+  }
+
+  .custom-content .icon-stack {
+    gap: 0.8rem;
+    margin-bottom: 0.8rem;
+  }
+
+  .custom-content .icon-stack svg {
+    width: 24px;
+    height: 24px;
+  }
+
+  .custom-slide h2 {
+    font-size: 1.3rem;
+  }
+
+  .custom-slide p {
+    font-size: 0.9rem;
   }
 }
