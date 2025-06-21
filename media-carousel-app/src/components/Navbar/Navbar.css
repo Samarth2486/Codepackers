@@ -64,6 +64,7 @@ body {
   flex-direction: column;
   cursor: pointer;
   gap: 5px;
+  z-index: 1010; /* higher than others just in case */
 }
 
 .navbar-toggle span {
@@ -126,6 +127,18 @@ body {
     display: flex;
     flex-direction: column;
   }
+  .navbar-right {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    margin-top: 0.5rem;
+    gap: 0.5rem; 
+  }
+
+  .language-switcher {
+    margin-left: auto;
+  }
 }
 .language-switcher {
   display: flex;
@@ -167,4 +180,10 @@ body {
 
 .navbar-logo:hover {
   transform: scale(1.03);
+}
+.navbar-right {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap; /* ensures wrap on mobile */
 }

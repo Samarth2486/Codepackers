@@ -26,43 +26,46 @@ const Navbar = () => {
           onClick={() => scrollToSection('hero')}
           translate="no"
         >
-          {/* ✅ Use full brand from translation only */}
           <span style={{ color: '#1f3c88', fontWeight: 700 }}>
             {t('brand')}
           </span>
         </div>
 
-        <div className="navbar-links">
-          <button onClick={() => scrollToSection('hero')}>{t('navbar.home')}</button>
-          <button onClick={() => scrollToSection('ai-form')}>{t('navbar.ai_chat')}</button>
-          <button onClick={() => scrollToSection('ai-form')}>{t('navbar.form')}</button>
-          <button onClick={() => scrollToSection('capabilities')}>{t('navbar.capabilities')}</button>
-          <button onClick={() => scrollToSection('analytics')}>{t('navbar.analytics')}</button>
-          <button onClick={() => scrollToSection('contact')}>{t('navbar.contact')}</button>
-        </div>
+        {/* ✅ Grouping right-side items */}
+        <div className="navbar-right">
+          <div className="navbar-links">
+            <button onClick={() => scrollToSection('hero')}>{t('navbar.home')}</button>
+            <button onClick={() => scrollToSection('ai-form')}>{t('navbar.ai_chat')}</button>
+            <button onClick={() => scrollToSection('ai-form')}>{t('navbar.form')}</button>
+            <button onClick={() => scrollToSection('capabilities')}>{t('navbar.capabilities')}</button>
+            <button onClick={() => scrollToSection('analytics')}>{t('navbar.analytics')}</button>
+            <button onClick={() => scrollToSection('contact')}>{t('navbar.contact')}</button>
+          </div>
 
-        <div className="language-switcher">
-          <button
-            className={i18n.language === 'en' ? 'active' : ''}
-            onClick={() => changeLanguage('en')}
-          >
-            EN
-          </button>
-          <button
-            className={i18n.language === 'es' ? 'active' : ''}
-            onClick={() => changeLanguage('es')}
-          >
-            ES
-          </button>
-        </div>
+          <div className="language-switcher">
+            <button
+              className={i18n.language === 'en' ? 'active' : ''}
+              onClick={() => changeLanguage('en')}
+            >
+              EN
+            </button>
+            <button
+              className={i18n.language === 'es' ? 'active' : ''}
+              onClick={() => changeLanguage('es')}
+            >
+              ES
+            </button>
+          </div>
 
-        <div className="navbar-toggle" onClick={() => setMenuOpen(!menuOpen)}>
-          <span />
-          <span />
-          <span />
+          <div className="navbar-toggle" onClick={() => setMenuOpen(!menuOpen)}>
+            <span />
+            <span />
+            <span />
+          </div>
         </div>
       </div>
 
+      {/* Mobile Menu */}
       {menuOpen && (
         <div className="mobile-menu open">
           <button onClick={() => scrollToSection('hero')}>{t('navbar.home')}</button>
