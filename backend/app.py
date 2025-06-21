@@ -4,10 +4,10 @@ from generate_pdf import create_pdf
 import os,json,pytz
 from datetime import datetime
 from dotenv import load_dotenv
-
+from database import collection
 # Gemini import
 import google.generativeai as genai
-
+print(collection)
 # Load environment variables
 load_dotenv()
 
@@ -49,6 +49,11 @@ def chat():
         # Send message to Gemini
         response = model.generate_content(user_message)
         bot_reply = response.text
+        collection.insert_one({"query": user_message, "response": bot_reply})
+
+        # Find the document
+        result = collection.find_one({"query": user_message})
+        print(result)
 
         return jsonify({"reply": bot_reply})
 

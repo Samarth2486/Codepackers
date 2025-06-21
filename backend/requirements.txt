@@ -11,3 +11,4 @@ flask_cors
 python-dotenv==1.0.1
 pytz
 google-generativeai
+pymongo[srv]
