@@ -23,6 +23,7 @@ body {
   align-items: center;
   justify-content: space-between;
   height: 56px;
+  min-height: 56px;
 }
 
 .navbar-logo {
@@ -33,6 +34,7 @@ body {
   transition: all 0.3s;
   white-space: nowrap;
   flex-shrink: 0;
+  overflow: hidden;
 }
 
 .navbar-logo span {
@@ -46,6 +48,8 @@ body {
 .navbar-links {
   display: flex;
   gap: 1.2rem;
+  flex-shrink: 1;
+  overflow: hidden;
 }
 
 .navbar-links button {
@@ -57,6 +61,7 @@ body {
   cursor: pointer;
   transition: color 0.3s;
   padding: 0 2px;
+  white-space: nowrap;
 }
 
 .navbar-links button:hover {
@@ -67,6 +72,7 @@ body {
   display: flex;
   align-items: center;
   gap: 0.7rem;
+  flex-shrink: 0;
 }
 
 .language-switcher {
@@ -76,6 +82,7 @@ body {
   background: #f1f3f5;
   border-radius: 12px;
   padding: 3px 5px;
+  flex-shrink: 0;
 }
 
 .language-switcher button {
@@ -89,6 +96,7 @@ body {
   padding: 4px 8px;
   border-radius: 8px;
   transition: all 0.2s;
+  white-space: nowrap;
 }
 
 .language-switcher button:hover {
@@ -114,6 +122,8 @@ body {
   height: 32px;
   justify-content: center;
   align-items: center;
+  flex-shrink: 0;
+  position: relative;
 }
 
 .navbar-toggle span {
@@ -122,6 +132,7 @@ body {
   background-color: #1f3c88;
   border-radius: 2px;
   display: block;
+  transition: all 0.2s ease;
 }
 
 .mobile-menu {
@@ -200,12 +211,13 @@ body {
   .navbar-inner {
     padding: 0.5rem 0.5rem;
     height: 52px;
+    min-height: 52px;
   }
   .navbar-links {
-    display: none;
+    display: none !important;
   }
   .navbar-toggle {
-    display: flex;
+    display: flex !important;
   }
   .language-switcher {
     gap: 0.1rem;
@@ -217,17 +229,45 @@ body {
   .navbar-inner {
     padding: 0.4rem 0.2rem;
     height: 48px;
+    min-height: 48px;
   }
   .navbar-logo {
-    font-size: 0.97rem;
+    font-size: 0.95rem;
+    max-width: 60%;
+  }
+  .language-switcher {
+    gap: 0;
+    padding: 2px 2px;
   }
   .language-switcher button {
-    padding: 2px 5px;
-    font-size: 0.76rem;
+    padding: 2px 4px;
+    font-size: 0.75rem;
+    margin: 0 1px;
   }
   .navbar-toggle {
     width: 28px;
     height: 28px;
+    margin-left: 0.3rem;
+  }
+  .navbar-toggle span {
+    width: 20px;
+    height: 2px;
+  }
+}
+
+@media screen and (max-width: 400px) {
+  .navbar-inner {
+    padding: 0.3rem 0.1rem;
+    height: 46px;
+    min-height: 46px;
+  }
+  .navbar-logo {
+    font-size: 0.9rem;
+    max-width: 55%;
+  }
+  .language-switcher button {
+    padding: 1px 3px;
+    font-size: 0.7rem;
   }
 }
 
