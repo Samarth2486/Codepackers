@@ -24,7 +24,7 @@ function App() {
 
   const closeModal = () => {
     setIsModalOpen(false);
-    setSelectedCap(null);
+    setTimeout(() => setSelectedCap(null), 500); // Wait for exit animation
   };
 
   const mediaItems = [

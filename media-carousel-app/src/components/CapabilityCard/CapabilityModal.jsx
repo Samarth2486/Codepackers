@@ -5,29 +5,56 @@ import { useTranslation } from 'react-i18next';
 
 const CapabilityModal = ({ isOpen, onClose, capability }) => {
   const [activeTab, setActiveTab] = useState('features');
+  const [isClosing, setIsClosing] = useState(false);
   const modalRef = useRef(null);
   const { t } = useTranslation();
 
-  useEffect(() => {
-    const handleEsc = (e) => {
-      if (e.key === 'Escape') onClose();
-    };
-    document.addEventListener('keydown', handleEsc);
-    return () => document.removeEventListener('keydown', handleEsc);
-  }, [onClose]);
+  // Particle effect state
+  const [particles, setParticles] = useState([]);
 
-  const handleClickOutside = (e) => {
-    if (modalRef.current && !modalRef.current.contains(e.target)) {
-      onClose();
+  const handleClickOutside = (event) => {
+    if (modalRef.current && !modalRef.current.contains(event.target)) {
+      triggerCloseAnimation();
     }
   };
 
-  const renderList = (items, fallbackKey) =>
-    Array.isArray(items) && items.length > 0 ? (
-      <ul>{items.map((item, i) => <li key={i}>{item}</li>)}</ul>
-    ) : (
-      <p className="tab-fallback">{t(fallbackKey)}</p>
-    );
+  const triggerCloseAnimation = () => {
+    setIsClosing(true);
+    
+    // Create particle explosion
+    const newParticles = Array.from({ length: 25 }).map((_, i) => ({
+      id: i,
+      x: Math.random() * 100,
+      y: Math.random() * 100,
+      size: Math.random() * 10 + 5,
+      color: `hsl(${Math.random() * 60 + 200}, 80%, 60%)`,
+      life: Math.random() * 0.7 + 0.3
+    }));
+    setParticles(newParticles);
+
+    // Close after animation completes
+    setTimeout(onClose, 800);
+  };
+
+  useEffect(() => {
+    const handleEsc = (e) => e.key === 'Escape' && triggerCloseAnimation();
+    document.addEventListener('keydown', handleEsc);
+    return () => document.removeEventListener('keydown', handleEsc);
+  }, []);
+
+  // Define renderList function
+  const renderList = (items, fallbackKey) => {
+    if (Array.isArray(items) && items.length > 0) {
+      return (
+        <ul>
+          {items.map((item, i) => (
+            <li key={i}>{item}</li>
+          ))}
+        </ul>
+      );
+    }
+    return <p className="tab-fallback">{t(fallbackKey)}</p>;
+  };
 
   return (
     <AnimatePresence>
@@ -37,23 +64,101 @@ const CapabilityModal = ({ isOpen, onClose, capability }) => {
           onClick={handleClickOutside}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.25 }}
+          exit={{ 
+            opacity: 0,
+            transition: { duration: 0.4 }
+          }}
         >
+          {/* Particle explosion */}
+          {particles.map((particle) => (
+            <motion.div
+              key={particle.id}
+              className="particle"
+              initial={{
+                x: '50%',
+                y: '50%',
+                scale: 1,
+                opacity: 1,
+                backgroundColor: particle.color,
+                width: `${particle.size}px`,
+                height: `${particle.size}px`,
+              }}
+              animate={{
+                x: `${particle.x}%`,
+                y: `${particle.y}%`,
+                scale: [1, 1.5, 0],
+                opacity: [1, 1, 0],
+                rotate: Math.random() * 360
+              }}
+              transition={{
+                duration: particle.life,
+                ease: "easeOut"
+              }}
+            />
+          ))}
+
           <motion.div
             ref={modalRef}
             className="modal-content"
             onClick={(e) => e.stopPropagation()}
-            initial={{ opacity: 0, scale: 0.8, y: -30 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.85, y: 20 }}
-            transition={{ type: 'spring', stiffness: 200, damping: 20 }}
+            initial={{ 
+              opacity: 0,
+              scale: 0.8,
+              y: 50
+            }}
+            animate={{
+              opacity: 1,
+              scale: 1,
+              y: 0,
+              transition: { 
+                duration: 0.5,
+                ease: [0.175, 0.885, 0.32, 1.275]
+              }
+            }}
+            exit={{
+              opacity: 0,
+              scale: isClosing ? [1, 1.2, 0.8] : 0.9,
+              y: isClosing ? [0, -50, 100] : 40,
+              rotateX: isClosing ? [0, 20, -45] : 0,
+              rotateZ: isClosing ? [0, -10, 10] : 0,
+              transition: {
+                duration: 0.8,
+                ease: [0.6, 0.05, 0.5, 0.95],
+                scale: {
+                  times: [0, 0.5, 1],
+                  duration: 0.8
+                },
+                y: {
+                  times: [0, 0.5, 1],
+                  duration: 0.8
+                },
+                rotateX: {
+                  times: [0, 0.5, 1],
+                  duration: 0.8
+                }
+              }
+            }}
           >
-            <button className="close-x" onClick={onClose}>×</button>
+            <motion.button 
+              className="close-x" 
+              onClick={triggerCloseAnimation}
+              initial={{ scale: 0.8 }}
+              animate={{ scale: 1 }}
+              exit={{ 
+                scale: 0,
+                rotate: 180,
+                transition: { duration: 0.3 }
+              }}
+              whileHover={{ scale: 1.2 }}
+              whileTap={{ scale: 0.8 }}
+            >
+              ×
+            </motion.button>
+
             <div className="modal-icon">{capability.icon}</div>
             <h2>{capability.title}</h2>
             <p>{capability.description}</p>
-
+            
             <div className="tabs">
               <button
                 className={`tab ${activeTab === 'features' ? 'active' : ''}`}
