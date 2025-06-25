@@ -1,10 +1,22 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './Navbar.css';
 import { useTranslation } from 'react-i18next';
 
 const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const { t, i18n } = useTranslation();
+  const [selectedLang, setSelectedLang] = useState('en'); // Default to English
+
+  // Sync selectedLang with i18n.language always
+  useEffect(() => {
+    let lang = i18n.language || localStorage.getItem('language') || 'en';
+    if (lang.length > 2) lang = lang.slice(0, 2); // handle 'en-US', 'es-ES', etc.
+    setSelectedLang(lang);
+    localStorage.setItem('language', lang);
+    if (i18n.language !== lang) {
+      i18n.changeLanguage(lang);
+    }
+  }, [i18n.language, i18n]);
 
   const scrollToSection = (id) => {
     const section = document.getElementById(id);
@@ -16,6 +28,8 @@ const Navbar = () => {
 
   const changeLanguage = (lng) => {
     i18n.changeLanguage(lng);
+    localStorage.setItem('language', lng);
+    setSelectedLang(lng);
   };
 
   return (
@@ -46,13 +60,13 @@ const Navbar = () => {
         <div className="navbar-actions">
           <div className="language-switcher">
             <button
-              className={i18n.language === 'en' ? 'active' : ''}
+              className={selectedLang === 'en' ? 'active' : ''}
               onClick={() => changeLanguage('en')}
             >
               EN
             </button>
             <button
-              className={i18n.language === 'es' ? 'active' : ''}
+              className={selectedLang === 'es' ? 'active' : ''}
               onClick={() => changeLanguage('es')}
             >
               ES
@@ -77,13 +91,13 @@ const Navbar = () => {
           <button onClick={() => scrollToSection('contact')}>{t('navbar.contact')}</button>
           <div className="mobile-lang">
             <button
-              className={i18n.language === 'en' ? 'active' : ''}
+              className={selectedLang === 'en' ? 'active' : ''}
               onClick={() => changeLanguage('en')}
             >
               EN
             </button>
             <button
-              className={i18n.language === 'es' ? 'active' : ''}
+              className={selectedLang === 'es' ? 'active' : ''}
               onClick={() => changeLanguage('es')}
             >
               ES
