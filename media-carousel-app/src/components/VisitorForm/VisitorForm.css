@@ -27,32 +27,96 @@
   gap: 1rem;
 }
 
-.visitor-form input {
+.visitor-form input,
+.phone-input-group select,
+.phone-input-group input {
   padding: 0.9rem;
   border: 1px solid #ccc;
   border-radius: 10px;
   font-size: 1rem;
+  width: 100%;
 }
 
-.visitor-form input:focus {
+.visitor-form input:focus,
+.phone-input-group select:focus,
+.phone-input-group input:focus {
   border-color: #1f3c88;
   outline: none;
   box-shadow: 0 0 0 3px rgba(31, 60, 136, 0.2);
 }
 
-.visitor-form button {
+.google-signin-btn,
+.otp-btn,
+.verify-btn,
+.submit-btn,
+.download-btn,
+.reset-btn {
   padding: 0.9rem;
-  background-color: #1f3c88;
   color: white;
   font-size: 1rem;
   border: none;
   border-radius: 10px;
   cursor: pointer;
   font-weight: 600;
+  transition: background-color 0.2s ease;
 }
 
-.visitor-form button:hover {
+.google-signin-btn {
+  background-color: #4285f4;
+}
+
+.google-signin-btn:hover {
+  background-color: #3367d6;
+}
+
+.otp-btn {
+  background-color: #28a745;
+}
+
+.otp-btn:hover {
+  background-color: #218838;
+}
+
+.verify-btn {
+  background-color: #17a2b8;
+}
+
+.verify-btn:hover {
+  background-color: #138496;
+}
+
+.submit-btn {
+  background-color: #1f3c88;
+}
+
+.submit-btn:hover {
   background-color: #3a64e6;
+}
+
+.submit-btn.disabled {
+  background-color: #6c757d;
+  cursor: not-allowed;
+}
+
+.download-btn {
+  background-color: #e91e63;
+  padding: 0.8rem 1.4rem;
+  display: inline-block;
+  margin-top: 0.8rem;
+}
+
+.download-btn:hover {
+  background-color: #d81b60;
+}
+
+.reset-btn {
+  background-color: #6c757d;
+  padding: 0.8rem 1.4rem;
+  margin-top: 0.8rem;
+}
+
+.reset-btn:hover {
+  background-color: #5a6268;
 }
 
 .error {
@@ -71,17 +135,32 @@
   margin-bottom: 1rem;
 }
 
-.download-section button {
-  background-color: #e91e63;
-  padding: 0.8rem 1.4rem;
-  font-size: 1rem;
-  color: #fff;
-  border: none;
-  border-radius: 10px;
-  cursor: pointer;
-  margin-top: 0.8rem;
+.phone-input-group {
+  display: flex;
+  gap: 10px;
 }
 
-.download-section button:hover {
-  background-color: #d81b60;
+.phone-input-group select {
+  flex: 0.3;
+}
+
+.phone-input-group input {
+  flex: 0.7;
+}
+
+.otp-verify-group {
+  display: flex;
+  gap: 10px;
+}
+
+.otp-verify-group input {
+  flex: 0.7;
+}
+
+.otp-verify-group button {
+  flex: 0.3;
+}
+
+.disabled-input {
+  background-color: #f5f5f5;
 }

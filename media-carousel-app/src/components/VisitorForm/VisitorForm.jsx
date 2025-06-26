@@ -1,15 +1,29 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import { useTranslation } from "react-i18next";
+import { auth, googleProvider } from "../../firebase";
+import {
+  signInWithPopup,
+  signInWithPhoneNumber,
+  RecaptchaVerifier,
+} from "firebase/auth";
 import "./VisitorForm.css";
 
 const VisitorForm = () => {
   const [formData, setFormData] = useState({ name: "", email: "", phone: "" });
-  const [formSubmitted, setFormSubmitted] = useState(false);
+  const [countryCode, setCountryCode] = useState("+91");
+  const [rawPhone, setRawPhone] = useState("");
+  const [isGoogleSignedIn, setIsGoogleSignedIn] = useState(false);
+  const [isPhoneVerified, setIsPhoneVerified] = useState(false);
+  const [otpSent, setOtpSent] = useState(false);
+  const [otpCode, setOtpCode] = useState("");
+  const [otpLoading, setOtpLoading] = useState(false);
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
+  const [formSubmitted, setFormSubmitted] = useState(false);
   const [pdfFilename, setPdfFilename] = useState("");
   const { t } = useTranslation();
+  const recaptchaRef = useRef(null);
 
   const API_BASE_URL = process.env.REACT_APP_BACKEND_URL;
 
@@ -20,10 +34,129 @@ const VisitorForm = () => {
       setFormSubmitted(true);
       if (savedPdf) setPdfFilename(savedPdf);
     }
+
+    // ✅ Enable test mode for localhost to avoid recaptcha timeout
+    if (window.location.hostname === "localhost") {
+      try {
+        auth.settings.appVerificationDisabledForTesting = true;
+      } catch (err) {
+        console.warn("Firebase test-mode setup failed:", err.message);
+      }
+    }
+
+    return () => {
+      if (window.recaptchaVerifier) {
+        window.recaptchaVerifier.clear();
+        window.recaptchaVerifier = null;
+      }
+    };
   }, []);
 
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value.trim() });
+  const handleGoogleLogin = async () => {
+    try {
+      const result = await signInWithPopup(auth, googleProvider);
+      const user = result.user;
+      setFormData((prev) => ({
+        ...prev,
+        name: user.displayName || "",
+        email: user.email || "",
+      }));
+      setIsGoogleSignedIn(true);
+      setErrorMsg("");
+    } catch (error) {
+      console.error("Google login failed:", error.message);
+      setErrorMsg("Google Sign-In failed. Try again.");
+    }
+  };
+
+  const setupRecaptcha = () => {
+    if (!window.recaptchaVerifier) {
+      window.recaptchaVerifier = new RecaptchaVerifier(
+        auth,
+        "recaptcha-container",
+        {
+          size: "invisible",
+          callback: (response) => console.log("reCAPTCHA solved"),
+          "expired-callback": () => {
+            setErrorMsg("reCAPTCHA expired. Please try again.");
+            window.recaptchaVerifier = null;
+          },
+        }
+      );
+    }
+    return window.recaptchaVerifier;
+  };
+
+  const sendOTP = async () => {
+    const fullPhone = `${countryCode}${rawPhone}`;
+    const phoneRegex = /^\+\d{10,15}$/;
+
+    if (!phoneRegex.test(fullPhone)) {
+      setErrorMsg("Please enter a valid phone number.");
+      return;
+    }
+
+    setOtpLoading(true);
+    setErrorMsg("");
+
+    try {
+      if (window.recaptchaVerifier) {
+        window.recaptchaVerifier.clear();
+        window.recaptchaVerifier = null;
+      }
+
+      const appVerifier = setupRecaptcha();
+      const confirmationResult = await signInWithPhoneNumber(
+        auth,
+        fullPhone,
+        appVerifier
+      );
+
+      window.confirmationResult = confirmationResult;
+      setOtpSent(true);
+      setFormData((prev) => ({ ...prev, phone: fullPhone }));
+    } catch (err) {
+      if (err.code === "auth/quota-exceeded") {
+        setErrorMsg("SMS quota exceeded. Try again later.");
+      } else if (err.code === "auth/too-many-requests") {
+        setErrorMsg("Too many requests. Try again later.");
+      } else {
+        setErrorMsg(err.message || "Failed to send OTP. Try again.");
+      }
+
+      if (window.recaptchaVerifier) {
+        window.recaptchaVerifier.clear();
+        window.recaptchaVerifier = null;
+      }
+    } finally {
+      setOtpLoading(false);
+    }
+  };
+
+  const verifyOTP = async () => {
+    if (!otpCode || otpCode.length < 6) {
+      setErrorMsg("Please enter a valid 6-digit OTP.");
+      return;
+    }
+
+    setOtpLoading(true);
+    setErrorMsg("");
+
+    try {
+      const result = await window.confirmationResult.confirm(otpCode);
+      setIsPhoneVerified(true);
+      setErrorMsg("");
+    } catch (err) {
+      if (err.code === "auth/invalid-verification-code") {
+        setErrorMsg("Invalid OTP.");
+      } else if (err.code === "auth/code-expired") {
+        setErrorMsg("OTP expired.");
+      } else {
+        setErrorMsg(err.message || "Verification failed.");
+      }
+    } finally {
+      setOtpLoading(false);
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -31,22 +164,8 @@ const VisitorForm = () => {
     setLoading(true);
     setErrorMsg("");
 
-    const nameRegex = /^[^\d]+$/;
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    const phoneRegex = /^\d{10}$/;
-
-    if (!nameRegex.test(formData.name)) {
-      setErrorMsg(t("form.errors.invalid_name"));
-      setLoading(false);
-      return;
-    }
-    if (!emailRegex.test(formData.email)) {
-      setErrorMsg(t("form.errors.invalid_email"));
-      setLoading(false);
-      return;
-    }
-    if (!phoneRegex.test(formData.phone)) {
-      setErrorMsg(t("form.errors.invalid_phone"));
+    if (!isGoogleSignedIn || !isPhoneVerified) {
+      setErrorMsg("Please verify Google and phone before submitting.");
       setLoading(false);
       return;
     }
@@ -66,7 +185,6 @@ const VisitorForm = () => {
       localStorage.setItem("visitorFormSubmitted", "true");
       localStorage.setItem("visitorFormPdf", data.pdf);
     } catch (err) {
-      console.warn("Backend not reachable. Using fallback.", err);
       setErrorMsg(t("form.errors.fallback"));
       setFormSubmitted(true);
       setPdfFilename("");
@@ -78,12 +196,22 @@ const VisitorForm = () => {
   };
 
   const handleReset = () => {
+    setFormData({ name: "", email: "", phone: "" });
+    setRawPhone("");
+    setOtpCode("");
+    setOtpSent(false);
+    setIsGoogleSignedIn(false);
+    setIsPhoneVerified(false);
     setFormSubmitted(false);
+    setPdfFilename("");
+    setErrorMsg("");
     localStorage.removeItem("visitorFormSubmitted");
     localStorage.removeItem("visitorFormPdf");
-    setFormData({ name: "", email: "", phone: "" });
-    setErrorMsg("");
-    setPdfFilename("");
+
+    if (window.recaptchaVerifier) {
+      window.recaptchaVerifier.clear();
+      window.recaptchaVerifier = null;
+    }
   };
 
   return (
@@ -97,33 +225,88 @@ const VisitorForm = () => {
       <h2>{t("form.heading")}</h2>
 
       {!formSubmitted ? (
-        <form onSubmit={handleSubmit} className="visitor-form">
-          <input
-            type="text"
-            name="name"
-            placeholder={t("form.name")}
-            onChange={handleChange}
-            required
-          />
-          <input
-            type="email"
-            name="email"
-            placeholder={t("form.email")}
-            onChange={handleChange}
-            required
-          />
-          <input
-            type="tel"
-            name="phone"
-            placeholder={t("form.phone")}
-            onChange={handleChange}
-            required
-          />
-          <button type="submit" disabled={loading}>
-            {loading ? t("form.submitting") : t("form.submit")}
-          </button>
-          {errorMsg && <p className="error">{errorMsg}</p>}
-        </form>
+        <>
+          {!isGoogleSignedIn && (
+            <button className="google-btn" onClick={handleGoogleLogin}>
+              Sign in with Google
+            </button>
+          )}
+
+          <form onSubmit={handleSubmit} className="visitor-form">
+            <input
+              type="text"
+              name="name"
+              placeholder={t("form.name")}
+              value={formData.name}
+              readOnly
+              required
+            />
+            <input
+              type="email"
+              name="email"
+              placeholder={t("form.email")}
+              value={formData.email}
+              readOnly
+              required
+            />
+            <div className="phone-row">
+              <select
+                value={countryCode}
+                onChange={(e) => setCountryCode(e.target.value)}
+                disabled={isPhoneVerified}
+              >
+                <option value="+91">🇮🇳 +91</option>
+                <option value="+1">🇺🇸 +1</option>
+                <option value="+44">🇬🇧 +44</option>
+                <option value="+61">🇦🇺 +61</option>
+              </select>
+              <input
+                type="tel"
+                placeholder={t("form.phone")}
+                value={rawPhone}
+                onChange={(e) =>
+                  setRawPhone(e.target.value.replace(/\D/g, "").slice(0, 10))
+                }
+                disabled={isPhoneVerified}
+                required
+              />
+            </div>
+
+            {!otpSent && !isPhoneVerified && (
+              <button type="button" onClick={sendOTP} disabled={!rawPhone}>
+                {otpLoading ? "Sending..." : "Send OTP"}
+              </button>
+            )}
+
+            {otpSent && !isPhoneVerified && (
+              <>
+                <input
+                  type="text"
+                  placeholder="Enter 6-digit OTP"
+                  value={otpCode}
+                  onChange={(e) =>
+                    setOtpCode(e.target.value.replace(/\D/g, "").slice(0, 6))
+                  }
+                  required
+                />
+                <button
+                  type="button"
+                  onClick={verifyOTP}
+                  disabled={otpLoading || otpCode.length < 6}
+                >
+                  {otpLoading ? "Verifying..." : "Verify OTP"}
+                </button>
+              </>
+            )}
+
+            <div id="recaptcha-container" ref={recaptchaRef}></div>
+
+            <button type="submit" disabled={!isPhoneVerified || loading}>
+              {loading ? t("form.submitting") : t("form.submit")}
+            </button>
+            {errorMsg && <p className="error">{errorMsg}</p>}
+          </form>
+        </>
       ) : (
         <div className="download-section">
           <p>{t("form.success_message")}</p>
@@ -134,10 +317,10 @@ const VisitorForm = () => {
               target="_blank"
               rel="noopener noreferrer"
             >
-              <button type="button">{t("form.download_pdf")}</button>
+              <button>{t("form.download_pdf")}</button>
             </a>
           ) : (
-            <p style={{ color: "orange" }}>{t("form.no_pdf")}</p>
+            <p className="fallback">{t("form.no_pdf")}</p>
           )}
           <button onClick={handleReset}>{t("form.submit_another")}</button>
         </div>

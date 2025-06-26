@@ -1,104 +1,93 @@
 from flask import Flask, request, jsonify, send_file
 from flask_cors import CORS
 from generate_pdf import create_pdf
-import os,json,pytz
-import uuid
+import os, json, pytz, uuid
 from datetime import datetime
 from dotenv import load_dotenv
 from database import collection
-# Gemini import
 from google.generativeai import configure, GenerativeModel
-print(collection)
+
 # Load environment variables
 load_dotenv()
 
-# Setup Gemini
+# Firebase + Gemini setup
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 configure(api_key=GEMINI_API_KEY)
-# Load Gemini model
 model = GenerativeModel("gemini-1.5-flash")
 
-
-# PDF directory
+# PDF and data file path
 PDF_DIR = os.getenv("PDF_DIR", "static/pdfs")
+VISITOR_DATA_FILE = os.getenv("VISITOR_DATA_FILE", "visitors.json")
 
-# Ensure PDF_DIR exists
+# Create directory if doesn't exist
 if not os.path.exists(PDF_DIR):
     os.makedirs(PDF_DIR)
 
-# Flask app
+# Flask App Init
 app = Flask(__name__)
 CORS(app)
 
-# -----------------------------
+# -----------------------------------
 # ROUTES
-# -----------------------------
+# -----------------------------------
 
-# Root route
 @app.route('/')
 def home():
     return "Codepackers Backend Running ✅"
 
+# ✅ Gemini Chat Route
 @app.route('/api/chat', methods=['POST'])
 def chat():
     try:
         data = request.get_json()
         user_message = data.get("message", "").strip()
-        thread_id = data.get("thread_id")  # 👈 Accept thread_id from frontend
+        thread_id = data.get("thread_id")
 
         if not user_message:
             return jsonify({"error": "No message provided"}), 400
 
-        # If no thread_id is sent, create one using uuid
         if not thread_id:
             thread_id = str(uuid.uuid4())
 
-        # Fetch previous conversation messages with the same thread_id
+        # Fetch past conversation for context
         previous = list(collection.find({"thread_id": thread_id}).sort("_id", 1))
-
         context = []
-        for msg in previous[-10:]:  # use only the last 10 for context
+        for msg in previous[-10:]:
             context.append({"role": "user", "parts": msg["query"]})
             context.append({"role": "model", "parts": msg["response"]})
 
-        # Send the message + context to Gemini
         gemini_input = context + [{"role": "user", "parts": user_message}]
         response = model.generate_content(gemini_input)
         bot_reply = response.text
 
-        # Store the new query and response along with thread_id
         collection.insert_one({
             "thread_id": thread_id,
             "query": user_message,
             "response": bot_reply
         })
 
-        # Return bot reply + thread_id back to frontend
-        return jsonify({
-            "reply": bot_reply,
-            "thread_id": thread_id  # 👈 include it in response
-        })
+        return jsonify({"reply": bot_reply, "thread_id": thread_id})
 
     except Exception as e:
         print(f"Error in /api/chat: {str(e)}")
         return jsonify({"error": str(e)}), 500
 
-VISITOR_DATA_FILE = os.getenv("VISITOR_DATA_FILE", "visitors.json")
-PDF_DIR = os.getenv("PDF_DIR", "static/pdfs")
-
+# ✅ Receive Visitor Form Data (verified email + phone)
 @app.route('/api/messages', methods=['POST'])
 def receive_visitor():
     try:
         print("RAW DATA RECEIVED:", request.data)
         data = request.get_json()
         print(data)
+
         if not all(k in data for k in ('name', 'email', 'phone')):
             return jsonify({'success': False, 'message': 'Missing fields'}), 200
 
-        # ✅ Add IST timestamp
+        # Add IST timestamp
         india_timezone = pytz.timezone("Asia/Kolkata")
         data['timestamp'] = datetime.now(india_timezone).isoformat()
 
+        # Store into visitors.json
         if not os.path.exists(VISITOR_DATA_FILE):
             with open(VISITOR_DATA_FILE, 'w') as f:
                 json.dump([], f)
@@ -108,11 +97,13 @@ def receive_visitor():
                 existing = json.load(f)
             except:
                 existing = []
+
             existing.append(data)
             f.seek(0)
             json.dump(existing, f, indent=4)
             f.truncate()
 
+        # Generate PDF using data
         filename = create_pdf(data)
         return jsonify({'success': True, 'pdf': filename})
 
@@ -120,6 +111,7 @@ def receive_visitor():
         print("Error in /api/messages:", e)
         return jsonify({'success': False, 'message': 'Internal server error'}), 500
 
+# ✅ Download the latest PDF
 @app.route('/api/download-pdf', methods=['GET'])
 def download_pdf():
     try:
@@ -137,6 +129,7 @@ def download_pdf():
         print("Error in /api/download-pdf:", e)
         return jsonify({'success': False, 'message': 'Could not download PDF'}), 500
 
+# ✅ Fetch all submitted visitors
 @app.route('/api/visitors', methods=['GET'])
 def get_visitors():
     try:
@@ -151,10 +144,6 @@ def get_visitors():
         print("Error in /api/visitors:", e)
         return jsonify({'success': False, 'message': 'Error fetching data'}), 500
 
-# -----------------------------
-# Run app
-# -----------------------------
-
+# ✅ Run server
 if __name__ == '__main__':
     app.run(debug=True, port=5000)
-
