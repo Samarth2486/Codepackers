@@ -13,7 +13,7 @@ import "./VisitorForm.css";
 
 const VisitorForm = () => {
   const [formData, setFormData] = useState({ name: "", email: "", phone: "" });
-  const [fullPhone, setFullPhone] = useState(""); // ✅ correct full phone number
+  const [fullPhone, setFullPhone] = useState("");
   const [isGoogleSignedIn, setIsGoogleSignedIn] = useState(false);
   const [isPhoneVerified, setIsPhoneVerified] = useState(false);
   const [otpSent, setOtpSent] = useState(false);
@@ -36,6 +36,7 @@ const VisitorForm = () => {
       if (savedPdf) setPdfFilename(savedPdf);
     }
 
+    // ✅ Enable test OTPs only on localhost
     if (window.location.hostname === "localhost") {
       try {
         auth.settings.appVerificationDisabledForTesting = true;
@@ -71,18 +72,14 @@ const VisitorForm = () => {
 
   const setupRecaptcha = () => {
     if (!window.recaptchaVerifier) {
-      window.recaptchaVerifier = new RecaptchaVerifier(
-        auth,
-        "recaptcha-container",
-        {
-          size: "invisible",
-          callback: (response) => console.log("reCAPTCHA solved"),
-          "expired-callback": () => {
-            setErrorMsg("reCAPTCHA expired. Please try again.");
-            window.recaptchaVerifier = null;
-          },
-        }
-      );
+      window.recaptchaVerifier = new RecaptchaVerifier(auth, "recaptcha-container", {
+        size: "invisible",
+        callback: () => console.log("reCAPTCHA solved"),
+        "expired-callback": () => {
+          setErrorMsg("reCAPTCHA expired. Please try again.");
+          window.recaptchaVerifier = null;
+        },
+      });
     }
     return window.recaptchaVerifier;
   };
@@ -106,11 +103,7 @@ const VisitorForm = () => {
       }
 
       const appVerifier = setupRecaptcha();
-      const confirmationResult = await signInWithPhoneNumber(
-        auth,
-        phoneNumber,
-        appVerifier
-      );
+      const confirmationResult = await signInWithPhoneNumber(auth, phoneNumber, appVerifier);
 
       window.confirmationResult = confirmationResult;
       setOtpSent(true);
