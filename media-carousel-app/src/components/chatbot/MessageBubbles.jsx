@@ -35,9 +35,10 @@ const MessageBubbles = ({ chat, isBotTyping, onOptionClick = () => {} }) => {
         const isExpanded = expandedIndexes.includes(idx);
         const showReadMore = msg.text.length > MAX_CHARS;
 
-        const displayedText = showReadMore && !isExpanded
-          ? msg.text.slice(0, MAX_CHARS) + "..."
-          : msg.text;
+        const displayedText =
+          showReadMore && !isExpanded
+            ? msg.text.slice(0, MAX_CHARS) + "..."
+            : msg.text;
 
         return (
           <div key={idx} className={`chat-bubble ${msg.from}`}>

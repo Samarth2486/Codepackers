@@ -36,21 +36,21 @@ const Dashboard = () => {
   }, [navigate]);
 
   useEffect(() => {
-    const expiryTime = localStorage.getItem("sessionExpiry");
+  const expiryTime = localStorage.getItem("sessionExpiry");
+  if (expiryTime) {
+    const interval = setInterval(() => {
+      if (Date.now() > Number(expiryTime)) {
+        localStorage.removeItem("loggedIn");
+        localStorage.removeItem("sessionExpiry");
+        setSessionExpired(true);
+        clearInterval(interval);
+      }
+    }, 1000); // check every second
 
-    if (expiryTime) {
-      const interval = setInterval(() => {
-        if (Date.now() > Number(expiryTime)) {
-          localStorage.removeItem("loggedIn");
-          localStorage.removeItem("sessionExpiry");
-          setSessionExpired(true);
-          clearInterval(interval);
-        }
-      }, 1000);
+    return () => clearInterval(interval);
+  }
+}, []);
 
-      return () => clearInterval(interval);
-    }
-  }, []);
 
   useEffect(() => {
     const fetchVisitors = async () => {
@@ -58,10 +58,14 @@ const Dashboard = () => {
         const res = await fetch(`${API_BASE_URL}/api/visitors`);
         if (!res.ok) throw new Error("Failed to fetch data");
         const data = await res.json();
-        if (Array.isArray(data)) {
-          setVisitorData(data);
-          setFilteredData(data);
-        } else {
+         if (Array.isArray(data)) {
+            // Sort by timestamp descending
+            data.sort((a, b) => new Date(b.timestamp || 0) - new Date(a.timestamp || 0));
+            setVisitorData(data);
+            setFilteredData(data);
+          }
+
+         else {
           throw new Error("Invalid response format");
         }
       } catch (err) {
@@ -127,6 +131,9 @@ const Dashboard = () => {
     setSessionExpired(false);
     navigate("/login", { replace: true });
   };
+  const [selectedVisitor, setSelectedVisitor] = useState(null);
+  const [selectedSource, setSelectedSource] = useState("all");
+
 
   return (
     <div className="dashboard-container">
@@ -147,7 +154,28 @@ const Dashboard = () => {
             placeholder="Search by Name or Email"
             value={searchQuery}
             onChange={handleSearch}
+            
           />
+          <select
+  value={selectedSource}
+  onChange={(e) => {
+    const val = e.target.value;
+    setSelectedSource(val);
+    const filtered = visitorData
+      .filter((v) => val === "all" ? true : (v.source || "form") === val)
+      .filter((v) =>
+        v.name.toLowerCase().includes(searchQuery) ||
+        v.email.toLowerCase().includes(searchQuery)
+      );
+    setFilteredData(filtered);
+    setCurrentPage(1);
+  }}
+>
+  <option value="all">All Sources</option>
+  <option value="form">Form</option>
+  <option value="whatsapp">WhatsApp</option>
+</select>
+
           <button onClick={downloadCSV}>Export CSV</button>
         </div>
 
@@ -167,11 +195,16 @@ const Dashboard = () => {
                   <th>Email</th>
                   <th>Phone</th>
                   <th>Submitted At</th>
+                  <th>Query ID</th>
                 </tr>
               </thead>
               <tbody>
                 {paginatedData.map((visitor, index) => (
-                  <tr key={index}>
+                  <tr 
+                  key={index}
+  className={visitor.source === "whatsapp" ? "whatsapp-row" : ""}
+>
+
                     <td>{(currentPage - 1) * rowsPerPage + index + 1}</td>
                     <td>{visitor.name}</td>
                     <td>{visitor.email}</td>
@@ -181,9 +214,50 @@ const Dashboard = () => {
                         ? new Date(visitor.timestamp).toLocaleString()
                         : "N/A"}
                     </td>
+                    <td className="query-methods-cell">
+                      <label>
+                        <input
+                          type="checkbox"
+                          checked={Array.isArray(visitor.queryMethod) && visitor.queryMethod.includes("email")}
+                          readOnly
+                        />
+                        Email
+                      </label>{" "}
+                      <label>
+                        <input
+                          type="checkbox"
+                          checked={Array.isArray(visitor.queryMethod) && visitor.queryMethod.includes("whatsapp")}
+                          readOnly
+                        />
+                        WhatsApp
+                        {Array.isArray(visitor.queryMethod) && visitor.queryMethod.includes("whatsapp") && (
+                          <button
+                            className="whatsapp-icon"
+                            onClick={() => setSelectedVisitor(visitor)}
+                            title="View WhatsApp Query"
+                          >
+                            🔍
+                          </button>
+                        )}
+                      </label>{" "}
+                      <label>
+                        <input
+                          type="checkbox"
+                          checked={!Array.isArray(visitor.queryMethod) || visitor.queryMethod.length === 0}
+                          readOnly
+                        />
+                        None
+                      </label>
+                    </td>
+
+
+
+
                   </tr>
                 ))}
               </tbody>
+
+
             </table>
 
             <div className="pagination">
@@ -224,6 +298,33 @@ const Dashboard = () => {
           </div>
         </div>
       )}
+      {selectedVisitor && (
+  <div className="modal-overlay">
+    <div className="modal-box">
+      <h3>Query Details</h3>
+      <p><strong>Name:</strong> {selectedVisitor.name}</p>
+      <p><strong>Email:</strong> {selectedVisitor.email}</p>
+      <p><strong>Phone:</strong> {selectedVisitor.phone}</p>
+
+      {selectedVisitor.message && (
+        <p><strong>Message:</strong> {selectedVisitor.message}</p>
+      )}
+
+      <p><strong>Timestamp:</strong> {selectedVisitor.timestamp ? new Date(selectedVisitor.timestamp).toLocaleString() : "N/A"}</p>
+
+      {selectedVisitor.queryId && (
+        <p><strong>Query ID:</strong> {selectedVisitor.queryId}</p>
+      )}
+
+      <p><strong>Source:</strong> {selectedVisitor.source || "form"}</p>
+
+      <button className="modal-btn" onClick={() => setSelectedVisitor(null)}>
+        Close
+      </button>
+    </div>
+  </div>
+)}
+
     </div>
   );
 };

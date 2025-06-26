@@ -12,15 +12,39 @@ const ChatWidget = () => {
   const [isTyping, setIsTyping] = useState(false);
   const [typedMessage, setTypedMessage] = useState('');
   const [fullMessage, setFullMessage] = useState('');
-  const messagesEndRef = useRef(null);
+  const [currentOptions, setCurrentOptions] = useState(null);
+  const [isUserScrolling, setIsUserScrolling] = useState(false);
 
+  const messagesEndRef = useRef(null);
+  const chatContainerRef = useRef(null);
+
+  // Track user manual scroll
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [chat, typedMessage]);
+    const container = chatContainerRef.current;
+    if (!container) return;
+
+    const handleScroll = () => {
+      const { scrollTop, scrollHeight, clientHeight } = container;
+      const isAtBottom = scrollTop + clientHeight >= scrollHeight - 20;
+      setIsUserScrolling(!isAtBottom);
+    };
+
+    container.addEventListener('scroll', handleScroll);
+    return () => container.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  // Auto scroll if bot is typing and user hasn’t scrolled manually
+  useEffect(() => {
+    if (!isUserScrolling) {
+      messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [typedMessage, chat]);
 
   useEffect(() => {
     if (currentNode === 'start') {
       const startMsg = decisionTree.start.message;
+      const options = decisionTree.start.options || null;
+      setCurrentOptions(options);
       setIsTyping(true);
       setTimeout(() => setFullMessage(startMsg), 1000);
     }
@@ -35,20 +59,21 @@ const ChatWidget = () => {
         index++;
         if (index >= fullMessage.length) {
           clearInterval(interval);
-          setChat((prev) => [...prev, { from: 'bot', text: fullMessage }]);
+          setChat((prev) => [...prev, { from: 'bot', text: fullMessage, options: currentOptions }]);
           setIsTyping(false);
           setFullMessage('');
+          setCurrentOptions(null);
         }
-      }, 40);
+      }, 10); // 💨 fast typing like ChatGPT
       return () => clearInterval(interval);
     }
-  }, [fullMessage]);
+  }, [fullMessage, currentOptions]);
 
   const handleOptionClick = (nextNodeKey) => {
-    const label = decisionTree[currentNode]?.options?.find(opt => opt.next === nextNodeKey)?.label;
-    if (label) {
-      setChat((prev) => [...prev, { from: 'user', text: label }]);
-    }
+    const label = decisionTree[currentNode]?.options?.find(opt => opt.next === nextNodeKey)?.label
+      || nextNodeKey;
+
+    setChat((prev) => [...prev, { from: 'user', text: label }]);
 
     if (nextNodeKey === 'freeInput') {
       setChat((prev) => [...prev, { from: 'bot', text: decisionTree.freeInput.message }]);
@@ -57,6 +82,7 @@ const ChatWidget = () => {
       const next = decisionTree[nextNodeKey];
       if (next) {
         setCurrentNode(nextNodeKey);
+        setCurrentOptions(next.options || null);
         setIsTyping(true);
         setTimeout(() => {
           setFullMessage(next.message);
@@ -83,9 +109,20 @@ const ChatWidget = () => {
         <button className="chatbot-close-btn" onClick={() => window.location.reload()}>×</button>
       </div>
 
-      <div className="chatbot-messages">
+      <div className="chatbot-messages" ref={chatContainerRef}>
         {chat.map((msg, idx) => (
-          <div key={idx} className={`chatbot-msg ${msg.from}`}>{msg.text}</div>
+          <div key={idx}>
+            <div className={`chatbot-msg ${msg.from}`}>{msg.text}</div>
+            {msg.from === 'bot' && msg.options && (
+              <div className="bot-options">
+                {msg.options.map((opt, optIdx) => (
+                  <button key={optIdx} onClick={() => handleOptionClick(opt.next)}>
+                    {opt.label}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
         ))}
 
         {isTyping && (
@@ -113,9 +150,9 @@ const ChatWidget = () => {
           <button type="submit">{t('chatbot.send')}</button>
         </form>
       ) : (
-        !isTyping && !fullMessage && decisionTree[currentNode]?.options && (
+        !isTyping && !fullMessage && currentOptions && (
           <div className="bot-options">
-            {decisionTree[currentNode].options.map((opt, idx) => (
+            {currentOptions.map((opt, idx) => (
               <button key={idx} onClick={() => handleOptionClick(opt.next)}>
                 {opt.label}
               </button>

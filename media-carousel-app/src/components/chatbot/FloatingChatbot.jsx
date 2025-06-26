@@ -10,7 +10,6 @@ const FloatingChatbot = () => {
   const [input, setInput] = useState("");
   const [isBotTyping, setIsBotTyping] = useState(false);
 
-  // ✅ Load existing thread ID from localStorage
   const [threadId, setThreadId] = useState(() => {
     return localStorage.getItem("chat_thread_id") || null;
   });
@@ -18,8 +17,8 @@ const FloatingChatbot = () => {
   const API_BASE_URL =
     process.env.REACT_APP_BACKEND_URL || "http://127.0.0.1:5000";
 
-  const typeMessage = useCallback((text) => {
-    setMessages((prev) => [...prev, { from: "ai", text }]);
+  const typeMessage = useCallback((text, options = null) => {
+    setMessages((prev) => [...prev, { from: "ai", text, options }]);
     setIsBotTyping(false);
   }, []);
 
@@ -42,27 +41,30 @@ const FloatingChatbot = () => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           message: userInput,
-          thread_id: threadId, // ✅ Send existing threadId if present
+          thread_id: threadId,
         }),
       });
 
       const data = await response.json();
       const botReply = data.reply || t("floatingChatbot.noReply");
+      const options = data.options || null;
 
-      // ✅ Store threadId if it's new
       if (data.thread_id && !threadId) {
         setThreadId(data.thread_id);
         localStorage.setItem("chat_thread_id", data.thread_id);
       }
 
-      typeMessage(botReply);
+      typeMessage(botReply, options);
     } catch (error) {
       console.error("Error:", error);
       typeMessage(t("floatingChatbot.error"));
     }
   };
 
-  // ✅ Optional: Reset the conversation and clear stored thread ID
+  const handleOptionClick = (optionText) => {
+    handleSend(optionText);
+  };
+
   const resetChat = () => {
     const confirmReset = window.confirm("Do you want to reset the chat?");
     if (confirmReset) {
@@ -71,6 +73,7 @@ const FloatingChatbot = () => {
       setMessages([]);
     }
   };
+
   return (
     <>
       {!isOpen && (
@@ -100,7 +103,11 @@ const FloatingChatbot = () => {
           </div>
 
           <div className="chatbot-body">
-            <MessageBubbles chat={messages} isBotTyping={isBotTyping} />
+            <MessageBubbles
+              chat={messages}
+              isBotTyping={isBotTyping}
+              onOptionClick={handleOptionClick}
+            />
           </div>
 
           <div className="chatbot-input">

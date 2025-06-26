@@ -16,7 +16,7 @@ const LoginForm = () => {
     e.preventDefault();
 
     if (formData.username === "admin" && formData.password === "admin") {
-      const expiryTime = Date.now() + 30 * 1000; // ⏱️ 30 seconds session
+      const expiryTime = Date.now() + 5 * 60 * 1000; // ⏱️ 5 minutes session
       localStorage.setItem("loggedIn", "true");
       localStorage.setItem("sessionExpiry", expiryTime);
       navigate("/dashboard");

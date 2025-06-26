@@ -13,7 +13,7 @@ import "./VisitorForm.css";
 
 const VisitorForm = () => {
   const [formData, setFormData] = useState({ name: "", email: "", phone: "" });
-  const [fullPhone, setFullPhone] = useState(""); // ✅ correct full phone number
+  const [fullPhone, setFullPhone] = useState("");
   const [isGoogleSignedIn, setIsGoogleSignedIn] = useState(false);
   const [isPhoneVerified, setIsPhoneVerified] = useState(false);
   const [otpSent, setOtpSent] = useState(false);
@@ -23,9 +23,14 @@ const VisitorForm = () => {
   const [errorMsg, setErrorMsg] = useState("");
   const [formSubmitted, setFormSubmitted] = useState(false);
   const [pdfFilename, setPdfFilename] = useState("");
+  const [showEmailModal, setShowEmailModal] = useState(false);
+  const [showWhatsappModal, setShowWhatsappModal] = useState(false); // ✅ New
+  const [queryMessage, setQueryMessage] = useState("");
+  const [whatsappMessage, setWhatsappMessage] = useState(""); // ✅ New
+  const [showToast, setShowToast] = useState(false);
+  const [sendingQuery, setSendingQuery] = useState(false);
   const { t } = useTranslation();
   const recaptchaRef = useRef(null);
-
   const API_BASE_URL = process.env.REACT_APP_BACKEND_URL;
 
   useEffect(() => {
@@ -64,7 +69,6 @@ const VisitorForm = () => {
       setIsGoogleSignedIn(true);
       setErrorMsg("");
     } catch (error) {
-      console.error("Google login failed:", error.message);
       setErrorMsg("Google Sign-In failed. Try again.");
     }
   };
@@ -76,7 +80,7 @@ const VisitorForm = () => {
         "recaptcha-container",
         {
           size: "invisible",
-          callback: (response) => console.log("reCAPTCHA solved"),
+          callback: () => {},
           "expired-callback": () => {
             setErrorMsg("reCAPTCHA expired. Please try again.");
             window.recaptchaVerifier = null;
@@ -90,7 +94,6 @@ const VisitorForm = () => {
   const sendOTP = async () => {
     const phoneNumber = "+" + fullPhone.replace(/[^\d]/g, "");
     const phoneRegex = /^\+\d{10,15}$/;
-
     if (!phoneRegex.test(phoneNumber)) {
       setErrorMsg("Please enter a valid phone number.");
       return;
@@ -98,20 +101,17 @@ const VisitorForm = () => {
 
     setOtpLoading(true);
     setErrorMsg("");
-
     try {
       if (window.recaptchaVerifier) {
         window.recaptchaVerifier.clear();
         window.recaptchaVerifier = null;
       }
-
       const appVerifier = setupRecaptcha();
       const confirmationResult = await signInWithPhoneNumber(
         auth,
         phoneNumber,
         appVerifier
       );
-
       window.confirmationResult = confirmationResult;
       setOtpSent(true);
       setFormData((prev) => ({ ...prev, phone: phoneNumber }));
@@ -123,11 +123,6 @@ const VisitorForm = () => {
       } else {
         setErrorMsg(err.message || "Failed to send OTP. Try again.");
       }
-
-      if (window.recaptchaVerifier) {
-        window.recaptchaVerifier.clear();
-        window.recaptchaVerifier = null;
-      }
     } finally {
       setOtpLoading(false);
     }
@@ -138,22 +133,13 @@ const VisitorForm = () => {
       setErrorMsg("Please enter a valid 6-digit OTP.");
       return;
     }
-
     setOtpLoading(true);
     setErrorMsg("");
-
     try {
       await window.confirmationResult.confirm(otpCode);
       setIsPhoneVerified(true);
-      setErrorMsg("");
     } catch (err) {
-      if (err.code === "auth/invalid-verification-code") {
-        setErrorMsg("Invalid OTP.");
-      } else if (err.code === "auth/code-expired") {
-        setErrorMsg("OTP expired.");
-      } else {
-        setErrorMsg(err.message || "Verification failed.");
-      }
+      setErrorMsg("OTP verification failed. Try again.");
     } finally {
       setOtpLoading(false);
     }
@@ -163,35 +149,34 @@ const VisitorForm = () => {
     e.preventDefault();
     setLoading(true);
     setErrorMsg("");
-
     if (!isGoogleSignedIn || !isPhoneVerified) {
       setErrorMsg("Please verify Google and phone before submitting.");
       setLoading(false);
       return;
     }
-
     try {
       const res = await fetch(`${API_BASE_URL}/api/messages`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-      });
+        body: JSON.stringify({
+        ...formData,
+        queryMethod: ["email", "whatsapp"],  // or update dynamically
+        source: "form",
+      }),
 
+      });
       const data = await res.json();
       if (!data.success || !data.pdf) throw new Error("API failed");
-
       setFormSubmitted(true);
       setPdfFilename(data.pdf);
       localStorage.setItem("visitorFormSubmitted", "true");
       localStorage.setItem("visitorFormPdf", data.pdf);
+      localStorage.setItem("visitorData", JSON.stringify(formData));
     } catch (err) {
       setErrorMsg(t("form.errors.fallback"));
       setFormSubmitted(true);
       setPdfFilename("");
-      localStorage.setItem("visitorFormSubmitted", "true");
-      localStorage.removeItem("visitorFormPdf");
     }
-
     setLoading(false);
   };
 
@@ -207,12 +192,78 @@ const VisitorForm = () => {
     setErrorMsg("");
     localStorage.removeItem("visitorFormSubmitted");
     localStorage.removeItem("visitorFormPdf");
-
-    if (window.recaptchaVerifier) {
-      window.recaptchaVerifier.clear();
-      window.recaptchaVerifier = null;
-    }
   };
+
+  const sendQueryToBackend = async () => {
+  setSendingQuery(true);
+  const saved = JSON.parse(localStorage.getItem("visitorData") || "{}");
+
+  try {
+    const res = await fetch(`${API_BASE_URL}/api/send-query-email`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        name: saved.name,
+        email: saved.email,
+        phone: saved.phone,
+        message: queryMessage,
+      }),
+    });
+    const result = await res.json();
+    if (result.success) {
+      setShowEmailModal(false);
+      setShowToast(true);
+      setQueryMessage("");
+      setTimeout(() => setShowToast(false), 3000);
+    } else {
+      alert("Failed to send email. Please try again.");
+    }
+  } catch (err) {
+    alert("Something went wrong.");
+  }
+  setSendingQuery(false);
+};
+
+const sendWhatsAppQuery = async () => {
+  const saved = JSON.parse(localStorage.getItem("visitorData") || "{}");
+
+  if (!saved.name || !saved.email || !saved.phone || !whatsappMessage) {
+    alert("Missing saved form data or message");
+    return;
+  }
+
+  try {
+    const res = await fetch(`${API_BASE_URL}/api/log-whatsapp-query`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        name: saved.name,
+        email: saved.email,
+        phone: saved.phone,
+        message: whatsappMessage,
+        queryMethod: ["whatsapp"],
+        source: "form"
+      }),
+    });
+
+    const data = await res.json();
+    if (!data.success) throw new Error("Logging failed");
+
+    const text = encodeURIComponent(
+      `Hello Team,\n\nVisitor Details:\nName: ${saved.name}\nEmail: ${saved.email}\nPhone: ${saved.phone}\nQuery ID: ${data.queryId}\n\nMessage:\n${whatsappMessage}`
+    );
+    const url = `https://wa.me/919835775694?text=${text}`;
+    window.open(url, "_blank");
+
+    setWhatsappMessage("");
+    setShowWhatsappModal(false);
+    setShowToast(true);
+    setTimeout(() => setShowToast(false), 3000);
+  } catch (err) {
+    alert("Failed to send WhatsApp query.");
+  }
+};
+
 
   return (
     <motion.div
@@ -236,25 +287,9 @@ const VisitorForm = () => {
               Sign in with Google
             </button>
           )}
-
           <form onSubmit={handleSubmit} className="visitor-form">
-            <input
-              type="text"
-              name="name"
-              placeholder={t("form.name")}
-              value={formData.name}
-              readOnly
-              required
-            />
-            <input
-              type="email"
-              name="email"
-              placeholder={t("form.email")}
-              value={formData.email}
-              readOnly
-              required
-            />
-
+            <input type="text" placeholder={t("form.name")} value={formData.name} readOnly required />
+            <input type="email" placeholder={t("form.email")} value={formData.email} readOnly required />
             <PhoneInput
               country={"in"}
               value={fullPhone}
@@ -262,18 +297,11 @@ const VisitorForm = () => {
               inputClass="phone-custom-input"
               disabled={isPhoneVerified}
             />
-
             {!otpSent && !isPhoneVerified && (
-              <button
-                type="button"
-                onClick={sendOTP}
-                className="otp-btn"
-                disabled={!fullPhone}
-              >
+              <button type="button" onClick={sendOTP} className="otp-btn" disabled={!fullPhone}>
                 {otpLoading ? "Sending..." : "Send OTP"}
               </button>
             )}
-
             {otpSent && !isPhoneVerified && (
               <div className="otp-verify-group">
                 <input
@@ -295,14 +323,10 @@ const VisitorForm = () => {
                 </button>
               </div>
             )}
-
             <div id="recaptcha-container" ref={recaptchaRef}></div>
-
             <button
               type="submit"
-              className={`submit-btn ${
-                !isPhoneVerified || loading ? "disabled" : ""
-              }`}
+              className={`submit-btn ${!isPhoneVerified || loading ? "disabled" : ""}`}
               disabled={!isPhoneVerified || loading}
             >
               {loading ? t("form.submitting") : t("form.submit")}
@@ -328,7 +352,76 @@ const VisitorForm = () => {
           <button className="reset-btn" onClick={handleReset}>
             {t("form.submit_another")}
           </button>
+
+          {/* 🔽 QUERY SECTION */}
+          <div className="query-section">
+            <p className="query-text">Have a query? Don't worry, we're here for you!</p>
+            <div className="contact-options">
+              <div className="contact-method">
+                <button className="contact-button" onClick={() => setShowEmailModal(true)}>
+                  <img src="https://img.icons8.com/ios-filled/50/1f3c88/new-post.png" alt="Mail" className="contact-icon" />
+                  <span className="contact-label">Mail</span>
+                </button>
+              </div>
+              <div className="contact-method">
+                <button className="contact-button" onClick={() => setShowWhatsappModal(true)}>
+                  <img src="https://img.icons8.com/ios-filled/50/1f3c88/whatsapp.png" alt="WhatsApp" className="contact-icon" />
+                  <span className="contact-label">WhatsApp</span>
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
+      )}
+
+      {/* ✅ EMAIL MODAL */}
+      {showEmailModal && (
+        <div className="email-modal-overlay">
+          <div className="email-modal">
+            <h3>Send us your query</h3>
+            <textarea
+              rows={5}
+              value={queryMessage}
+              onChange={(e) => setQueryMessage(e.target.value)}
+              placeholder="Type your message here..."
+            />
+            <div className="email-modal-buttons">
+              <button className="modern-send-btn" onClick={sendQueryToBackend} disabled={sendingQuery}>
+                {sendingQuery ? "Sending..." : "Send Email"}
+              </button>
+              <button className="modern-cancel-btn" onClick={() => setShowEmailModal(false)}>
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ✅ WHATSAPP MODAL */}
+      {showWhatsappModal && (
+        <div className="email-modal-overlay">
+          <div className="email-modal">
+            <h3>Send us your query via WhatsApp</h3>
+            <textarea
+              rows={5}
+              value={whatsappMessage}
+              onChange={(e) => setWhatsappMessage(e.target.value)}
+              placeholder="Type your WhatsApp message here..."
+            />
+            <div className="email-modal-buttons">
+              <button className="modern-send-btn" onClick={sendWhatsAppQuery}>
+                Send WhatsApp
+              </button>
+              <button className="modern-cancel-btn" onClick={() => setShowWhatsappModal(false)}>
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showToast && (
+        <div className="toast-message">✅ Message sent successfully!</div>
       )}
     </motion.div>
   );
