@@ -64,11 +64,13 @@ const FloatingChatbot = () => {
 
   // ✅ Optional: Reset the conversation and clear stored thread ID
   const resetChat = () => {
-    localStorage.removeItem("chat_thread_id");
-    setThreadId(null);
-    setMessages([]);
+    const confirmReset = window.confirm("Do you want to reset the chat?");
+    if (confirmReset) {
+      localStorage.removeItem("chat_thread_id");
+      setThreadId(null);
+      setMessages([]);
+    }
   };
-
   return (
     <>
       {!isOpen && (
