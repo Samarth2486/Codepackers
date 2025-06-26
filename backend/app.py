@@ -2,6 +2,7 @@ from flask import Flask, request, jsonify, send_file
 from flask_cors import CORS
 from generate_pdf import create_pdf
 import os,json,pytz
+import uuid
 from datetime import datetime
 from dotenv import load_dotenv
 from database import collection
@@ -16,7 +17,7 @@ GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 configure(api_key=GEMINI_API_KEY)
 # Load Gemini model
 model = GenerativeModel("gemini-1.5-flash")
-Chat = model.start_chat()
+
 
 # PDF directory
 PDF_DIR = os.getenv("PDF_DIR", "static/pdfs")
@@ -38,24 +39,45 @@ CORS(app)
 def home():
     return "Codepackers Backend Running ✅"
 
-# Chatbot route
 @app.route('/api/chat', methods=['POST'])
 def chat():
     try:
-        user_message = request.json.get("message", "")
+        data = request.get_json()
+        user_message = data.get("message", "").strip()
+        thread_id = data.get("thread_id")  # 👈 Accept thread_id from frontend
+
         if not user_message:
             return jsonify({"error": "No message provided"}), 400
 
-        # Send message to Gemini
-        response = Chat.send_message(user_message)
-        bot_reply=response.text
-        collection.insert_one({"query": user_message, "response": bot_reply})
+        # If no thread_id is sent, create one using uuid
+        if not thread_id:
+            thread_id = str(uuid.uuid4())
 
-        # Find the document
-        result = collection.find_one({"query": user_message})
-        print(result)
+        # Fetch previous conversation messages with the same thread_id
+        previous = list(collection.find({"thread_id": thread_id}).sort("_id", 1))
 
-        return jsonify({"reply": bot_reply})
+        context = []
+        for msg in previous[-10:]:  # use only the last 10 for context
+            context.append({"role": "user", "parts": msg["query"]})
+            context.append({"role": "model", "parts": msg["response"]})
+
+        # Send the message + context to Gemini
+        gemini_input = context + [{"role": "user", "parts": user_message}]
+        response = model.generate_content(gemini_input)
+        bot_reply = response.text
+
+        # Store the new query and response along with thread_id
+        collection.insert_one({
+            "thread_id": thread_id,
+            "query": user_message,
+            "response": bot_reply
+        })
+
+        # Return bot reply + thread_id back to frontend
+        return jsonify({
+            "reply": bot_reply,
+            "thread_id": thread_id  # 👈 include it in response
+        })
 
     except Exception as e:
         print(f"Error in /api/chat: {str(e)}")

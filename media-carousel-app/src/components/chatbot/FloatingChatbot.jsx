@@ -10,6 +10,11 @@ const FloatingChatbot = () => {
   const [input, setInput] = useState("");
   const [isBotTyping, setIsBotTyping] = useState(false);
 
+  // ✅ Load existing thread ID from localStorage
+  const [threadId, setThreadId] = useState(() => {
+    return localStorage.getItem("chat_thread_id") || null;
+  });
+
   const API_BASE_URL =
     process.env.REACT_APP_BACKEND_URL || "http://127.0.0.1:5000";
 
@@ -35,18 +40,33 @@ const FloatingChatbot = () => {
       const response = await fetch(`${API_BASE_URL}/api/chat`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message: userInput }),
+        body: JSON.stringify({
+          message: userInput,
+          thread_id: threadId, // ✅ Send existing threadId if present
+        }),
       });
 
       const data = await response.json();
-      const botReply =
-        data.reply || t("floatingChatbot.noReply");
+      const botReply = data.reply || t("floatingChatbot.noReply");
+
+      // ✅ Store threadId if it's new
+      if (data.thread_id && !threadId) {
+        setThreadId(data.thread_id);
+        localStorage.setItem("chat_thread_id", data.thread_id);
+      }
 
       typeMessage(botReply);
     } catch (error) {
       console.error("Error:", error);
       typeMessage(t("floatingChatbot.error"));
     }
+  };
+
+  // ✅ Optional: Reset the conversation and clear stored thread ID
+  const resetChat = () => {
+    localStorage.removeItem("chat_thread_id");
+    setThreadId(null);
+    setMessages([]);
   };
 
   return (
@@ -64,9 +84,17 @@ const FloatingChatbot = () => {
         <div className="chatbot-popup">
           <div className="chatbot-header">
             <span className="chatbot-title">{t("floatingChatbot.header")}</span>
-            <button className="chatbot-close" onClick={() => setIsOpen(false)}>
-              ×
-            </button>
+            <div className="chatbot-header-buttons">
+              <button className="chatbot-reset" onClick={resetChat}>
+                ⟳
+              </button>
+              <button
+                className="chatbot-close"
+                onClick={() => setIsOpen(false)}
+              >
+                ×
+              </button>
+            </div>
           </div>
 
           <div className="chatbot-body">
@@ -81,7 +109,9 @@ const FloatingChatbot = () => {
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && handleSend(input)}
             />
-            <button onClick={() => handleSend(input)}>{t("floatingChatbot.send")}</button>
+            <button onClick={() => handleSend(input)}>
+              {t("floatingChatbot.send")}
+            </button>
           </div>
         </div>
       )}
