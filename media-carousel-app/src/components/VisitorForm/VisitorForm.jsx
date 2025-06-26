@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import { useTranslation } from "react-i18next";
+import PhoneInput from "react-phone-input-2";
+import "react-phone-input-2/lib/style.css";
 import { auth, googleProvider } from "../../firebase";
 import {
   signInWithPopup,
@@ -11,8 +13,7 @@ import "./VisitorForm.css";
 
 const VisitorForm = () => {
   const [formData, setFormData] = useState({ name: "", email: "", phone: "" });
-  const [countryCode, setCountryCode] = useState("+91");
-  const [rawPhone, setRawPhone] = useState("");
+  const [fullPhone, setFullPhone] = useState(""); // ✅ correct full phone number
   const [isGoogleSignedIn, setIsGoogleSignedIn] = useState(false);
   const [isPhoneVerified, setIsPhoneVerified] = useState(false);
   const [otpSent, setOtpSent] = useState(false);
@@ -35,7 +36,6 @@ const VisitorForm = () => {
       if (savedPdf) setPdfFilename(savedPdf);
     }
 
-    // ✅ Enable test mode for localhost to avoid recaptcha timeout
     if (window.location.hostname === "localhost") {
       try {
         auth.settings.appVerificationDisabledForTesting = true;
@@ -88,10 +88,10 @@ const VisitorForm = () => {
   };
 
   const sendOTP = async () => {
-    const fullPhone = `${countryCode}${rawPhone}`;
+    const phoneNumber = "+" + fullPhone.replace(/[^\d]/g, "");
     const phoneRegex = /^\+\d{10,15}$/;
 
-    if (!phoneRegex.test(fullPhone)) {
+    if (!phoneRegex.test(phoneNumber)) {
       setErrorMsg("Please enter a valid phone number.");
       return;
     }
@@ -108,13 +108,13 @@ const VisitorForm = () => {
       const appVerifier = setupRecaptcha();
       const confirmationResult = await signInWithPhoneNumber(
         auth,
-        fullPhone,
+        phoneNumber,
         appVerifier
       );
 
       window.confirmationResult = confirmationResult;
       setOtpSent(true);
-      setFormData((prev) => ({ ...prev, phone: fullPhone }));
+      setFormData((prev) => ({ ...prev, phone: phoneNumber }));
     } catch (err) {
       if (err.code === "auth/quota-exceeded") {
         setErrorMsg("SMS quota exceeded. Try again later.");
@@ -143,7 +143,7 @@ const VisitorForm = () => {
     setErrorMsg("");
 
     try {
-      const result = await window.confirmationResult.confirm(otpCode);
+      await window.confirmationResult.confirm(otpCode);
       setIsPhoneVerified(true);
       setErrorMsg("");
     } catch (err) {
@@ -197,7 +197,7 @@ const VisitorForm = () => {
 
   const handleReset = () => {
     setFormData({ name: "", email: "", phone: "" });
-    setRawPhone("");
+    setFullPhone("");
     setOtpCode("");
     setOtpSent(false);
     setIsGoogleSignedIn(false);
@@ -227,7 +227,12 @@ const VisitorForm = () => {
       {!formSubmitted ? (
         <>
           {!isGoogleSignedIn && (
-            <button className="google-btn" onClick={handleGoogleLogin}>
+            <button className="google-signin-btn" onClick={handleGoogleLogin}>
+              <img
+                src="https://developers.google.com/identity/images/g-logo.png"
+                alt="G"
+                className="google-logo"
+              />
               Sign in with Google
             </button>
           )}
@@ -249,37 +254,28 @@ const VisitorForm = () => {
               readOnly
               required
             />
-            <div className="phone-row">
-              <select
-                value={countryCode}
-                onChange={(e) => setCountryCode(e.target.value)}
-                disabled={isPhoneVerified}
-              >
-                <option value="+91">🇮🇳 +91</option>
-                <option value="+1">🇺🇸 +1</option>
-                <option value="+44">🇬🇧 +44</option>
-                <option value="+61">🇦🇺 +61</option>
-              </select>
-              <input
-                type="tel"
-                placeholder={t("form.phone")}
-                value={rawPhone}
-                onChange={(e) =>
-                  setRawPhone(e.target.value.replace(/\D/g, "").slice(0, 10))
-                }
-                disabled={isPhoneVerified}
-                required
-              />
-            </div>
+
+            <PhoneInput
+              country={"in"}
+              value={fullPhone}
+              onChange={(phone) => setFullPhone(phone)}
+              inputClass="phone-custom-input"
+              disabled={isPhoneVerified}
+            />
 
             {!otpSent && !isPhoneVerified && (
-              <button type="button" onClick={sendOTP} disabled={!rawPhone}>
+              <button
+                type="button"
+                onClick={sendOTP}
+                className="otp-btn"
+                disabled={!fullPhone}
+              >
                 {otpLoading ? "Sending..." : "Send OTP"}
               </button>
             )}
 
             {otpSent && !isPhoneVerified && (
-              <>
+              <div className="otp-verify-group">
                 <input
                   type="text"
                   placeholder="Enter 6-digit OTP"
@@ -292,16 +288,23 @@ const VisitorForm = () => {
                 <button
                   type="button"
                   onClick={verifyOTP}
+                  className="verify-btn"
                   disabled={otpLoading || otpCode.length < 6}
                 >
                   {otpLoading ? "Verifying..." : "Verify OTP"}
                 </button>
-              </>
+              </div>
             )}
 
             <div id="recaptcha-container" ref={recaptchaRef}></div>
 
-            <button type="submit" disabled={!isPhoneVerified || loading}>
+            <button
+              type="submit"
+              className={`submit-btn ${
+                !isPhoneVerified || loading ? "disabled" : ""
+              }`}
+              disabled={!isPhoneVerified || loading}
+            >
               {loading ? t("form.submitting") : t("form.submit")}
             </button>
             {errorMsg && <p className="error">{errorMsg}</p>}
@@ -317,12 +320,14 @@ const VisitorForm = () => {
               target="_blank"
               rel="noopener noreferrer"
             >
-              <button>{t("form.download_pdf")}</button>
+              <button className="download-btn">{t("form.download_pdf")}</button>
             </a>
           ) : (
             <p className="fallback">{t("form.no_pdf")}</p>
           )}
-          <button onClick={handleReset}>{t("form.submit_another")}</button>
+          <button className="reset-btn" onClick={handleReset}>
+            {t("form.submit_another")}
+          </button>
         </div>
       )}
     </motion.div>
