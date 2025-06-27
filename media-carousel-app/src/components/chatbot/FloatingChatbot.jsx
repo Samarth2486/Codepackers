@@ -66,7 +66,9 @@ const FloatingChatbot = () => {
   };
 
   const resetChat = () => {
-    const confirmReset = window.confirm("Do you want to reset the chat?");
+    const confirmReset = window.confirm(
+      t("floatingChatbot.resetConfirmation") || "Do you want to reset the chat?"
+    );
     if (confirmReset) {
       localStorage.removeItem("chat_thread_id");
       setThreadId(null);

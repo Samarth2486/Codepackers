@@ -7,6 +7,8 @@ const MessageBubbles = ({ chat, isBotTyping, onOptionClick = () => {} }) => {
   const containerRef = useRef(null);
   const [expandedIndexes, setExpandedIndexes] = useState([]);
 
+  const MAX_CHARS = 250;
+
   const isNearBottom = () => {
     if (!containerRef.current) return true;
     const { scrollTop, scrollHeight, clientHeight } = containerRef.current;
@@ -14,31 +16,25 @@ const MessageBubbles = ({ chat, isBotTyping, onOptionClick = () => {} }) => {
   };
 
   useEffect(() => {
-  const timeout = setTimeout(() => {
-    if (isNearBottom()) {
-      bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
-    }
-  }, 100); // delay ensures DOM renders first
-  return () => clearTimeout(timeout);
-}, [chat.length, isBotTyping]);
-
+    const timeout = setTimeout(() => {
+      if (isNearBottom()) {
+        bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+      }
+    }, 100);
+    return () => clearTimeout(timeout);
+  }, [chat, isBotTyping]);
 
   const toggleExpand = (idx) => {
     setExpandedIndexes((prev) =>
-      prev.includes(idx)
-        ? prev.filter((i) => i !== idx)
-        : [...prev, idx]
+      prev.includes(idx) ? prev.filter((i) => i !== idx) : [...prev, idx]
     );
   };
-
-  const MAX_CHARS = 250;
 
   return (
     <div className="chat-messages" ref={containerRef}>
       {chat.map((msg, idx) => {
         const isExpanded = expandedIndexes.includes(idx);
         const showReadMore = msg.text.length > MAX_CHARS;
-
         const displayedText =
           showReadMore && !isExpanded
             ? msg.text.slice(0, MAX_CHARS) + "..."
@@ -65,6 +61,8 @@ const MessageBubbles = ({ chat, isBotTyping, onOptionClick = () => {} }) => {
                     key={i}
                     className="option-button"
                     onClick={() => onOptionClick(opt)}
+                    tabIndex={0}
+                    onKeyDown={(e) => e.key === "Enter" && onOptionClick(opt)}
                   >
                     {opt}
                   </button>
