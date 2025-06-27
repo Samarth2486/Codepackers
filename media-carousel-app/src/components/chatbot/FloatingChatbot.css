@@ -261,3 +261,25 @@
     transform: scale(1);
   }
 }
+/* Add to existing styles */
+.chatbot-body::-webkit-scrollbar {
+  width: 6px;
+}
+
+.chatbot-body::-webkit-scrollbar-thumb {
+  background: #c7d2fe;
+  border-radius: 4px;
+}
+
+.chatbot-body::-webkit-scrollbar-thumb:hover {
+  background: #a5b4fc;
+}
+
+.chat-bubble {
+  animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}

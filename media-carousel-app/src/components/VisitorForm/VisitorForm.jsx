@@ -305,10 +305,9 @@ const sendWhatsAppQuery = async () => {
       transition={{ duration: 0.6, ease: "easeOut" }}
       viewport={{ once: true, amount: 0.3 }}
     >
-      <h2 className="form-heading">Get Access to Our PDF</h2>
-      <p className="form-subtext">
-  📘 Free Expert PDF + Bonus Tips <br /> Join 2,000+ Professionals
-</p>
+      <h2 className="form-heading">{t("form.heading")}</h2>
+<p className="form-subtext">{t("form.subtext")}</p>
+
 
 
 
@@ -317,13 +316,14 @@ const sendWhatsAppQuery = async () => {
         <>
           {!isGoogleSignedIn && (
             <button className="google-signin-btn" onClick={handleGoogleLogin}>
-              <img
-                src="https://developers.google.com/identity/images/g-logo.png"
-                alt="G"
-                className="google-logo"
-              />
-              Sign in with Google
-            </button>
+  <img
+    src="https://developers.google.com/identity/images/g-logo.png"
+    alt="G"
+    className="google-logo"
+  />
+  {t("form.sign_in_google")}
+</button>
+
           )}
           <form onSubmit={handleSubmit} className="visitor-form">
             <input type="text" placeholder={t("form.name")} value={formData.name} readOnly required />
@@ -333,7 +333,7 @@ const sendWhatsAppQuery = async () => {
   country={"in"}
   value={fullPhone}
   onChange={(phone) => setFullPhone(phone)}
-  placeholder="Your 10-digit phone number" // ✅ Correct
+  placeholder={t("form.phone_placeholder")}
   disableCountryCode={false}
   disableDropdown={false}
   inputProps={{
@@ -348,7 +348,7 @@ const sendWhatsAppQuery = async () => {
             <small className="privacy-note">We'll only use this for OTP verification. No spam, ever.</small>
             {!otpSent && !isPhoneVerified && (
               <button type="button" onClick={sendOTP} className="otp-btn" disabled={!fullPhone}>
-                {otpLoading ? "Sending..." : "Send OTP"}
+                {otpLoading ? t("form.sending") : t("form.send_otp")}
               </button>
             )}
             {otpSent && !isPhoneVerified && (
@@ -368,7 +368,7 @@ const sendWhatsAppQuery = async () => {
                   className="verify-btn"
                   disabled={otpLoading || otpCode.length < 6}
                 >
-                  {otpLoading ? "Verifying..." : "Verify OTP"}
+                  {otpLoading ? t("form.verifying") : t("form.verify_otp")}
                 </button>
               </div>
             )}
@@ -389,9 +389,7 @@ const sendWhatsAppQuery = async () => {
         </>
       ) : (
         <div className="download-section">
-          <p className="thank-you-text">
-  🎉 You're in! Your PDF is ready to download.
-</p>
+          <p className="thank-you-text">{t("form.pdf_ready")}</p>
 
           {pdfFilename ? (
             <a
@@ -402,8 +400,7 @@ const sendWhatsAppQuery = async () => {
             >
               
               <button className="download-btn">{t("form.download_pdf")}</button>
-<p className="pdf-note">Trusted by 2000+ users. Updated monthly.</p>
-
+              <p className="pdf-note">{t("form.pdf_note")}</p>
             </a>
           ) : (
             <p className="fallback">{t("form.no_pdf")}</p>
@@ -414,18 +411,18 @@ const sendWhatsAppQuery = async () => {
 
           {/* 🔽 QUERY SECTION */}
           <div className="query-section">
-            <p className="query-text">Have a query? Don't worry, we're here for you!</p>
+            <p className="query-text">{t("form.query_prompt")}</p>
             <div className="contact-options">
               <div className="contact-method">
                 <button className="contact-button" onClick={() => setShowEmailModal(true)}>
                   <img src="https://img.icons8.com/ios-filled/50/1f3c88/new-post.png" alt="Mail" className="contact-icon" />
-                  <span className="contact-label">Mail</span>
+                  <span className="contact-label">{t("form.contact_mail")}</span>
                 </button>
               </div>
               <div className="contact-method">
                 <button className="contact-button" onClick={() => setShowWhatsappModal(true)}>
                   <img src="https://img.icons8.com/ios-filled/50/1f3c88/whatsapp.png" alt="WhatsApp" className="contact-icon" />
-                  <span className="contact-label">WhatsApp</span>
+                  <span className="contact-label">{t("form.contact_mail")}</span>
                 </button>
               </div>
             </div>
@@ -435,52 +432,69 @@ const sendWhatsAppQuery = async () => {
 
       {/* ✅ EMAIL MODAL */}
       {showEmailModal && (
-        <div className="email-modal-overlay">
-          <div className="email-modal">
-            <h3>Send us your query</h3>
-            <textarea
-              rows={5}
-              value={queryMessage}
-              onChange={(e) => setQueryMessage(e.target.value)}
-              placeholder="Type your message here..."
-            />
-            <div className="email-modal-buttons">
-              <button className="modern-send-btn" onClick={sendQueryToBackend} disabled={sendingQuery}>
-                {sendingQuery ? "Sending..." : "Send Email"}
-              </button>
-              <button className="modern-cancel-btn" onClick={() => setShowEmailModal(false)}>
-                Cancel
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+  <div className="email-modal-overlay">
+    <div className="email-modal">
+      <h3>{t("form.query_modal_title")}</h3>
+
+      <textarea
+        rows={5}
+        value={queryMessage}
+        onChange={(e) => setQueryMessage(e.target.value)}
+        placeholder={t("form.query_placeholder")}
+      />
+
+      <div className="email-modal-buttons">
+        <button
+          className="modern-send-btn"
+          onClick={sendQueryToBackend}
+          disabled={sendingQuery}
+        >
+          {sendingQuery ? t("form.sending") : t("form.send_email")}
+        </button>
+
+        <button
+          className="modern-cancel-btn"
+          onClick={() => setShowEmailModal(false)}
+        >
+          {t("form.cancel")}
+        </button>
+      </div>
+    </div>
+  </div>
+)}
 
       {/* ✅ WHATSAPP MODAL */}
       {showWhatsappModal && (
-        <div className="email-modal-overlay">
-          <div className="email-modal">
-            <h3>Send us your query via WhatsApp</h3>
-            <textarea
-              rows={5}
-              value={whatsappMessage}
-              onChange={(e) => setWhatsappMessage(e.target.value)}
-              placeholder="Type your WhatsApp message here..."
-            />
-            <div className="email-modal-buttons">
-              <button className="modern-send-btn" onClick={sendWhatsAppQuery}>
-                Send WhatsApp
-              </button>
-              <button className="modern-cancel-btn" onClick={() => setShowWhatsappModal(false)}>
-                Cancel
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+  <div className="email-modal-overlay">
+    <div className="email-modal">
+      <h3>{t("form.whatsapp_modal_title")}</h3>
+
+      <textarea
+        rows={5}
+        value={whatsappMessage}
+        onChange={(e) => setWhatsappMessage(e.target.value)}
+        placeholder={t("form.whatsapp_placeholder")}
+      />
+
+      <div className="email-modal-buttons">
+        <button className="modern-send-btn" onClick={sendWhatsAppQuery}>
+          {t("form.send_whatsapp")}
+        </button>
+
+        <button
+          className="modern-cancel-btn"
+          onClick={() => setShowWhatsappModal(false)}
+        >
+          {t("form.cancel")}
+        </button>
+      </div>
+    </div>
+  </div>
+)}
+
 
       {showToast && (
-        <div className="toast-message">✅ Message sent successfully!</div>
+        <div className="toast-message">{t("form.toast_success")}</div>
       )}
     </motion.div>
   );

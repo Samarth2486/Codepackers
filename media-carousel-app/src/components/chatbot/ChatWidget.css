@@ -208,4 +208,60 @@
 .option-button:hover, .bot-options button:hover {
   background: #3730a3;
 }
+/* Add to existing styles */
+.chatbot-msg, .chat-bubble {
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  line-height: 1.6;
+  font-size: 15px;
+  letter-spacing: 0.01em;
+}
+
+.read-more-btn {
+  background: none;
+  border: none;
+  color: #4f46e5;
+  cursor: pointer;
+  padding: 0;
+  font-size: 14px;
+  font-weight: 500;
+  text-decoration: underline;
+  margin-left: 4px;
+  transition: color 0.2s;
+  display: inline-block;
+}
+
+.read-more-btn:hover {
+  color: #3730a3;
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 0.4; transform: scale(0.95); }
+  50% { opacity: 1; transform: scale(1.1); }
+}
+
+.typing-indicator .dot {
+  animation: blink 1.2s infinite ease-in-out;
+}
+
+.chatbot-messages::-webkit-scrollbar {
+  width: 6px;
+}
+
+.chatbot-messages::-webkit-scrollbar-thumb {
+  background: #c7d2fe;
+  border-radius: 4px;
+}
+
+.chatbot-messages::-webkit-scrollbar-thumb:hover {
+  background: #a5b4fc;
+}
+
+.chatbot-msg {
+  animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
 
