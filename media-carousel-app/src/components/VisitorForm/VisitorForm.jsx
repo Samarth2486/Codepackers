@@ -58,6 +58,18 @@ const VisitorForm = () => {
     };
   }, []);
 
+  useEffect(() => {
+  const interval = setInterval(() => {
+    const phoneInput = document.querySelector(".react-tel-input input");
+    if (phoneInput && phoneInput.placeholder !== "Your 10-digit phone number") {
+      phoneInput.placeholder = "Your 10-digit phone number"; // ✅ Force override
+      clearInterval(interval);
+    }
+  }, 100); // Check every 100ms
+
+  return () => clearInterval(interval);
+}, []);
+
   const handleGoogleLogin = async () => {
     try {
       const result = await signInWithPopup(auth, googleProvider);
@@ -293,7 +305,13 @@ const sendWhatsAppQuery = async () => {
       transition={{ duration: 0.6, ease: "easeOut" }}
       viewport={{ once: true, amount: 0.3 }}
     >
-      <h2>{t("form.heading")}</h2>
+      <h2 className="form-heading">Get Access to Our PDF</h2>
+      <p className="form-subtext">
+  📘 Free Expert PDF + Bonus Tips <br /> Join 2,000+ Professionals
+</p>
+
+
+
 
       {!formSubmitted ? (
         <>
@@ -310,13 +328,24 @@ const sendWhatsAppQuery = async () => {
           <form onSubmit={handleSubmit} className="visitor-form">
             <input type="text" placeholder={t("form.name")} value={formData.name} readOnly required />
             <input type="email" placeholder={t("form.email")} value={formData.email} readOnly required />
+            
             <PhoneInput
-              country={"in"}
-              value={fullPhone}
-              onChange={(phone) => setFullPhone(phone)}
-              inputClass="phone-custom-input"
-              disabled={isPhoneVerified}
-            />
+  country={"in"}
+  value={fullPhone}
+  onChange={(phone) => setFullPhone(phone)}
+  placeholder="Your 10-digit phone number" // ✅ Correct
+  disableCountryCode={false}
+  disableDropdown={false}
+  inputProps={{
+    name: "phone",
+    required: true,
+    autoFocus: false,
+  }}
+  isValid={() => true} // Optional: force valid
+/>
+
+
+            <small className="privacy-note">We'll only use this for OTP verification. No spam, ever.</small>
             {!otpSent && !isPhoneVerified && (
               <button type="button" onClick={sendOTP} className="otp-btn" disabled={!fullPhone}>
                 {otpLoading ? "Sending..." : "Send OTP"}
@@ -344,19 +373,26 @@ const sendWhatsAppQuery = async () => {
               </div>
             )}
             <div id="recaptcha-container" ref={recaptchaRef}></div>
-            <button
-              type="submit"
-              className={`submit-btn ${!isPhoneVerified || loading ? "disabled" : ""}`}
-              disabled={!isPhoneVerified || loading}
-            >
-              {loading ? t("form.submitting") : t("form.submit")}
-            </button>
+            <motion.button
+  whileTap={{ scale: 0.97 }}
+  whileHover={{ scale: 1.03 }}
+  transition={{ type: "spring", stiffness: 300 }}
+  className="submit-btn"
+  disabled={!isPhoneVerified || loading}
+>
+  {loading ? t("form.submitting") : t("form.submit")}
+</motion.button>
+
+
             {errorMsg && <p className="error">{errorMsg}</p>}
           </form>
         </>
       ) : (
         <div className="download-section">
-          <p>{t("form.success_message")}</p>
+          <p className="thank-you-text">
+  🎉 You're in! Your PDF is ready to download.
+</p>
+
           {pdfFilename ? (
             <a
               href={`${API_BASE_URL}/static/pdfs/${pdfFilename}`}
@@ -364,7 +400,10 @@ const sendWhatsAppQuery = async () => {
               target="_blank"
               rel="noopener noreferrer"
             >
+              
               <button className="download-btn">{t("form.download_pdf")}</button>
+<p className="pdf-note">Trusted by 2000+ users. Updated monthly.</p>
+
             </a>
           ) : (
             <p className="fallback">{t("form.no_pdf")}</p>
