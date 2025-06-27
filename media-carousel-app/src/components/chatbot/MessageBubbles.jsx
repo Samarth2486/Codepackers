@@ -14,10 +14,14 @@ const MessageBubbles = ({ chat, isBotTyping, onOptionClick = () => {} }) => {
   };
 
   useEffect(() => {
+  const timeout = setTimeout(() => {
     if (isNearBottom()) {
-      bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+      bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
     }
-  }, [chat, isBotTyping]);
+  }, 100); // delay ensures DOM renders first
+  return () => clearTimeout(timeout);
+}, [chat.length, isBotTyping]);
+
 
   const toggleExpand = (idx) => {
     setExpandedIndexes((prev) =>

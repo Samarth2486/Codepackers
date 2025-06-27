@@ -25,7 +25,7 @@ const ChatWidget = () => {
 
     const handleScroll = () => {
       const { scrollTop, scrollHeight, clientHeight } = container;
-      const isAtBottom = scrollTop + clientHeight >= scrollHeight - 20;
+      const isAtBottom = scrollTop + clientHeight >= scrollHeight - 30;
       setIsUserScrolling(!isAtBottom);
     };
 
@@ -51,23 +51,50 @@ const ChatWidget = () => {
   }, [currentNode]);
 
   useEffect(() => {
-    if (fullMessage) {
-      let index = 0;
-      setTypedMessage('');
-      const interval = setInterval(() => {
-        setTypedMessage((prev) => prev + fullMessage.charAt(index));
-        index++;
-        if (index >= fullMessage.length) {
-          clearInterval(interval);
-          setChat((prev) => [...prev, { from: 'bot', text: fullMessage, options: currentOptions }]);
+  if (fullMessage) {
+    let index = 0;
+    setTypedMessage('');
+    const messageLength = fullMessage.length;
+
+    const interval = setInterval(() => {
+      setTypedMessage((prev) => prev + fullMessage.charAt(index));
+      index++;
+
+      // ✨ Smooth scroll during typing
+      if (!isUserScrolling) {
+        messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+      }
+
+      if (index >= messageLength) {
+        clearInterval(interval);
+
+        // ✨ Wait briefly before appending full message
+        setTimeout(() => {
+          setChat((prev) => [
+            ...prev,
+            { from: 'bot', text: fullMessage, options: currentOptions },
+          ]);
+
+          setTypedMessage('');
           setIsTyping(false);
           setFullMessage('');
           setCurrentOptions(null);
-        }
-      }, 10); // 💨 fast typing like ChatGPT
-      return () => clearInterval(interval);
-    }
-  }, [fullMessage, currentOptions]);
+
+          // ✨ Final scroll after message is added
+          if (!isUserScrolling) {
+            setTimeout(() => {
+              messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+            }, 150); // slight delay after DOM render
+          }
+        }, 200); // Optional pause after typing ends
+      }
+    }, 10); // Fast typing speed like GPT
+
+    return () => clearInterval(interval);
+  }
+}, [fullMessage, currentOptions, isUserScrolling]);
+
+
 
   const handleOptionClick = (nextNodeKey) => {
     const label = decisionTree[currentNode]?.options?.find(opt => opt.next === nextNodeKey)?.label
@@ -110,34 +137,38 @@ const ChatWidget = () => {
       </div>
 
       <div className="chatbot-messages" ref={chatContainerRef}>
-        {chat.map((msg, idx) => (
-          <div key={idx}>
-            <div className={`chatbot-msg ${msg.from}`}>{msg.text}</div>
-            {msg.from === 'bot' && msg.options && (
-              <div className="bot-options">
-                {msg.options.map((opt, optIdx) => (
-                  <button key={optIdx} onClick={() => handleOptionClick(opt.next)}>
-                    {opt.label}
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
-        ))}
+  {chat.map((msg, idx) => (
+    <div key={idx}>
+      <div className={`chatbot-msg ${msg.from}`}>{msg.text}</div>
+      {msg.from === 'bot' && msg.options && (
+        <div className="bot-options">
+          {msg.options.map((opt, optIdx) => (
+            <button key={optIdx} onClick={() => handleOptionClick(opt.next)}>
+              {opt.label}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  ))}
 
-        {isTyping && (
-          <div className="chatbot-msg bot typing-indicator">
-            <span className="dot"></span>
-            <span className="dot"></span>
-            <span className="dot"></span>
-          </div>
-        )}
+  {/* ✅ MOVE & REPLACE THESE BLOCKS HERE 👇 */}
+  {typedMessage && (
+    <div className="chatbot-msg bot typewriter">{typedMessage}</div>
+  )}
 
-        {typedMessage && (
-          <div className="chatbot-msg bot typewriter">{typedMessage}</div>
-        )}
-        <div ref={messagesEndRef} />
-      </div>
+  {isTyping && !typedMessage && (
+    <div className="chatbot-msg bot typing-indicator">
+      <span className="dot" />
+      <span className="dot" />
+      <span className="dot" />
+    </div>
+  )}
+
+  {/* 👇 KEEP THIS AT THE VERY END */}
+  <div ref={messagesEndRef} />
+</div>
+
 
       {currentNode === 'freeInput' ? (
         <form className="chatbot-input" onSubmit={handleUserSubmit}>
