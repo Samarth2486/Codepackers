@@ -64,8 +64,15 @@ const Dashboard = () => {
             (a, b) =>
               new Date(b.timestamp || 0) - new Date(a.timestamp || 0)
           );
+          
+          data.sort(
+            (a, b) => new Date(b.timestamp || 0) - new Date(a.timestamp || 0)
+          );
           setVisitorData(data);
           setFilteredData(data);
+
+
+
         } else {
           throw new Error("Invalid response format");
         }

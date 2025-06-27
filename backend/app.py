@@ -116,9 +116,9 @@ def receive_visitor():
                 existing = []
 
             # ✅ Only skip if both email & phone match
-            match = find_strict_match(existing, data_entry["email"], data_entry["phone"])
-            if not match:
-                existing.append(data_entry)
+            # ❌ NO need to match — always log every new query
+            existing.append(data_entry)
+
 
             f.seek(0)
             json.dump(existing, f, indent=4)
@@ -219,9 +219,9 @@ def send_query_email():
             except:
                 existing = []
 
-            match = find_strict_match(existing, email, phone)
-            if not match:
-                existing.append(data_entry)
+            # ❌ NO need to match — always log every new query
+            existing.append(data_entry)
+
 
             f.seek(0)
             json.dump(existing, f, indent=4)
@@ -270,9 +270,9 @@ def log_whatsapp_query():
             except:
                 existing = []
 
-            match = find_strict_match(existing, email, phone)
-            if not match:
-                existing.append(data_entry)
+            # ❌ NO need to match — always log every new query
+            existing.append(data_entry)
+
 
             f.seek(0)
             json.dump(existing, f, indent=4)

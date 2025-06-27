@@ -43,8 +43,34 @@
   box-shadow: 0 0 0 3px rgba(31, 60, 136, 0.2);
 }
 
+/* Google Sign-In */
+.google-signin-btn {
+  background-color: #ffffff;
+  color: #444;
+  border: 1px solid #ccc;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  justify-content: center;
+  padding: 0.9rem;
+  font-size: 1rem;
+  font-weight: 600;
+  border-radius: 10px;
+  transition: all 0.2s ease;
+  width: 100%;
+  margin: 0 auto 1rem auto;
+}
+
+.google-signin-btn:hover {
+  background-color: #f0f0f0;
+}
+
+.google-signin-btn img.google-logo {
+  width: 20px;
+  height: 20px;
+}
+
 /* Buttons */
-.google-signin-btn,
 .otp-btn,
 .verify-btn,
 .submit-btn,
@@ -58,25 +84,6 @@
   cursor: pointer;
   transition: background-color 0.2s ease;
   color: white;
-}
-
-.google-signin-btn {
-  background-color: #ffffff;
-  color: #444;
-  border: 1px solid #ccc;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  justify-content: center;
-}
-
-.google-signin-btn:hover {
-  background-color: #f0f0f0;
-}
-
-.google-signin-btn img.google-logo {
-  width: 20px;
-  height: 20px;
 }
 
 .otp-btn {
@@ -128,6 +135,7 @@
   background-color: #5a6268;
 }
 
+/* Disabled States */
 .google-signin-btn:disabled,
 .otp-btn:disabled,
 .verify-btn:disabled,
