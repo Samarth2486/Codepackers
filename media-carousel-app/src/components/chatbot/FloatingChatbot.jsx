@@ -66,7 +66,7 @@ const FloatingChatbot = () => {
   };
 
   const resetChat = () => {
-    const confirmReset = window.confirm("Do you want to reset the chat?");
+    const confirmReset = window.confirm(t("floatingChatbot.resetConfirm"));
     if (confirmReset) {
       localStorage.removeItem("chat_thread_id");
       setThreadId(null);
@@ -90,15 +90,8 @@ const FloatingChatbot = () => {
           <div className="chatbot-header">
             <span className="chatbot-title">{t("floatingChatbot.header")}</span>
             <div className="chatbot-header-buttons">
-              <button className="chatbot-reset" onClick={resetChat}>
-                ⟳
-              </button>
-              <button
-                className="chatbot-close"
-                onClick={() => setIsOpen(false)}
-              >
-                ×
-              </button>
+              <button className="chatbot-reset" onClick={resetChat}>⟳</button>
+              <button className="chatbot-close" onClick={() => setIsOpen(false)}>×</button>
             </div>
           </div>
 

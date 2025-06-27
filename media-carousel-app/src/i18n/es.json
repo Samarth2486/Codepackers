@@ -11,25 +11,30 @@
   "brand": "Codepackers Software Solutions",
 
   "chatbot": {
-    "header": "Paul - Mi Agente de IA Empresarial",
-    "thankyou": "¡Gracias! Nuestro equipo se pondrá en contacto contigo pronto.",
+    "header": "Chatea con el bot de Codepackers",
     "inputPlaceholder": "Escribe tu mensaje...",
     "send": "Enviar",
-    "welcome": "¡Hola! ¿Cómo puedo ayudarte hoy?",
-    "option1": "Información del Producto",
-    "option2": "Detalles de Precios",
-    "option3": "Hablar con Soporte"
+    "thankyou": "¡Gracias! Nos pondremos en contacto pronto.",
+    "start_message": "¡Hola! ¿Cómo puedo ayudarte hoy?",
+    "free_input_msg": "Por favor escribe tu consulta abajo.",
+    "option_services": "Ver nuestros servicios",
+    "option_contact": "Contactar con soporte",
+    "option_restart": "Reiniciar"
   },
 
+  
   "floatingChatbot": {
-    "welcome": "¡Hola! Soy tu asistente de IA. ¿En qué puedo ayudarte hoy?",
-    "noReply": "Lo siento, no pude procesar eso. Por favor, inténtalo de nuevo.",
-    "error": "¡Ups! Algo salió mal. Inténtalo de nuevo más tarde.",
-    "tooltip": "Inicia un chat con Paul",
-    "header": "Paul - Agente de IA de Codepackers",
-    "inputPlaceholder": "Escribe tu mensaje...",
+    "header": "Asistente de Codepackers",
+    "welcome": "¡Hola! Pregúntame cualquier cosa sobre nuestros servicios.",
+    "noReply": "Lo siento, no entendí eso.",
+    "error": "Algo salió mal. Inténtalo de nuevo.",
+    "resetConfirm": "¿Deseas reiniciar el chat?",
+    "tooltip": "¿Necesitas ayuda? ¡Pregunta al bot!",
+    "inputPlaceholder": "Escribe tu mensaje aquí...",
     "send": "Enviar"
   },
+
+
 
   "aiChatCarousel": {
     "title": "Paul - Mi Agente de IA Empresarial",
@@ -146,21 +151,36 @@
 
   "form": {
     "heading": "Obtén acceso a nuestro PDF",
-    "name": "Tu nombre",
-    "email": "Tu correo electrónico",
-    "phone": "Tu número de teléfono",
+    "subtext": "📘 PDF gratuito con consejos expertos\nÚnete a más de 2,000 profesionales",
+    "sign_in_google": "Iniciar sesión con Google",
+    "name": "Nombre completo",
+    "email": "Dirección de correo",
+    "phone_placeholder": "Tu número de teléfono de 10 dígitos",
+    "send_otp": "Enviar OTP",
+    "sending": "Enviando...",
+    "verify_otp": "Verificar OTP",
+    "verifying": "Verificando...",
     "submit": "Enviar",
     "submitting": "Enviando...",
-    "success_message": "¡Gracias! Ahora puedes descargar el PDF:",
     "download_pdf": "Descargar PDF",
-    "no_pdf": "(No hay PDF disponible - el backend podría no estar accesible.)",
+    "no_pdf": "PDF no disponible en este momento.",
     "submit_another": "Enviar otra respuesta",
+    "pdf_ready": "🎉 ¡Listo! Tu PDF está listo para descargar.",
+    "pdf_note": "Confiado por más de 2000 usuarios. Actualizado mensualmente.",
     "errors": {
-      "invalid_name": "El nombre no debe contener números.",
-      "invalid_email": "Por favor ingresa un correo válido.",
-      "invalid_phone": "El número de teléfono debe tener exactamente 10 dígitos.",
-      "fallback": "⚠️ No se pudo conectar con el backend. Mostrando éxito simulado."
-    }
+      "fallback": "Error de envío. Por favor, inténtalo de nuevo."
+    },
+    "query_prompt": "¿Tienes una consulta? ¡Estamos aquí para ayudarte!",
+    "contact_mail": "Correo",
+    "contact_whatsapp": "WhatsApp",
+    "query_modal_title": "Envíanos tu consulta",
+    "query_placeholder": "Escribe tu mensaje aquí...",
+    "send_email": "Enviar correo",
+    "cancel": "Cancelar",
+    "query_whatsapp_title": "Envíanos tu consulta por WhatsApp",
+    "whatsapp_placeholder": "Escribe tu mensaje de WhatsApp aquí...",
+    "send_whatsapp": "Enviar por WhatsApp",
+    "toast_success": "✅ ¡Mensaje enviado exitosamente!"
   },
 
   "hero": {
@@ -176,5 +196,9 @@
     "heading": "Contáctanos",
     "email": "Correo",
     "phone": "Teléfono"
+  },
+  "messageBubbles": {
+    "readMore": "Read more",
+    "showLess": "Show less"
   }
 }

@@ -10,24 +10,27 @@
 
   "brand": "Codepackers Software Solutions",
 
+
   "chatbot": {
-    "header": "Paul - My Enterprise AI Agent",
-    "thankyou": "Thanks! Our team will get back to you soon.",
+    "header": "Chat with Codepackers Bot",
     "inputPlaceholder": "Type your message...",
     "send": "Send",
-    "welcome": "Hi! How can I help you today?",
-    "option1": "Product Information",
-    "option2": "Pricing Details",
-    "option3": "Speak to Support"
+    "thankyou": "Thank you! We'll get back to you shortly.",
+    "start_message": "Hi there! How can I assist you today?",
+    "free_input_msg": "Please type your query below.",
+    "option_services": "View our services",
+    "option_contact": "Contact support",
+    "option_restart": "Restart"
   },
 
   "floatingChatbot": {
-    "welcome": "Hi there! I'm your AI assistant. How can I help you today?",
-    "noReply": "Sorry, I couldn't process that. Please try again.",
-    "error": "Oops! Something went wrong. Please try again later.",
-    "tooltip": "Start a chat with Paul",
-    "header": "Paul - Codepackers AI Agent",
-    "inputPlaceholder": "Type your message...",
+    "header": "Codepackers Assistant",
+    "welcome": "Hi there! Ask me anything about our services.",
+    "noReply": "Sorry, I couldn't understand that.",
+    "error": "Something went wrong. Please try again.",
+    "resetConfirm": "Do you want to reset the chat?",
+    "tooltip": "Need help? Ask the bot!",
+    "inputPlaceholder": "Type your message here...",
     "send": "Send"
   },
 
@@ -98,21 +101,36 @@
 
   "form": {
     "heading": "Get Access to Our PDF",
-    "name": "Your Name",
-    "email": "Your Email",
-    "phone": "Your Phone Number",
+    "subtext": "📘 Free Expert PDF + Bonus Tips\nJoin 2,000+ Professionals",
+    "sign_in_google": "Sign in with Google",
+    "name": "Full Name",
+    "email": "Email Address",
+    "phone_placeholder": "Your 10-digit phone number",
+    "send_otp": "Send OTP",
+    "sending": "Sending...",
+    "verify_otp": "Verify OTP",
+    "verifying": "Verifying...",
     "submit": "Submit",
     "submitting": "Submitting...",
-    "success_message": "Thank you! You can now download the PDF:",
     "download_pdf": "Download PDF",
-    "no_pdf": "(No PDF available - backend might not be reachable.)",
+    "no_pdf": "PDF not available at the moment.",
     "submit_another": "Submit Another Response",
+    "pdf_ready": "🎉 You're in! Your PDF is ready to download.",
+    "pdf_note": "Trusted by 2000+ users. Updated monthly.",
     "errors": {
-      "invalid_name": "Name must not contain numbers.",
-      "invalid_email": "Please enter a valid email address.",
-      "invalid_phone": "Phone number must be exactly 10 digits.",
-      "fallback": "⚠️ Not able to connect to backend. Showing dummy form success."
-    }
+      "fallback": "Submission error. Please try again."
+    },
+    "query_prompt": "Have a query? Don't worry, we're here for you!",
+    "contact_mail": "Mail",
+    "contact_whatsapp": "WhatsApp",
+    "query_modal_title": "Send us your query",
+    "query_placeholder": "Type your message here...",
+    "send_email": "Send Email",
+    "cancel": "Cancel",
+    "query_whatsapp_title": "Send us your query via WhatsApp",
+    "whatsapp_placeholder": "Type your WhatsApp message here...",
+    "send_whatsapp": "Send WhatsApp",
+    "toast_success": "✅ Message sent successfully!"
   },
 
   "hero": {
@@ -128,5 +146,9 @@
     "heading": "Contact Us",
     "email": "Email",
     "phone": "Phone"
+  },
+  "messageBubbles": {
+    "readMore": "Read more",
+    "showLess": "Show less"
   }
 }

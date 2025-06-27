@@ -1,8 +1,10 @@
 import React, { useEffect, useRef, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import "./MessageBubbles.css";
+import { useTranslation } from "react-i18next";
 
 const MessageBubbles = ({ chat, isBotTyping, onOptionClick = () => {} }) => {
+  const { t } = useTranslation();
   const bottomRef = useRef(null);
   const containerRef = useRef(null);
   const [expandedIndexes, setExpandedIndexes] = useState([]);
@@ -14,20 +16,17 @@ const MessageBubbles = ({ chat, isBotTyping, onOptionClick = () => {} }) => {
   };
 
   useEffect(() => {
-  const timeout = setTimeout(() => {
-    if (isNearBottom()) {
-      bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
-    }
-  }, 100); // delay ensures DOM renders first
-  return () => clearTimeout(timeout);
-}, [chat.length, isBotTyping]);
-
+    const timeout = setTimeout(() => {
+      if (isNearBottom()) {
+        bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
+      }
+    }, 100);
+    return () => clearTimeout(timeout);
+  }, [chat.length, isBotTyping]);
 
   const toggleExpand = (idx) => {
     setExpandedIndexes((prev) =>
-      prev.includes(idx)
-        ? prev.filter((i) => i !== idx)
-        : [...prev, idx]
+      prev.includes(idx) ? prev.filter((i) => i !== idx) : [...prev, idx]
     );
   };
 
@@ -53,7 +52,7 @@ const MessageBubbles = ({ chat, isBotTyping, onOptionClick = () => {} }) => {
                   className="read-more-btn"
                   onClick={() => toggleExpand(idx)}
                 >
-                  {isExpanded ? "Show less" : "Read more"}
+                  {isExpanded ? t("messageBubbles.showLess") : t("messageBubbles.readMore")}
                 </button>
               )}
             </div>
@@ -66,7 +65,7 @@ const MessageBubbles = ({ chat, isBotTyping, onOptionClick = () => {} }) => {
                     className="option-button"
                     onClick={() => onOptionClick(opt)}
                   >
-                    {opt}
+                    {typeof opt === "string" ? t(`chatbot.${opt}`) : opt}
                   </button>
                 ))}
               </div>
