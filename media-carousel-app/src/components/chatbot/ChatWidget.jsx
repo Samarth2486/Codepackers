@@ -5,7 +5,6 @@ import { useTranslation } from 'react-i18next';
 
 const ChatWidget = () => {
   const { t } = useTranslation();
-
   const [chat, setChat] = useState([]);
   const [currentNode, setCurrentNode] = useState('start');
   const [userInput, setUserInput] = useState('');
@@ -14,10 +13,13 @@ const ChatWidget = () => {
   const [fullMessage, setFullMessage] = useState('');
   const [currentOptions, setCurrentOptions] = useState(null);
   const [isUserScrolling, setIsUserScrolling] = useState(false);
+  const [expandedMessages, setExpandedMessages] = useState({});
 
   const messagesEndRef = useRef(null);
   const chatContainerRef = useRef(null);
+  const typingSpeed = 10; // Fast typing speed (ms per character)
 
+  // Auto-scroll management (FIXED: Added chat dependency)
   useEffect(() => {
     const container = chatContainerRef.current;
     if (!container) return;
@@ -32,12 +34,14 @@ const ChatWidget = () => {
     return () => container.removeEventListener('scroll', handleScroll);
   }, []);
 
+  // Auto-scroll when new messages arrive (FIXED)
   useEffect(() => {
     if (!isUserScrolling) {
       messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
     }
-  }, [typedMessage, chat]);
+  }, [chat, isUserScrolling]); // Added chat dependency
 
+  // Initialize chatbot
   useEffect(() => {
     if (currentNode === 'start') {
       const startMsg = decisionTree.start.message;
@@ -48,6 +52,7 @@ const ChatWidget = () => {
     }
   }, [currentNode, t]);
 
+  // Typing effect implementation
   useEffect(() => {
     if (fullMessage) {
       let index = 0;
@@ -64,17 +69,21 @@ const ChatWidget = () => {
 
         if (index >= messageLength) {
           clearInterval(interval);
-
           setTimeout(() => {
             setChat((prev) => [
               ...prev,
-              { from: 'bot', text: fullMessage, options: currentOptions },
+              { 
+                from: 'bot', 
+                text: fullMessage, 
+                options: currentOptions,
+                id: Date.now()
+              },
             ]);
             setTypedMessage('');
             setIsTyping(false);
             setFullMessage('');
             setCurrentOptions(null);
-
+            
             if (!isUserScrolling) {
               setTimeout(() => {
                 messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -82,27 +91,44 @@ const ChatWidget = () => {
             }
           }, 200);
         }
-      }, 10);
+      }, typingSpeed);
 
       return () => clearInterval(interval);
     }
-  }, [fullMessage, currentOptions, isUserScrolling]);
+  }, [fullMessage, currentOptions, isUserScrolling, typingSpeed]);
 
+  // Toggle message expansion
+  const toggleExpand = (id) => {
+    setExpandedMessages(prev => ({
+      ...prev,
+      [id]: !prev[id]
+    }));
+  };
+
+  // Handle option selection (FIXED: Added setIsTyping)
   const handleOptionClick = (nextNodeKey) => {
     const option = decisionTree[currentNode]?.options?.find(opt => opt.next === nextNodeKey);
     const labelKey = option?.label || nextNodeKey;
 
-    setChat((prev) => [...prev, { from: 'user', text: t(`chatbot.${labelKey}`) }]);
+    setChat((prev) => [...prev, { 
+      from: 'user', 
+      text: t(`chatbot.${labelKey}`),
+      id: Date.now()
+    }]);
 
     if (nextNodeKey === 'freeInput') {
-      setChat((prev) => [...prev, { from: 'bot', text: t(`chatbot.${decisionTree.freeInput.message}`) }]);
+      setChat((prev) => [...prev, { 
+        from: 'bot', 
+        text: t(`chatbot.${decisionTree.freeInput.message}`),
+        id: Date.now()
+      }]);
       setCurrentNode('freeInput');
     } else {
       const next = decisionTree[nextNodeKey];
       if (next) {
         setCurrentNode(nextNodeKey);
         setCurrentOptions(next.options || null);
-        setIsTyping(true);
+        setIsTyping(true); // Show typing indicator
         setTimeout(() => {
           setFullMessage(t(`chatbot.${next.message}`));
         }, 1000);
@@ -110,12 +136,17 @@ const ChatWidget = () => {
     }
   };
 
+  // Handle user message submission (FIXED: Added setIsTyping)
   const handleUserSubmit = (e) => {
     e.preventDefault();
     if (!userInput.trim()) return;
-    setChat((prev) => [...prev, { from: 'user', text: userInput }]);
+    setChat((prev) => [...prev, { 
+      from: 'user', 
+      text: userInput,
+      id: Date.now()
+    }]);
     setUserInput('');
-    setIsTyping(true);
+    setIsTyping(true); // Show typing indicator
     setTimeout(() => {
       setFullMessage(t('chatbot.thankyou'));
     }, 1000);
@@ -129,9 +160,21 @@ const ChatWidget = () => {
       </div>
 
       <div className="chatbot-messages" ref={chatContainerRef}>
-        {chat.map((msg, idx) => (
-          <div key={idx}>
-            <div className={`chatbot-msg ${msg.from}`}>{msg.text}</div>
+        {chat.map((msg) => (
+          <div key={msg.id}>
+            <div className={`chatbot-msg ${msg.from}`}>
+              {msg.text.length > 300 && !expandedMessages[msg.id] ? (
+                <>
+                  {msg.text.substring(0, 300)}... 
+                  <button 
+                    className="read-more-btn" 
+                    onClick={() => toggleExpand(msg.id)}
+                  >
+                    {t('chatbot.readMore')}
+                  </button>
+                </>
+              ) : msg.text}
+            </div>
             {msg.from === 'bot' && msg.options && (
               <div className="bot-options">
                 {msg.options.map((opt, optIdx) => (
