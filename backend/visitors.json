@@ -140,5 +140,39 @@
         "queryMethod": [
             "whatsapp"
         ]
+    },
+    {
+        "name": "Samya Soni",
+        "email": "samya.soni.1435@gmail.com",
+        "phone": "+911234567890",
+        "timestamp": "2025-06-27T12:15:37.035527+05:30",
+        "message": "",
+        "queryId": "c4e31fc1",
+        "source": "form",
+        "queryMethod": []
+    },
+    {
+        "name": "Samya Soni",
+        "email": "samya.soni.1435@gmail.com",
+        "phone": "+911234567890",
+        "message": "tell me about agent in brief",
+        "source": "email",
+        "timestamp": "2025-06-27T12:16:29.637368+05:30",
+        "queryId": "552cbeb2",
+        "queryMethod": [
+            "email"
+        ]
+    },
+    {
+        "name": "Samya Soni",
+        "email": "samya.soni.1435@gmail.com",
+        "phone": "+911234567890",
+        "message": "tell me about codepackers",
+        "source": "whatsapp",
+        "timestamp": "2025-06-27T12:40:48.825543+05:30",
+        "queryId": "52be7ea2",
+        "queryMethod": [
+            "whatsapp"
+        ]
     }
 ]
