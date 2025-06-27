@@ -24,6 +24,7 @@ const VisitorForm = () => {
   const [formSubmitted, setFormSubmitted] = useState(false);
   const [pdfFilename, setPdfFilename] = useState("");
   const [showEmailModal, setShowEmailModal] = useState(false);
+  const [googleUser, setGoogleUser] = useState(null);
   const [showWhatsappModal, setShowWhatsappModal] = useState(false); // ✅ New
   const [queryMessage, setQueryMessage] = useState("");
   const [whatsappMessage, setWhatsappMessage] = useState(""); // ✅ New
@@ -62,10 +63,12 @@ const VisitorForm = () => {
       const result = await signInWithPopup(auth, googleProvider);
       const user = result.user;
       setFormData((prev) => ({
-        ...prev,
-        name: user.displayName || "",
-        email: user.email || "",
-      }));
+      ...prev,
+      name: user.displayName || "",
+      email: user.email || "",
+    }));
+
+      setGoogleUser(user);
       setIsGoogleSignedIn(true);
       setErrorMsg("");
     } catch (error) {
@@ -146,39 +149,49 @@ const VisitorForm = () => {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    setErrorMsg("");
-    if (!isGoogleSignedIn || !isPhoneVerified) {
-      setErrorMsg("Please verify Google and phone before submitting.");
-      setLoading(false);
-      return;
-    }
-    try {
-      const res = await fetch(`${API_BASE_URL}/api/messages`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-        ...formData,
-        queryMethod: ["email", "whatsapp"],  // or update dynamically
-        source: "form",
-      }),
+  e.preventDefault();
+  setLoading(true);
+  setErrorMsg("");
 
-      });
-      const data = await res.json();
-      if (!data.success || !data.pdf) throw new Error("API failed");
-      setFormSubmitted(true);
-      setPdfFilename(data.pdf);
-      localStorage.setItem("visitorFormSubmitted", "true");
-      localStorage.setItem("visitorFormPdf", data.pdf);
-      localStorage.setItem("visitorData", JSON.stringify(formData));
-    } catch (err) {
-      setErrorMsg(t("form.errors.fallback"));
-      setFormSubmitted(true);
-      setPdfFilename("");
-    }
+  if (!isGoogleSignedIn || !isPhoneVerified) {
+    setErrorMsg("Please verify Google and phone before submitting.");
     setLoading(false);
+    return;
+  }
+
+    const payload = {
+    name: googleUser?.displayName || formData.name,
+    email: googleUser?.email || formData.email,
+    phone: formData.phone,
+    queryMethod: [], // ✅ no message in this context
+    source: "form",
   };
+
+
+  try {
+    const res = await fetch(`${API_BASE_URL}/api/messages`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+
+    const data = await res.json();
+    if (!data.success || !data.pdf) throw new Error("API failed");
+
+    setFormSubmitted(true);
+    setPdfFilename(data.pdf);
+    localStorage.setItem("visitorFormSubmitted", "true");
+    localStorage.setItem("visitorFormPdf", data.pdf);
+    localStorage.setItem("visitorData", JSON.stringify(payload));
+  } catch (err) {
+    setErrorMsg(t("form.errors.fallback"));
+    setFormSubmitted(true);
+    setPdfFilename("");
+  }
+
+  setLoading(false);
+};
+
 
   const handleReset = () => {
     setFormData({ name: "", email: "", phone: "" });
@@ -203,11 +216,14 @@ const VisitorForm = () => {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        name: saved.name,
-        email: saved.email,
-        phone: saved.phone,
-        message: queryMessage,
-      }),
+      name: saved.name,
+      email: saved.email,
+      phone: saved.phone,
+      message: queryMessage,
+      queryMethod: ["email"],   // ✅ Important
+      source: "form"
+    }),
+
     });
     const result = await res.json();
     if (result.success) {
@@ -226,8 +242,9 @@ const VisitorForm = () => {
 
 const sendWhatsAppQuery = async () => {
   const saved = JSON.parse(localStorage.getItem("visitorData") || "{}");
+  const messageTrimmed = whatsappMessage.trim();
 
-  if (!saved.name || !saved.email || !saved.phone || !whatsappMessage) {
+  if (!saved.name || !saved.email || !saved.phone || !messageTrimmed) {
     alert("Missing saved form data or message");
     return;
   }
@@ -240,18 +257,21 @@ const sendWhatsAppQuery = async () => {
         name: saved.name,
         email: saved.email,
         phone: saved.phone,
-        message: whatsappMessage,
+        message: messageTrimmed,
         queryMethod: ["whatsapp"],
         source: "form"
       }),
     });
 
     const data = await res.json();
-    if (!data.success) throw new Error("Logging failed");
+    if (!data.success || !data.queryId) throw new Error("Logging failed");
 
+    // ✅ ENCODE the full message
     const text = encodeURIComponent(
-      `Hello Team,\n\nVisitor Details:\nName: ${saved.name}\nEmail: ${saved.email}\nPhone: ${saved.phone}\nQuery ID: ${data.queryId}\n\nMessage:\n${whatsappMessage}`
+      `Hello Team,\n\nVisitor Details:\nName: ${saved.name}\nEmail: ${saved.email}\nPhone: ${saved.phone}\nQuery ID: ${data.queryId}\n\nMessage:\n${messageTrimmed}`
     );
+
+    // ✅ Open WhatsApp AFTER API success
     const url = `https://wa.me/919835775694?text=${text}`;
     window.open(url, "_blank");
 

@@ -1,428 +1,56 @@
 [
     {
-        "name": "samarth",
-        "email": "samarthapj@gmail.com",
-        "phone": "9310742422"
-    },
-    {
-        "name": "sam1",
-        "email": "s@gmail.com",
-        "phone": "9310742422"
-    },
-    {
-        "name": "sam",
-        "email": "samapj@gmail.com",
-        "phone": "9310742422"
-    },
-    {
-        "name": "rahul",
-        "email": "rahul@gmail.com",
-        "phone": "7778373833"
-    },
-    {
-        "name": "rahul",
-        "email": "good@gmail.com",
-        "phone": "7778373833"
-    },
-    {
-        "name": "samya",
-        "email": "samya@gmail.com",
-        "phone": "8310048454"
-    },
-    {
-        "name": "samarth",
-        "email": "rahul@gmail.com",
-        "phone": "7778373833"
-    },
-    {
-        "name": "samarth",
-        "email": "good@gmail.com",
-        "phone": "7778373833"
-    },
-    {
-        "name": "qwe",
-        "email": "qwe@gmail.com",
-        "phone": "9835775694",
-        "timestamp": "2025-06-16T19:31:23.777928"
-    },
-    {
-        "name": "samya",
-        "email": "samya@gmail.com",
-        "phone": "9835775694",
-        "timestamp": "2025-06-16T20:12:12.051567"
-    },
-    {
-        "name": "harry",
-        "email": "harry@gmail.com",
-        "phone": "1234567890",
-        "timestamp": "2025-06-16T20:38:08.644171"
-    },
-    {
-        "name": "potter",
-        "email": "potter@gmail.com",
-        "phone": "9835775694",
-        "timestamp": "2025-06-17T02:13:37.209127+05:30"
-    },
-    {
-        "name": "m samarth",
-        "email": "samarth@gmail.com",
-        "phone": "1234567890",
-        "timestamp": "2025-06-17T02:38:10.113765+05:30"
-    },
-    {
-        "name": "samarth",
-        "email": "good@gmail.com",
-        "phone": "8310048454"
-    },
-    {
-        "name": "samarth",
-        "email": "samarthoffcampus@gmail.com",
-        "phone": "7778373833"
-    },
-    {
-        "name": "samya",
-        "email": "samya@gmail.com",
-        "phone": "7778373833"
-    },
-    {
-        "name": "M.Samarth",
-        "email": "m.samarth.ug22@nsut.ac.in",
-        "phone": "9310742242",
-        "timestamp": "2025-06-20T22:15:32.978560+05:30"
-    },
-    {
-        "name": "chatur",
-        "email": "chatur@gmail.com",
-        "phone": "9888877777",
-        "timestamp": "2025-06-20T22:16:07.246542+05:30"
-    },
-    {
         "name": "Samya Soni",
-        "email": "happiness.knock.knock.hp7@gmail.com",
-        "phone": "+919835775694",
-        "timestamp": "2025-06-27T04:20:54.709822+05:30",
+        "email": "cocktail.3.us@gmail.com",
+        "phone": "+911234567890",
+        "timestamp": "2025-06-27T10:01:39.915016+05:30",
+        "message": "hello hello",
+        "queryId": "b47f1167",
+        "source": "email",
         "queryMethod": [
-            "whatsapp"
-        ],
-        "message": "bye bye",
-        "queryId": "a217a4e9",
-        "source": "whatsapp"
-    },
-    {
-        "name": "Samya Soni",
-        "email": "happiness.knock.knock.hp7@gmail.com",
-        "phone": "+919835775694",
-        "timestamp": "2025-06-26T20:44:52.928297+05:30"
-    },
-    {
-        "name": "Samya Soni",
-        "email": "happiness.knock.knock.hp7@gmail.com",
-        "phone": "+919835775694",
-        "timestamp": "2025-06-26T20:51:45.284738+05:30"
-    },
-    {
-        "name": "Samya Soni",
-        "email": "happiness.knock.knock.hp7@gmail.com",
-        "phone": "+919835775694",
-        "timestamp": "2025-06-26T20:54:38.645154+05:30"
-    },
-    {
-        "name": "Samya",
-        "email": "you.are.my.sunshine7648@gmail.com",
-        "phone": "+919835775694",
-        "timestamp": "2025-06-26T21:13:30.648205+05:30"
-    },
-    {
-        "name": "Samya",
-        "email": "you.are.my.sunshine7648@gmail.com",
-        "phone": "+919835775694",
-        "timestamp": "2025-06-26T21:35:40.347711+05:30"
-    },
-    {
-        "name": "Samya",
-        "email": "you.are.my.sunshine7648@gmail.com",
-        "phone": "+911234567890",
-        "timestamp": "2025-06-27T04:09:32.146066+05:30",
-        "queryMethod": [
-            "whatsapp"
-        ],
-        "message": "DEAD",
-        "queryId": "ee695588",
-        "source": "whatsapp"
-    },
-    {
-        "name": "Samya",
-        "email": "you.are.my.sunshine7648@gmail.com",
-        "phone": "+919835775694",
-        "timestamp": "2025-06-26T22:16:07.399178+05:30"
-    },
-    {
-        "name": "Samya Soni",
-        "email": "happiness.knock.knock.hp7@gmail.com",
-        "phone": "+919835775694",
-        "timestamp": "2025-06-26T23:56:59.994181+05:30"
+            "email"
+        ]
     },
     {
         "name": "Samya Soni",
         "email": "happiness.knock.knock.hp7@gmail.com",
         "phone": "+911234567890",
-        "timestamp": "2025-06-26T23:57:59.268132+05:30"
-    },
-    {
-        "name": "Samya",
-        "email": "you.are.my.sunshine7648@gmail.com",
-        "phone": "+919835775694",
-        "timestamp": "2025-06-27T00:31:52.361994+05:30"
-    },
-    {
-        "name": "Samya",
-        "email": "you.are.my.sunshine7648@gmail.com",
-        "phone": "+919835775694",
-        "timestamp": "2025-06-27T00:56:13.557957+05:30"
-    },
-    {
-        "name": "Samya Soni",
-        "email": "happiness.knock.knock.hp7@gmail.com",
-        "phone": "+911234567890",
-        "timestamp": "2025-06-27T01:40:11.111839+05:30"
-    },
-    {
-        "name": "Samya Soni",
-        "email": "happiness.knock.knock.hp7@gmail.com",
-        "phone": "+911234567890",
-        "timestamp": "2025-06-27T01:52:33.281367+05:30"
-    },
-    {
-        "name": "Samya Soni",
-        "email": "happiness.knock.knock.hp7@gmail.com",
-        "phone": "+911234567890",
-        "timestamp": "2025-06-27T02:42:13.531267+05:30"
-    },
-    {
-        "name": "Samya Soni",
-        "email": "happiness.knock.knock.hp7@gmail.com",
-        "phone": "+911234567890",
-        "message": "lets go",
-        "source": "whatsapp",
-        "timestamp": "2025-06-27T02:42:21.648654+05:30",
-        "queryId": "a7f13798"
-    },
-    {
-        "name": "Samya Soni",
-        "email": "happiness.knock.knock.hp7@gmail.com",
-        "phone": "+911234567890",
-        "timestamp": "2025-06-27T03:00:55.160431+05:30"
-    },
-    {
-        "name": "Samya Soni",
-        "email": "happiness.knock.knock.hp7@gmail.com",
-        "phone": "+911234567890",
-        "message": "BHAI HOGYA",
-        "source": "whatsapp",
-        "timestamp": "2025-06-27T03:01:09.615652+05:30",
-        "queryId": "0a412265"
-    },
-    {
-        "name": "Samya Soni",
-        "email": "happiness.knock.knock.hp7@gmail.com",
-        "phone": "+919835775694",
-        "queryMethod": [
-            "email",
-            "whatsapp"
-        ],
+        "timestamp": "2025-06-27T09:54:35.152388+05:30",
+        "message": "",
+        "queryId": "95352964",
         "source": "form",
-        "timestamp": "2025-06-27T03:20:29.914657+05:30"
+        "queryMethod": []
     },
     {
         "name": "Samya Soni",
         "email": "happiness.knock.knock.hp7@gmail.com",
-        "phone": "+919835775694",
-        "message": "iykik",
-        "source": "whatsapp",
-        "timestamp": "2025-06-27T03:20:55.706211+05:30",
-        "queryId": "55cdd874"
+        "phone": "+911234567890",
+        "message": "hola",
+        "source": "email",
+        "timestamp": "2025-06-27T09:54:49.679000+05:30",
+        "queryId": "1302f988",
+        "queryMethod": [
+            "email"
+        ]
     },
     {
-        "name": "Samya",
-        "email": "you.are.my.sunshine7648@gmail.com",
-        "phone": "+919835775694",
-        "queryMethod": [
-            "email",
-            "whatsapp"
-        ],
+        "name": "Samya Soni",
+        "email": "cocktail.3.us@gmail.com",
+        "phone": "+911234567890",
+        "timestamp": "2025-06-27T10:01:28.527159+05:30",
+        "message": "",
+        "queryId": "e5e2c3e9",
         "source": "form",
-        "timestamp": "2025-06-27T03:22:48.769496+05:30"
+        "queryMethod": []
     },
     {
         "name": "Samya Soni",
         "email": "happiness.knock.knock.hp7@gmail.com",
-        "phone": "+911234567890",
-        "queryMethod": [
-            "email",
-            "whatsapp"
-        ],
+        "phone": "+919835775694",
+        "timestamp": "2025-06-27T10:07:56.380699+05:30",
+        "message": "",
+        "queryId": "f4d8d9e3",
         "source": "form",
-        "timestamp": "2025-06-27T03:23:44.089897+05:30"
-    },
-    {
-        "name": "Samya Soni",
-        "email": "happiness.knock.knock.hp7@gmail.com",
-        "phone": "+911234567890",
-        "message": "iykik",
-        "source": "whatsapp",
-        "timestamp": "2025-06-27T03:23:52.212852+05:30",
-        "queryId": "dc167710"
-    },
-    {
-        "name": "Samya Soni",
-        "email": "cocktail.3.us@gmail.com",
-        "phone": "+911234567890",
-        "queryMethod": [
-            "email",
-            "whatsapp"
-        ],
-        "source": "form",
-        "timestamp": "2025-06-27T03:27:21.696442+05:30"
-    },
-    {
-        "name": "Samya Soni",
-        "email": "happiness.knock.knock.hp7@gmail.com",
-        "phone": "+911234567890",
-        "timestamp": "2025-06-27T03:33:23.064468+05:30",
-        "queryMethod": [
-            "email"
-        ],
-        "message": "",
-        "queryId": "",
-        "source": "form"
-    },
-    {
-        "name": "Samya Soni",
-        "email": "cocktail.3.us@gmail.com",
-        "phone": "+919835775694",
-        "timestamp": "2025-06-27T03:36:34.169785+05:30",
-        "queryMethod": [
-            "email"
-        ],
-        "message": "",
-        "queryId": "",
-        "source": "form"
-    },
-    {
-        "name": "Samya Soni",
-        "email": "cocktail.3.us@gmail.com",
-        "phone": "+919835775694",
-        "message": "HELLO HELLO",
-        "source": "whatsapp",
-        "timestamp": "2025-06-27T03:36:43.263422+05:30",
-        "queryId": "7f9cdd3b"
-    },
-    {
-        "name": "Samya Soni",
-        "email": "cocktail.3.us@gmail.com",
-        "phone": "+911234567890",
-        "timestamp": "2025-06-27T03:53:32.590336+05:30",
-        "queryMethod": [
-            "email"
-        ],
-        "message": "",
-        "queryId": "",
-        "source": "form"
-    },
-    {
-        "name": "Samya Soni",
-        "email": "happiness.knock.knock.hp7@gmail.com",
-        "phone": "+911234567890",
-        "timestamp": "2025-06-27T03:55:01.806168+05:30",
-        "queryMethod": [
-            "email"
-        ],
-        "message": "",
-        "queryId": "",
-        "source": "form"
-    },
-    {
-        "name": "Samya Soni",
-        "email": "cocktail.3.us@gmail.com",
-        "phone": "+919835775694",
-        "timestamp": "2025-06-27T03:56:44.573018+05:30",
-        "queryMethod": [
-            "email"
-        ],
-        "message": "",
-        "queryId": "",
-        "source": "form"
-    },
-    {
-        "name": "Samya Soni",
-        "email": "cocktail.3.us@gmail.com",
-        "phone": "+919835775694",
-        "timestamp": "2025-06-27T04:08:55.291005+05:30",
-        "queryMethod": [
-            "email"
-        ],
-        "message": "",
-        "queryId": "",
-        "source": "form"
-    },
-    {
-        "name": "Samya Soni",
-        "email": "cocktail.3.us@gmail.com",
-        "phone": "+911234567890",
-        "timestamp": "2025-06-27T04:09:26.777028+05:30",
-        "queryMethod": [
-            "email"
-        ],
-        "message": "",
-        "queryId": "",
-        "source": "form"
-    },
-    {
-        "name": "Samya Soni",
-        "email": "cocktail.3.us@gmail.com",
-        "phone": "+919835775694",
-        "timestamp": "2025-06-27T04:11:17.304752+05:30",
-        "queryMethod": [
-            "email"
-        ],
-        "message": "",
-        "queryId": "",
-        "source": "form"
-    },
-    {
-        "name": "Samya Soni",
-        "email": "happiness.knock.knock.hp7@gmail.com",
-        "phone": "+919835775694",
-        "timestamp": "2025-06-27T04:20:13.472962+05:30",
-        "queryMethod": [
-            "email"
-        ],
-        "message": "",
-        "queryId": "",
-        "source": "form"
-    },
-    {
-        "name": "Samya Soni",
-        "email": "happiness.knock.knock.hp7@gmail.com",
-        "phone": "+919835775694",
-        "timestamp": "2025-06-27T04:20:48.397013+05:30",
-        "queryMethod": [
-            "email"
-        ],
-        "message": "",
-        "queryId": "",
-        "source": "form"
-    },
-    {
-        "name": "Samya Soni",
-        "email": "happiness.knock.knock.hp7@gmail.com",
-        "phone": "+911234567890",
-        "timestamp": "2025-06-27T04:21:33.203171+05:30",
-        "queryMethod": [
-            "email"
-        ],
-        "message": "",
-        "queryId": "",
-        "source": "form"
+        "queryMethod": []
     }
 ]
