@@ -3,15 +3,17 @@ import { motion } from "framer-motion";
 import { useTranslation } from "react-i18next";
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
-import { auth, googleProvider } from "../../firebase";
+import { GithubAuthProvider } from "firebase/auth";
+import { auth, googleProvider, githubProvider } from "../../firebase";
 import {
   signInWithPopup,
   signInWithPhoneNumber,
+  linkWithCredential,
   RecaptchaVerifier,
 } from "firebase/auth";
 import "./VisitorForm.css";
 
-const VisitorForm = () => {
+const VisitorForm = (props) => {
   const [formData, setFormData] = useState({ name: "", email: "", phone: "" });
   const [fullPhone, setFullPhone] = useState("");
   const [isGoogleSignedIn, setIsGoogleSignedIn] = useState(false);
@@ -87,6 +89,38 @@ const VisitorForm = () => {
       setErrorMsg("Google Sign-In failed. Try again.");
     }
   };
+
+  const handleGitHubLogin = async () => {
+  try {
+    const result = await signInWithPopup(auth, githubProvider);
+    const user = result.user;
+
+    setFormData((prev) => ({
+      ...prev,
+      name: user.displayName || "",
+      email: user.email || "",
+    }));
+
+    setGoogleUser(user);
+    setIsGoogleSignedIn(true);
+    setErrorMsg("");
+  } catch (error) {
+    console.error("GitHub Sign-in error:", error.code, error.message);
+
+    if (error.code === "auth/account-exists-with-different-credential") {
+      const pendingCred = GithubAuthProvider.credentialFromError(error);
+      const email = error.customData?.email;
+
+      setErrorMsg(`This email is already used with Google. Please sign in with Google first.`);
+
+      // ✅ Suggest user to manually sign in with Google
+      // OR trigger the Google popup in a chained function (via user event only)
+    } else {
+      setErrorMsg("GitHub Sign-In failed. Try again.");
+    }
+  }
+};
+
 
   const setupRecaptcha = () => {
     if (!window.recaptchaVerifier) {
@@ -171,14 +205,13 @@ const VisitorForm = () => {
     return;
   }
 
-    const payload = {
+  const payload = {
     name: googleUser?.displayName || formData.name,
     email: googleUser?.email || formData.email,
     phone: formData.phone,
     queryMethod: [], // ✅ no message in this context
     source: "form",
   };
-
 
   try {
     const res = await fetch(`${API_BASE_URL}/api/messages`, {
@@ -195,6 +228,10 @@ const VisitorForm = () => {
     localStorage.setItem("visitorFormSubmitted", "true");
     localStorage.setItem("visitorFormPdf", data.pdf);
     localStorage.setItem("visitorData", JSON.stringify(payload));
+
+    // ✅ Callback to notify parent (e.g. ChatWidget) of successful verification
+    if (props.onVerified) props.onVerified();
+
   } catch (err) {
     setErrorMsg(t("form.errors.fallback"));
     setFormSubmitted(true);
@@ -203,6 +240,7 @@ const VisitorForm = () => {
 
   setLoading(false);
 };
+
 
 
   const handleReset = () => {
@@ -315,16 +353,26 @@ const sendWhatsAppQuery = async () => {
       {!formSubmitted ? (
         <>
           {!isGoogleSignedIn && (
-            <button className="google-signin-btn" onClick={handleGoogleLogin}>
-  <img
-    src="https://developers.google.com/identity/images/g-logo.png"
-    alt="G"
-    className="google-logo"
-  />
-  {t("form.sign_in_google")}
-</button>
+  <div className="social-auth-group">
+    <button className="google-signin-btn" onClick={handleGoogleLogin}>
+      <img
+        src="https://developers.google.com/identity/images/g-logo.png"
+        alt="G"
+        className="google-logo"
+      />
+      Sign in with Google
+    </button>
 
-          )}
+    <button className="github-signin-btn" onClick={handleGitHubLogin}>
+      <img
+        src="https://img.icons8.com/ios-filled/50/000000/github.png"
+        alt="GitHub"
+        className="google-logo"
+      />
+      Sign in with GitHub
+    </button>
+  </div>
+)}
           <form onSubmit={handleSubmit} className="visitor-form">
             <input type="text" placeholder={t("form.name")} value={formData.name} readOnly required />
             <input type="email" placeholder={t("form.email")} value={formData.email} readOnly required />

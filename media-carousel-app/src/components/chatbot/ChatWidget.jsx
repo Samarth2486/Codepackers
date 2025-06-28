@@ -3,6 +3,10 @@ import decisionTree from './decisionTree';
 import './ChatWidget.css';
 import { useTranslation } from 'react-i18next';
 
+// ✅ NEW: import VisitorForm and Firebase Auth
+import VisitorForm from './VisitorForm';
+import { auth } from '../firebase';
+
 const ChatWidget = () => {
   const { t } = useTranslation();
   const [chat, setChat] = useState([]);
@@ -15,11 +19,23 @@ const ChatWidget = () => {
   const [isUserScrolling, setIsUserScrolling] = useState(false);
   const [expandedMessages, setExpandedMessages] = useState({});
 
+  // ✅ NEW: login state, question count, show form toggle
+  const [questionCount, setQuestionCount] = useState(0);
+  const [isVerified, setIsVerified] = useState(false);
+  const [showVisitorForm, setShowVisitorForm] = useState(false);
+
   const messagesEndRef = useRef(null);
   const chatContainerRef = useRef(null);
-  const typingSpeed = 10; // Fast typing speed (ms per character)
+  const typingSpeed = 10;
 
-  // Auto-scroll management (FIXED: Added chat dependency)
+  // ✅ NEW: Check Firebase Auth state on mount
+  useEffect(() => {
+    const unsubscribe = auth.onAuthStateChanged((user) => {
+      if (user) setIsVerified(true);
+    });
+    return () => unsubscribe();
+  }, []);
+
   useEffect(() => {
     const container = chatContainerRef.current;
     if (!container) return;
@@ -34,14 +50,12 @@ const ChatWidget = () => {
     return () => container.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Auto-scroll when new messages arrive (FIXED)
   useEffect(() => {
     if (!isUserScrolling) {
       messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
     }
-  }, [chat, isUserScrolling]); // Added chat dependency
+  }, [chat, isUserScrolling]);
 
-  // Initialize chatbot
   useEffect(() => {
     if (currentNode === 'start') {
       const startMsg = decisionTree.start.message;
@@ -52,7 +66,6 @@ const ChatWidget = () => {
     }
   }, [currentNode, t]);
 
-  // Typing effect implementation
   useEffect(() => {
     if (fullMessage) {
       let index = 0;
@@ -72,9 +85,9 @@ const ChatWidget = () => {
           setTimeout(() => {
             setChat((prev) => [
               ...prev,
-              { 
-                from: 'bot', 
-                text: fullMessage, 
+              {
+                from: 'bot',
+                text: fullMessage,
                 options: currentOptions,
                 id: Date.now()
               },
@@ -83,7 +96,7 @@ const ChatWidget = () => {
             setIsTyping(false);
             setFullMessage('');
             setCurrentOptions(null);
-            
+
             if (!isUserScrolling) {
               setTimeout(() => {
                 messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -97,7 +110,6 @@ const ChatWidget = () => {
     }
   }, [fullMessage, currentOptions, isUserScrolling, typingSpeed]);
 
-  // Toggle message expansion
   const toggleExpand = (id) => {
     setExpandedMessages(prev => ({
       ...prev,
@@ -105,20 +117,35 @@ const ChatWidget = () => {
     }));
   };
 
-  // Handle option selection (FIXED: Added setIsTyping)
   const handleOptionClick = (nextNodeKey) => {
+    // ✅ NEW: Anonymous user limit
+    if (!isVerified && questionCount >= 2) {
+      setChat(prev => [
+        ...prev,
+        {
+          from: 'bot',
+          text: '⚠️ ' + t('chatbot.limitReached') || 'You’ve reached the anonymous limit. Please sign in to continue.',
+          id: Date.now()
+        }
+      ]);
+      setShowVisitorForm(true);
+      return;
+    }
+
     const option = decisionTree[currentNode]?.options?.find(opt => opt.next === nextNodeKey);
     const labelKey = option?.label || nextNodeKey;
 
-    setChat((prev) => [...prev, { 
-      from: 'user', 
+    setChat((prev) => [...prev, {
+      from: 'user',
       text: t(`chatbot.${labelKey}`),
       id: Date.now()
     }]);
 
+    setQuestionCount((prev) => prev + 1); // ✅ NEW: Increment question count
+
     if (nextNodeKey === 'freeInput') {
-      setChat((prev) => [...prev, { 
-        from: 'bot', 
+      setChat((prev) => [...prev, {
+        from: 'bot',
         text: t(`chatbot.${decisionTree.freeInput.message}`),
         id: Date.now()
       }]);
@@ -128,7 +155,7 @@ const ChatWidget = () => {
       if (next) {
         setCurrentNode(nextNodeKey);
         setCurrentOptions(next.options || null);
-        setIsTyping(true); // Show typing indicator
+        setIsTyping(true);
         setTimeout(() => {
           setFullMessage(t(`chatbot.${next.message}`));
         }, 1000);
@@ -136,20 +163,46 @@ const ChatWidget = () => {
     }
   };
 
-  // Handle user message submission (FIXED: Added setIsTyping)
   const handleUserSubmit = (e) => {
     e.preventDefault();
     if (!userInput.trim()) return;
-    setChat((prev) => [...prev, { 
-      from: 'user', 
+
+    // ✅ NEW: Anonymous user input limit
+    if (!isVerified && questionCount >= 2) {
+      setChat(prev => [
+        ...prev,
+        {
+          from: 'bot',
+          text: '⚠️ ' + t('chatbot.limitReached') || 'You’ve reached the anonymous limit. Please sign in to continue.',
+          id: Date.now()
+        }
+      ]);
+      setShowVisitorForm(true);
+      return;
+    }
+
+    setChat((prev) => [...prev, {
+      from: 'user',
       text: userInput,
       id: Date.now()
     }]);
     setUserInput('');
-    setIsTyping(true); // Show typing indicator
+    setQuestionCount((prev) => prev + 1); // ✅ NEW
+    setIsTyping(true);
     setTimeout(() => {
       setFullMessage(t('chatbot.thankyou'));
     }, 1000);
+  };
+
+  // ✅ NEW: Handle successful verification
+  const handleVerified = () => {
+    setIsVerified(true);
+    setShowVisitorForm(false);
+    setChat(prev => [...prev, {
+      from: 'bot',
+      text: '✅ ' + t('chatbot.loggedInSuccess') || "You're now signed in. Continue chatting!",
+      id: Date.now()
+    }]);
   };
 
   return (
@@ -165,9 +218,9 @@ const ChatWidget = () => {
             <div className={`chatbot-msg ${msg.from}`}>
               {msg.text.length > 300 && !expandedMessages[msg.id] ? (
                 <>
-                  {msg.text.substring(0, 300)}... 
-                  <button 
-                    className="read-more-btn" 
+                  {msg.text.substring(0, 300)}...
+                  <button
+                    className="read-more-btn"
                     onClick={() => toggleExpand(msg.id)}
                   >
                     {t('chatbot.readMore')}
@@ -202,7 +255,12 @@ const ChatWidget = () => {
         <div ref={messagesEndRef} />
       </div>
 
-      {currentNode === 'freeInput' ? (
+      {/* ✅ NEW: VisitorForm shows only when user exceeds question limit */}
+      {showVisitorForm ? (
+        <div className="chatbot-visitor-form-wrapper">
+          <VisitorForm onVerified={handleVerified} />
+        </div>
+      ) : currentNode === 'freeInput' ? (
         <form className="chatbot-input" onSubmit={handleUserSubmit}>
           <input
             type="text"
