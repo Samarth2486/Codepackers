@@ -1,31 +1,22 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useLayoutEffect, useRef, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import "./MessageBubbles.css";
 import { useTranslation } from "react-i18next";
 
-const MessageBubbles = ({ chat, isBotTyping, onOptionClick = () => {} }) => {
+const MessageBubbles = ({
+  chat,
+  isBotTyping,
+  typedMessage,
+  onOptionClick = () => {},
+}) => {
   const { t } = useTranslation();
   const bottomRef = useRef(null);
-  const containerRef = useRef(null);
   const [expandedIndexes, setExpandedIndexes] = useState([]);
-
   const MAX_CHARS = 250;
 
-  const isNearBottom = () => {
-    if (!containerRef.current) return true;
-    const { scrollTop, scrollHeight, clientHeight } = containerRef.current;
-    return scrollHeight - scrollTop - clientHeight < 50;
-  };
-
-  useEffect(() => {
-    const timeout = setTimeout(() => {
-      if (isNearBottom()) {
-        bottomRef.current?.scrollIntoView({ behavior: "smooth" });
-      }
-    }, 100);
-
-    return () => clearTimeout(timeout);
-  }, [chat.length, isBotTyping]);
+  useLayoutEffect(() => {
+    bottomRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
+  }, [chat, isBotTyping, typedMessage]);
 
   const toggleExpand = (idx) => {
     setExpandedIndexes((prev) =>
@@ -34,7 +25,7 @@ const MessageBubbles = ({ chat, isBotTyping, onOptionClick = () => {} }) => {
   };
 
   return (
-    <div className="chat-messages" ref={containerRef}>
+    <div className="chat-messages">
       {chat.map((msg, idx) => {
         const isExpanded = expandedIndexes.includes(idx);
         const showReadMore = msg.text.length > MAX_CHARS;
@@ -78,11 +69,21 @@ const MessageBubbles = ({ chat, isBotTyping, onOptionClick = () => {} }) => {
         );
       })}
 
-      {isBotTyping && (
+      {/* 3-dot typing indicator BEFORE typedMessage begins */}
+      {isBotTyping && typedMessage === "" && (
         <div className="chat-bubble ai typing-indicator">
           <span className="dot"></span>
           <span className="dot"></span>
           <span className="dot"></span>
+        </div>
+      )}
+
+      {/* Character-by-character typing */}
+      {typedMessage && (
+        <div className="chat-bubble ai">
+          <div className="markdown-content">
+            <ReactMarkdown>{typedMessage}</ReactMarkdown>
+          </div>
         </div>
       )}
 
