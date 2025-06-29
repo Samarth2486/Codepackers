@@ -16,6 +16,7 @@ const FloatingChatbot = () => {
 
   const chatContainerRef = useRef(null);
   const messagesEndRef = useRef(null);
+  const typingIntervalRef = useRef(null);
   const typingSpeed = 10;
 
   const [threadId, setThreadId] = useState(() => {
@@ -25,7 +26,6 @@ const FloatingChatbot = () => {
   const API_BASE_URL =
     process.env.REACT_APP_BACKEND_URL || "http://127.0.0.1:5000";
 
-  // Handle scroll events to detect manual user scrolling
   useEffect(() => {
     const container = chatContainerRef.current;
     if (!container) return;
@@ -40,22 +40,27 @@ const FloatingChatbot = () => {
     return () => container.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Trigger welcome message on first open
   useEffect(() => {
     if (isOpen && messages.length === 0) {
       setFullMessage(t("floatingChatbot.welcome"));
     }
   }, [isOpen, messages.length, t]);
 
-  // Typing effect for bot replies
   useEffect(() => {
     if (fullMessage) {
+      if (typingIntervalRef.current) {
+        clearInterval(typingIntervalRef.current);
+      }
+
       let index = 0;
-      setTypedMessage("");
+      let typedSoFar = ""; // ✅ use local variable to ensure message consistency
       const messageLength = fullMessage.length;
 
-      const interval = setInterval(() => {
-        setTypedMessage((prev) => prev + fullMessage.charAt(index));
+      setTypedMessage("");
+      typingIntervalRef.current = setInterval(() => {
+        typedSoFar += fullMessage.charAt(index);
+        setTypedMessage(typedSoFar); // shows animated text
+
         index++;
 
         if (!isUserScrolling) {
@@ -63,72 +68,67 @@ const FloatingChatbot = () => {
         }
 
         if (index >= messageLength) {
-          clearInterval(interval);
+          clearInterval(typingIntervalRef.current);
+          typingIntervalRef.current = null;
+
           setTimeout(() => {
-            setMessages((prev) => {
-  // Only add if fullMessage isn't already last typed message
-  const lastMsg = prev[prev.length - 1];
-  if (lastMsg?.text === fullMessage && lastMsg?.from === "ai") return prev;
-
-  return [...prev, { from: "ai", text: fullMessage, options: currentOptions }];
-});
-
+            setMessages((prev) => [
+              ...prev,
+              { from: "ai", text: typedSoFar, options: currentOptions },
+            ]);
             setTypedMessage("");
             setIsBotTyping(false);
             setFullMessage("");
             setCurrentOptions(null);
-
-            if (!isUserScrolling) {
-              setTimeout(() => {
-                messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-              }, 150);
-            }
           }, 200);
         }
       }, typingSpeed);
 
-      return () => clearInterval(interval);
+      return () => clearInterval(typingIntervalRef.current);
     }
-  }, [fullMessage, currentOptions, isUserScrolling, typingSpeed]);
+  }, [fullMessage, currentOptions, isUserScrolling]);
 
   const handleSend = async (userInput) => {
-  if (!userInput.trim()) return;
+    if (!userInput.trim()) return;
 
-  setMessages((prev) => [...prev, { from: "user", text: userInput }]);
-  setInput("");
+    setMessages((prev) => [...prev, { from: "user", text: userInput }]);
+    setInput("");
 
-  // 🛠️ Clear old state BEFORE new typing begins
-  setFullMessage("");
-  setTypedMessage("");
-  setIsBotTyping(true);
-
-  try {
-    const response = await fetch(`${API_BASE_URL}/api/chat`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        message: userInput,
-        thread_id: threadId,
-      }),
-    });
-
-    const data = await response.json();
-    const botReply = data.reply || t("floatingChatbot.noReply");
-    const options = data.options || null;
-
-    if (data.thread_id && !threadId) {
-      setThreadId(data.thread_id);
-      localStorage.setItem("chat_thread_id", data.thread_id);
+    if (typingIntervalRef.current) {
+      clearInterval(typingIntervalRef.current);
+      typingIntervalRef.current = null;
     }
 
-    setFullMessage(botReply);   // Start typing this
-    setCurrentOptions(options);
-  } catch (error) {
-    console.error("Error:", error);
-    setFullMessage(t("floatingChatbot.error"));
-  }
-};
+    setTypedMessage("");
+    setFullMessage("");
+    setIsBotTyping(true);
 
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/chat`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          message: userInput,
+          thread_id: threadId,
+        }),
+      });
+
+      const data = await response.json();
+      const botReply = data.reply || t("floatingChatbot.noReply");
+      const options = data.options || null;
+
+      if (data.thread_id && !threadId) {
+        setThreadId(data.thread_id);
+        localStorage.setItem("chat_thread_id", data.thread_id);
+      }
+
+      setCurrentOptions(options);
+      setFullMessage(botReply);
+    } catch (error) {
+      console.error("Error:", error);
+      setFullMessage(t("floatingChatbot.error"));
+    }
+  };
 
   const handleOptionClick = (optionText) => {
     handleSend(optionText);
@@ -145,6 +145,11 @@ const FloatingChatbot = () => {
       setFullMessage("");
       setTypedMessage("");
       setIsBotTyping(false);
+
+      if (typingIntervalRef.current) {
+        clearInterval(typingIntervalRef.current);
+        typingIntervalRef.current = null;
+      }
     }
   };
 
@@ -171,12 +176,11 @@ const FloatingChatbot = () => {
 
           <div className="chatbot-body" ref={chatContainerRef}>
             <MessageBubbles
-  chat={messages}
-  isBotTyping={isBotTyping}
-  typedMessage={typedMessage}
-  onOptionClick={handleOptionClick}
-/>
-
+              chat={messages}
+              isBotTyping={isBotTyping}
+              typedMessage={typedMessage}
+              onOptionClick={handleOptionClick}
+            />
             <div ref={messagesEndRef} />
           </div>
 

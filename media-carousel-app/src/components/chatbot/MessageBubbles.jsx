@@ -27,8 +27,9 @@ const MessageBubbles = ({
   return (
     <div className="chat-messages">
       {chat.map((msg, idx) => {
+        const isTextString = typeof msg.text === "string";
         const isExpanded = expandedIndexes.includes(idx);
-        const showReadMore = msg.text.length > MAX_CHARS;
+        const showReadMore = isTextString && msg.text.length > MAX_CHARS;
         const displayedText =
           showReadMore && !isExpanded
             ? msg.text.slice(0, MAX_CHARS) + "..."
@@ -37,11 +38,19 @@ const MessageBubbles = ({
         return (
           <div key={idx} className={`chat-bubble ${msg.from}`}>
             <div className="markdown-content">
-              <ReactMarkdown>{displayedText}</ReactMarkdown>
+              <ReactMarkdown>
+                {isTextString ? displayedText : ""}
+              </ReactMarkdown>
+
               {showReadMore && (
                 <button
                   className="read-more-btn"
                   onClick={() => toggleExpand(idx)}
+                  aria-label={
+                    isExpanded
+                      ? t("messageBubbles.showLess")
+                      : t("messageBubbles.readMore")
+                  }
                 >
                   {isExpanded
                     ? t("messageBubbles.showLess")
@@ -50,7 +59,7 @@ const MessageBubbles = ({
               )}
             </div>
 
-            {msg.options && (
+            {Array.isArray(msg.options) && (
               <div className="chat-options">
                 {msg.options.map((opt, i) => (
                   <button
@@ -58,7 +67,9 @@ const MessageBubbles = ({
                     className="option-button"
                     onClick={() => onOptionClick(opt)}
                     tabIndex={0}
-                    onKeyDown={(e) => e.key === "Enter" && onOptionClick(opt)}
+                    onKeyDown={(e) =>
+                      e.key === "Enter" && onOptionClick(opt)
+                    }
                   >
                     {typeof opt === "string" ? t(`chatbot.${opt}`) : opt}
                   </button>
@@ -69,12 +80,15 @@ const MessageBubbles = ({
         );
       })}
 
-      {/* 3-dot typing indicator BEFORE typedMessage begins */}
+      {/* Typing indicator */}
       {isBotTyping && typedMessage === "" && (
-        <div className="chat-bubble ai typing-indicator">
-          <span className="dot"></span>
-          <span className="dot"></span>
-          <span className="dot"></span>
+        <div
+          className="chat-bubble ai typing-indicator"
+          aria-label="Bot is typing"
+        >
+          <span className="dot" aria-hidden="true"></span>
+          <span className="dot" aria-hidden="true"></span>
+          <span className="dot" aria-hidden="true"></span>
         </div>
       )}
 
