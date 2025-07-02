@@ -13,16 +13,14 @@ const FloatingChatbot = () => {
   const [fullMessage, setFullMessage] = useState("");
   const [currentOptions, setCurrentOptions] = useState(null);
   const [isUserScrolling, setIsUserScrolling] = useState(false);
+  const [threadId, setThreadId] = useState(() => {
+    return localStorage.getItem("chat_thread_id") || "";
+  });
 
   const chatContainerRef = useRef(null);
   const messagesEndRef = useRef(null);
   const typingIntervalRef = useRef(null);
   const typingSpeed = 10;
-
-  const [threadId, setThreadId] = useState(() => {
-    return localStorage.getItem("chat_thread_id") || null;
-  });
-
   const API_BASE_URL =
     process.env.REACT_APP_BACKEND_URL || "http://127.0.0.1:5000";
 
@@ -53,14 +51,13 @@ const FloatingChatbot = () => {
       }
 
       let index = 0;
-      let typedSoFar = ""; // ✅ use local variable to ensure message consistency
+      let typedSoFar = "";
       const messageLength = fullMessage.length;
-
       setTypedMessage("");
+
       typingIntervalRef.current = setInterval(() => {
         typedSoFar += fullMessage.charAt(index);
-        setTypedMessage(typedSoFar); // shows animated text
-
+        setTypedMessage(typedSoFar);
         index++;
 
         if (!isUserScrolling) {
@@ -103,13 +100,15 @@ const FloatingChatbot = () => {
     setFullMessage("");
     setIsBotTyping(true);
 
+    const storedThreadId = localStorage.getItem("chat_thread_id") || "";
+
     try {
       const response = await fetch(`${API_BASE_URL}/api/chat`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           message: userInput,
-          thread_id: threadId,
+          thread_id: threadId || storedThreadId,
         }),
       });
 
@@ -117,7 +116,7 @@ const FloatingChatbot = () => {
       const botReply = data.reply || t("floatingChatbot.noReply");
       const options = data.options || null;
 
-      if (data.thread_id && !threadId) {
+      if (data.thread_id && data.thread_id !== threadId) {
         setThreadId(data.thread_id);
         localStorage.setItem("chat_thread_id", data.thread_id);
       }
@@ -140,7 +139,7 @@ const FloatingChatbot = () => {
     );
     if (confirmReset) {
       localStorage.removeItem("chat_thread_id");
-      setThreadId(null);
+      setThreadId("");
       setMessages([]);
       setFullMessage("");
       setTypedMessage("");
@@ -169,8 +168,15 @@ const FloatingChatbot = () => {
           <div className="chatbot-header">
             <span className="chatbot-title">{t("floatingChatbot.header")}</span>
             <div className="chatbot-header-buttons">
-              <button className="chatbot-reset" onClick={resetChat}>⟳</button>
-              <button className="chatbot-close" onClick={() => setIsOpen(false)}>×</button>
+              <button className="chatbot-reset" onClick={resetChat}>
+                ⟳
+              </button>
+              <button
+                className="chatbot-close"
+                onClick={() => setIsOpen(false)}
+              >
+                ×
+              </button>
             </div>
           </div>
 
