@@ -1,7 +1,7 @@
 from pymongo import MongoClient
 import os
 
-uri = os.getenv("uri")
+uri = os.getenv("MONGO_URI")
 
 # Initialize collections as None
 collection = None
@@ -21,3 +21,4 @@ try:
 
 except Exception as e:
     print("❌ Error connecting to MongoDB:", e)
+
