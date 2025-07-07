@@ -4,61 +4,36 @@ from generate_pdf import create_pdf
 import os, json, pytz, uuid, traceback
 from datetime import datetime, timedelta
 from dotenv import load_dotenv
-from database import collection
+from database import collection, get_conversation, save_conversation
 from google.generativeai import configure, GenerativeModel
-import smtplib
-from email.mime.text import MIMEText
-from email.mime.multipart import MIMEMultipart
 from sentence_transformers import SentenceTransformer
-import numpy as np
 from sklearn.metrics.pairwise import cosine_similarity
+import numpy as np
+import json
+import smtplib
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+from pathlib import Path
+
+VISITOR_DATA_FILE = "submissions.json"
 
 # Load environment variables
 load_dotenv()
-
-# AI Configuration
 configure(api_key=os.getenv("GEMINI_API_KEY"))
+
+# Models
 model = GenerativeModel("gemini-1.5-flash")
-embedder = SentenceTransformer('all-MiniLM-L6-v2')
+embedder = SentenceTransformer("all-MiniLM-L6-v2")
 
-# Semantic Scope
-COMPANY_KNOWLEDGE = [
-    "Codepacker Software Solutions - software design and development company",
-    "Alaap - enterprise conversational AI platform for chatbots and voice assistants",
-    "Pustak - customizable ERP framework for HR, CRM, and project management",
-    "Technical support for Codepacker products",
-    "AI-powered workflow automation solutions",
-    "Enterprise software integration services",
-    "Real-time multilingual communication tools",
-    "Company leadership: Vikas Tyagi and Sujagya Das Sharma",
-    "Why should I use Codepackers services?",
-    "What makes Codepackers unique?",
-    "How does Codepackers help businesses?",
-    "Industries served: e-commerce, healthcare, education, government",
-    "Why should I use Codepackers services?",
-    "What makes Codepackers unique?",
-    "How does Codepackers help businesses?",
-    "What are the benefits of using Alaap or Pustak?",
-    "How can Codepackers improve my business process?",
-    "Why choose Codepackers for software development?",
-    "What kind of problems does Codepackers solve?",
-    "Tell me about your solutions and value.",
-    "What is Alaap?",
-    "Explain Pustak framework",
-    "Codepacker technical support",
-    "AI solutions from Codepacker"
-]
-COMPANY_EMBEDDINGS = embedder.encode(COMPANY_KNOWLEDGE)
-
-# File paths
+# Directories
 PDF_DIR = os.getenv("PDF_DIR", "static/pdfs")
-VISITOR_DATA_FILE = os.getenv("VISITOR_DATA_FILE", "visitors.json")
 if not os.path.exists(PDF_DIR):
     os.makedirs(PDF_DIR)
 
 app = Flask(__name__)
 CORS(app)
 
+# Load system prompt
 def load_system_prompt():
     try:
         with open("system_prompt.txt", "r", encoding="utf-8") as f:
@@ -66,127 +41,93 @@ def load_system_prompt():
     except Exception:
         return ""
 
-def is_company_related(query):
+# Semantic similarity check
+def is_semantically_in_scope(text, reference, threshold=0.14):
     try:
-        query_embed = embedder.encode([query])
-        similarities = cosine_similarity(query_embed, COMPANY_EMBEDDINGS)
-        max_sim = np.max(similarities)
-        print(f"Semantic match for '{query}': {max_sim:.2f}")
-        return bool(max_sim > 0.35)
+        embeddings = embedder.encode([text, reference])
+        similarity = cosine_similarity([embeddings[0]], [embeddings[1]])[0][0]
+        print(f"Semantic similarity: {similarity:.2f}")
+        return similarity > threshold
     except Exception as e:
-        print(f"Embedding error: {e}")
+        print("Semantic similarity check failed:", e)
         return False
 
-@app.route('/api/chat', methods=['POST'])
+# 🧠 Chat Endpoint
+@app.route("/api/chat", methods=["POST"])
 def chat():
     try:
         if not request.is_json:
             return jsonify({"error": "Request must be JSON"}), 400
 
-        data = request.get_json(silent=True)
-        if not data:
-            return jsonify({"error": "Invalid or missing JSON body"}), 400
-
-        user_message = (data.get("message") or "").strip()
+        data = request.get_json()
+        user_msg = (data.get("message") or "").strip()
         thread_id = (data.get("thread_id") or "").strip()
 
-        if not user_message:
+        if not user_msg:
             return jsonify({"error": "Message cannot be empty"}), 400
 
+        # Check if response already cached
+        if thread_id:
+            cached = collection.find_one({
+                "thread_id": thread_id,
+                "query": user_msg,
+                "timestamp": {"$gt": datetime.now(pytz.utc) - timedelta(hours=24)}
+            })
+            if cached:
+                return jsonify({
+                    "reply": cached["response"],
+                    "thread_id": thread_id
+                })
+
+        # New session if no thread
         thread_id = thread_id or str(uuid.uuid4())
-
-        # Check if similar message exists in this thread
-        cached = collection.find_one({
-            "thread_id": thread_id,
-            "query": user_message,
-            "timestamp": {"$gt": datetime.now(pytz.utc) - timedelta(hours=24)}
-        })
-
-        if cached:
-            return jsonify({"reply": cached["response"], "thread_id": thread_id})
-
         system_prompt = load_system_prompt()
-        chat_history = []
 
+        # Build conversation history
+        history = []
         if system_prompt:
-            chat_history.append({"role": "user", "parts": system_prompt})
+            history.append({"role": "user", "parts": system_prompt})
 
-        past = collection.find({"thread_id": thread_id}).sort("timestamp", -1).limit(5)
-        for m in reversed(list(past)):
-            chat_history.append({"role": "user", "parts": m["query"]})
-            chat_history.append({"role": "model", "parts": m["response"]})
+        past_msgs = get_conversation(thread_id)
+        for msg in past_msgs:
+            history.append({"role": "user", "parts": msg["query"]})
+            history.append({"role": "model", "parts": msg["response"]})
 
-        chat_history.append({"role": "user", "parts": user_message})
+        # Add current user message
+        history.append({"role": "user", "parts": user_msg})
 
-        if not is_company_related(user_message):
-            bot_reply = "I specialize in Codepacker Software Solutions. Ask about our AI platforms or ERP solutions."
-        else:
-            try:
-                prompt = ""
-                if system_prompt:
-                    prompt += f"{system_prompt}\n\n"
-                for entry in chat_history:
-                    role = entry["role"]
-                    part = entry["parts"]
-                    prompt += f"{'User' if role == 'user' else 'AI'}: {part}\n"
-                prompt += "AI:"
-                response = model.generate_content(prompt)
-                bot_reply = response.text.strip() or "I can help with Codepacker products and services."
-                if len(bot_reply.split()) > 80:
-                    bot_reply = bot_reply[:500].rsplit(".", 1)[0] + "."
-            except Exception as e:
-                traceback.print_exc()
-                bot_reply = "Our AI service is temporarily unavailable."
+        # Generate reply from Gemini
+        try:
+            chat_session = model.start_chat(history=history)
+            response = chat_session.send_message(user_msg)
+            bot_reply = response.text.strip() if response.text else "I can help with Codepackers products and services."
 
-        collection.insert_one({
-            "thread_id": thread_id,
-            "query": user_message,
-            "response": bot_reply,
-            "timestamp": datetime.now(pytz.utc)
+            # Final semantic scope filtering
+            reference = " ".join([msg["parts"] for msg in history if msg["role"] in ("user", "model")])
+            if not is_semantically_in_scope(user_msg, reference):
+                bot_reply = "I'm here to assist with Codepackers-related queries. For anything else, please contact support."
+
+        except Exception as e:
+            print("Gemini API error:")
+            traceback.print_exc()
+            bot_reply = "Our AI service is temporarily unavailable."
+
+        # Save to DB
+        save_conversation(thread_id, user_msg, bot_reply)
+
+        return jsonify({
+            "reply": bot_reply,
+            "thread_id": thread_id
         })
 
-        return jsonify({"reply": bot_reply, "thread_id": thread_id})
-
     except Exception as e:
+        print("Unhandled /chat error:")
         traceback.print_exc()
-        return jsonify({"error": "Service unavailable", "retry_suggestion": "Please try again later"}), 500
+        return jsonify({
+            "error": "Internal server error",
+            "retry_suggestion": "Please try again later"
+        }), 500
 
-@app.route('/api/messages', methods=['POST'])
-def receive_visitor():
-    try:
-        data = request.get_json()
-        if not all(k in data for k in ('name', 'email', 'phone')):
-            return jsonify({'success': False, 'message': 'Missing fields'}), 200
-        timestamp = datetime.now(pytz.timezone("Asia/Kolkata")).isoformat()
-        message = data.get("message", "").strip()
-        query_id = str(uuid.uuid4())[:8]
-        data_entry = {
-            "name": data["name"],
-            "email": data["email"],
-            "phone": data["phone"],
-            "timestamp": timestamp,
-            "message": message,
-            "queryId": query_id,
-            "source": "form",
-            "queryMethod": []
-        }
-        if not os.path.exists(VISITOR_DATA_FILE):
-            with open(VISITOR_DATA_FILE, 'w') as f:
-                json.dump([], f)
-        with open(VISITOR_DATA_FILE, 'r+') as f:
-            try:
-                existing = json.load(f)
-            except:
-                existing = []
-            existing.append(data_entry)
-            f.seek(0)
-            json.dump(existing, f, indent=4)
-            f.truncate()
-        filename = create_pdf(data_entry)
-        return jsonify({'success': True, 'pdf': filename})
-    except Exception as e:
-        print("Error in /api/messages:", e)
-        return jsonify({'success': False, 'message': 'Internal server error'}), 500
 
 @app.route('/api/download-pdf', methods=['GET'])
 def download_pdf():
@@ -308,5 +249,4 @@ def log_whatsapp_query():
         return jsonify({'success': False, 'message': 'Internal server error'}), 500
 
 if __name__ == '__main__':
-    port = int(os.environ.get('PORT', 5000))
-    app.run(debug=True, host='0.0.0.0', port=port)
+    app.run(debug=True, port=5000)
